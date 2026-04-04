@@ -911,7 +911,21 @@ function setLoadingState(loading) {
     clearInterval(_progressTimer);
     animateGenProgress(false);
     showLoadingTips(false);
-    document.title = 'ScriptFlare — AI Script Writer for Faceless YouTube Channels';
+    if (document.hidden) {
+      // Flash "ready" in title if user switched tabs during generation
+      let flashes = 0;
+      const flashInterval = setInterval(() => {
+        document.title = flashes % 2 === 0
+          ? '⚡ Script ready! | ScriptFlare'
+          : 'ScriptFlare — AI Script Writer for Faceless YouTube Channels';
+        if (++flashes >= 6) {
+          clearInterval(flashInterval);
+          document.title = 'ScriptFlare — AI Script Writer for Faceless YouTube Channels';
+        }
+      }, 800);
+    } else {
+      document.title = 'ScriptFlare — AI Script Writer for Faceless YouTube Channels';
+    }
     const outOfScripts = getRemainingScripts() <= 0 && !isProUser();
     btn.disabled = false;
     btn.style.background = '';
@@ -981,6 +995,7 @@ function regenerateScript() {
   document.getElementById('upgrade-nudge')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
+  document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
