@@ -756,6 +756,18 @@ select {
   font-size: 0.78rem;
   color: var(--text-faint);
 }
+.testimonial-result {
+  display: inline-block;
+  background: rgba(52, 211, 153, 0.08);
+  color: #6ee7b7;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: 0.01em;
+}
 
 /* === PRICING === */
 #pricing { background: var(--bg); }
@@ -1253,6 +1265,64 @@ footer {
   background: rgba(251,191,36,0.06);
   border-color: rgba(251,191,36,0.2);
   color: #fcd34d;
+}
+
+/* Script score badge */
+.quality-score-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 14px 4px 4px;
+  border-right: 1px solid var(--border);
+  margin-right: 4px;
+  gap: 1px;
+}
+.quality-score-label {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-faint);
+  font-weight: 600;
+}
+.quality-score {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+.score-high { color: #34d399; }
+.score-mid  { color: #fbbf24; }
+.score-low  { color: #f87171; }
+
+/* Generation progress bar */
+.gen-progress-wrap {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeSlideIn 0.25s ease;
+}
+.gen-progress-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.gen-progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary), var(--pink));
+  border-radius: 3px;
+  transition: width 0.6s ease-out;
+}
+.gen-progress-pct {
+  font-size: 11px;
+  color: var(--text-faint);
+  font-variant-numeric: tabular-nums;
+  min-width: 32px;
+  text-align: right;
 }
 
 /* === TOPIC SUGGESTIONS === */

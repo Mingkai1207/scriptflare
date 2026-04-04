@@ -347,6 +347,12 @@
               <span class="spinner"></span> <span id="loading-text">Analyzing your topic...</span>
             </span>
           </button>
+          <div class="gen-progress-wrap hidden" id="gen-progress-wrap">
+            <div class="gen-progress-track">
+              <div class="gen-progress-fill" id="gen-progress-fill"></div>
+            </div>
+            <span class="gen-progress-pct" id="gen-progress-pct">0%</span>
+          </div>
         </div>
 
         <!-- OUTPUT -->
@@ -369,6 +375,10 @@
           <div class="script-content" id="script-content"></div>
           <!-- Script quality indicators -->
           <div class="script-quality hidden" id="script-quality">
+            <div class="quality-score-wrap">
+              <span class="quality-score-label">Score</span>
+              <span class="quality-score score-high" id="quality-score">—</span>
+            </div>
             <div class="quality-item" id="q-hook">🎣 Hook</div>
             <div class="quality-item" id="q-broll">🎬 B-Roll</div>
             <div class="quality-item" id="q-openloop">🔄 Open Loop</div>
@@ -433,6 +443,7 @@
       <p class="section-sub">2,400+ creators · 47,200+ scripts generated · ⭐ 4.9/5 avg rating</p>
       <div class="testimonials-grid">
         <div class="testimonial-card reveal">
+          <div class="testimonial-result">📈 800 → 22K subs in 5 months</div>
           <div class="stars">★★★★★</div>
           <p class="testimonial-text">"I went from 1 video a week to 4. My finance channel grew from 800 to 22K subscribers in 5 months. The hooks ScriptFlare generates are genuinely better than what I was writing manually."</p>
           <div class="testimonial-author">
@@ -444,6 +455,7 @@
           </div>
         </div>
         <div class="testimonial-card reveal reveal-delay-2">
+          <div class="testimonial-result">⏱️ 3× faster B-roll sourcing</div>
           <div class="stars">★★★★★</div>
           <p class="testimonial-text">"The B-roll cues alone are worth it. I used to spend hours figuring out what footage to pair with my voiceover. Now it's all right there in the script. Absolute game changer."</p>
           <div class="testimonial-author">
@@ -455,6 +467,7 @@
           </div>
         </div>
         <div class="testimonial-card reveal reveal-delay-4">
+          <div class="testimonial-result">📊 +22% avg view duration</div>
           <div class="stars">★★★★★</div>
           <p class="testimonial-text">"My average view duration went up 22% after switching to ScriptFlare scripts. The retention structure it uses — hooks, open loops, payoffs — is exactly what YouTube rewards."</p>
           <div class="testimonial-author">
@@ -466,6 +479,7 @@
           </div>
         </div>
         <div class="testimonial-card reveal">
+          <div class="testimonial-result">🔥 3 videos × 10K views week 1</div>
           <div class="stars">★★★★★</div>
           <p class="testimonial-text">"I run a tech and AI channel. ScriptFlare nails the tone — it sounds like a knowledgeable human, not a robot. My last 3 videos all crossed 10K views in the first week. The hook quality is next level."</p>
           <div class="testimonial-author">
@@ -531,7 +545,7 @@
         <h3>Complete Your Pro Upgrade</h3>
         <p>Subscribe for $19/month via PayPal — secure, cancel anytime.</p>
         <div id="paypal-button-container" class="paypal-btn-wrap">
-          <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick-subscriptions&business=liumingkai1207%40gmail.com&lc=US&item_name=ScriptFlare%20Pro&item_number=SFPRO&no_note=1&no_shipping=1&currency_code=USD&a3=19.00&p3=1&t3=M&src=1&sra=1&bn=PP-SubscriptionsBF" target="_blank" class="btn btn-paypal btn-lg">
+          <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick-subscriptions&business=liumingkai1207%40gmail.com&lc=US&item_name=ScriptFlare%20Pro&item_number=SFPRO&no_note=1&no_shipping=1&currency_code=USD&a3=19.00&p3=1&t3=M&src=1&sra=1&bn=PP-SubscriptionsBF" target="_blank" rel="noopener noreferrer" class="btn btn-paypal btn-lg">
             💳 Pay $19/month via PayPal
           </a>
         </div>

@@ -32,6 +32,7 @@ const VALID_CODES = new Set([
 let currentScript = '';
 let isGenerating = false;
 let _progressTimer = null;
+let _progressBarTimer = null;
 
 // === SCRIPT AUTO-SAVE ===
 function autoSaveScript(script, topic, niche) {
@@ -807,8 +808,10 @@ function setLoadingState(loading) {
       step = Math.min(step + 1, LOADING_STEPS.length - 1);
       if (loadingText) loadingText.textContent = LOADING_STEPS[step];
     }, 2200);
+    animateGenProgress(true);
   } else {
     clearInterval(_progressTimer);
+    animateGenProgress(false);
     const outOfScripts = getRemainingScripts() <= 0 && !isProUser();
     btn.disabled = false;
     btn.style.background = '';
@@ -943,6 +946,24 @@ function showQualityReport(script) {
   set('q-broll', brollCount >= 4, `${brollCount} B-Roll Cues`);
   set('q-openloop', hasOpenLoop, 'Open Loop');
   set('q-cta', hasCTA, 'CTA');
+
+  // Compute score
+  let score = 0;
+  if (hasHook) score += 25;
+  if (brollCount >= 6) score += 25;
+  else if (brollCount >= 4) score += 20;
+  else if (brollCount >= 2) score += 12;
+  if (hasOpenLoop) score += 25;
+  if (hasCTA) score += 25;
+  const sectionCount = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length;
+  if (sectionCount >= 4) score = Math.min(100, score + 5);
+
+  const scoreEl = document.getElementById('quality-score');
+  if (scoreEl) {
+    scoreEl.textContent = score + '/100';
+    scoreEl.className = 'quality-score ' + (score >= 80 ? 'score-high' : score >= 60 ? 'score-mid' : 'score-low');
+  }
+
   qDiv.classList.remove('hidden');
 }
 
@@ -1028,6 +1049,46 @@ function toggleFaq(el) {
     el.classList.add('open');
     answer.classList.add('open');
   }
+}
+
+// === GENERATION PROGRESS BAR ===
+function animateGenProgress(loading) {
+  const wrap = document.getElementById('gen-progress-wrap');
+  const fill = document.getElementById('gen-progress-fill');
+  const pctEl = document.getElementById('gen-progress-pct');
+  if (!wrap || !fill) return;
+
+  clearInterval(_progressBarTimer);
+
+  if (!loading) {
+    // Snap to 100%, then fade out
+    fill.style.transition = 'width 0.4s ease';
+    fill.style.width = '100%';
+    if (pctEl) pctEl.textContent = '100%';
+    setTimeout(() => {
+      wrap.classList.add('hidden');
+      // Reset for next use
+      setTimeout(() => { fill.style.width = '0%'; fill.style.transition = ''; }, 200);
+    }, 700);
+    return;
+  }
+
+  wrap.classList.remove('hidden');
+  fill.style.transition = 'none';
+  fill.style.width = '0%';
+  if (pctEl) pctEl.textContent = '0%';
+
+  let pct = 0;
+  // Ease toward 88% asymptotically — feels natural without knowing true completion
+  requestAnimationFrame(() => {
+    fill.style.transition = 'width 0.5s ease-out';
+    _progressBarTimer = setInterval(() => {
+      pct += (88 - pct) * 0.048;
+      if (pct > 88) pct = 88;
+      fill.style.width = pct.toFixed(1) + '%';
+      if (pctEl) pctEl.textContent = Math.round(pct) + '%';
+    }, 500);
+  });
 }
 
 // === CSS ANIMATION (inject shake) ===
