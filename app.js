@@ -130,14 +130,16 @@ function initStickyCTA() {
   }, { passive: true });
 }
 
-// === NAVBAR SCROLL ===
+// === NAVBAR SCROLL + SCROLL TO TOP ===
 function initNavbarScroll() {
   const nav = document.getElementById('navbar');
+  const scrollTop = document.getElementById('scroll-top');
   window.addEventListener('scroll', () => {
     nav.style.background = window.scrollY > 40
       ? 'rgba(6, 6, 15, 0.97)'
       : 'rgba(6, 6, 15, 0.85)';
-  });
+    if (scrollTop) scrollTop.classList.toggle('visible', window.scrollY > 500);
+  }, { passive: true });
 }
 
 // === TOPIC PLACEHOLDER ROTATION ===
@@ -962,6 +964,8 @@ function regenerateScript() {
   document.getElementById('upgrade-nudge')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
+  document.getElementById('script-content')?.classList.remove('hide-broll');
+  document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
   generateScript();
 }
@@ -974,6 +978,8 @@ function clearOutput() {
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
+  document.getElementById('script-content')?.classList.remove('hide-broll');
+  document.getElementById('broll-toggle')?.classList.remove('broll-off');
   localStorage.removeItem('sf_autosave');
   currentScript = '';
   const topicEl = document.getElementById('topic');

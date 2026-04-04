@@ -1034,6 +1034,42 @@ select {
   color: rgba(255,255,255,0.35);
 }
 
+/* === SCROLL TO TOP === */
+.scroll-top {
+  position: fixed;
+  bottom: 88px;
+  right: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 900;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.25s, transform 0.25s, background 0.2s;
+  pointer-events: none;
+}
+.scroll-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.scroll-top:hover {
+  background: var(--bg3);
+  border-color: var(--border-hover);
+  color: var(--text);
+}
+@media (max-width: 640px) {
+  .scroll-top { bottom: 76px; right: 12px; width: 36px; height: 36px; font-size: 0.9rem; }
+}
+
 /* === FOOTER === */
 footer {
   background: var(--bg);
