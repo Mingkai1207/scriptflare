@@ -692,9 +692,10 @@ function displayScript(script, topic, length) {
   }
   contentDiv.innerHTML = formatScript(script);
 
-  // Show output + topic suggestions
+  // Show output + quality report + topic suggestions
   outputDiv.classList.remove('hidden');
   outputDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  showQualityReport(script);
   showTopicSuggestions(niche);
 
   // Success toast with upgrade nudge if on last remaining (0 left now)
@@ -877,6 +878,7 @@ function clearOutput() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
+  document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   localStorage.removeItem('sf_autosave');
   currentScript = '';
@@ -913,6 +915,31 @@ function showToast(message, type = 'info') {
       setTimeout(() => toast.remove(), 400);
     }, 4000);
   });
+}
+
+// === SCRIPT QUALITY REPORT ===
+function showQualityReport(script) {
+  const qDiv = document.getElementById('script-quality');
+  if (!qDiv) return;
+
+  const lower = script.toLowerCase();
+  const brollCount = (script.match(/\[VISUAL:/gi) || []).length;
+  const hasHook = /\[hook\]/i.test(script);
+  const hasCTA = /\[call to action\]/i.test(script) || /\[cta\]/i.test(script);
+  const hasOpenLoop = ['stay tuned','coming up','find out','later in','keep watching','stick around','by the end'].some(p => lower.includes(p));
+
+  const set = (id, ok, label) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.className = 'quality-item ' + (ok ? 'q-ok' : 'q-miss');
+    el.textContent = (ok ? '✅ ' : '⚠️ ') + label;
+  };
+
+  set('q-hook', hasHook, 'Hook');
+  set('q-broll', brollCount >= 4, `${brollCount} B-Roll Cues`);
+  set('q-openloop', hasOpenLoop, 'Open Loop');
+  set('q-cta', hasCTA, 'CTA');
+  qDiv.classList.remove('hidden');
 }
 
 // === SHARE ON X ===

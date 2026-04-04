@@ -1215,6 +1215,35 @@ footer {
 .skeleton-header.w-40 { width: 40%; }
 .skeleton-spacer { height: 20px; }
 
+/* === SCRIPT QUALITY REPORT === */
+.script-quality {
+  display: flex;
+  gap: 8px;
+  padding: 10px 24px;
+  border-top: 1px solid var(--border);
+  flex-wrap: wrap;
+  background: rgba(0,0,0,0.15);
+  animation: fadeSlideIn 0.3s ease;
+}
+.quality-item {
+  font-size: 0.78rem;
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-weight: 500;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+}
+.quality-item.q-ok {
+  background: rgba(16,185,129,0.08);
+  border-color: rgba(16,185,129,0.25);
+  color: #6ee7b7;
+}
+.quality-item.q-miss {
+  background: rgba(251,191,36,0.06);
+  border-color: rgba(251,191,36,0.2);
+  color: #fcd34d;
+}
+
 /* === TOPIC SUGGESTIONS === */
 .topic-suggestions {
   padding: 16px 24px;
