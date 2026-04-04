@@ -3012,3 +3012,37 @@ kbd {
   margin: 0;
 }
 .nr-channels em { font-style: normal; color: var(--text-muted); }
+
+/* === QUALITY REPORT KEYWORDS === */
+.quality-keywords {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(124,92,252,0.02);
+  animation: fadeSlideIn 0.3s ease;
+}
+.kw-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 4px;
+}
+.kw-chip {
+  padding: 3px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  cursor: default;
+  transition: border-color 0.2s, color 0.2s;
+}
+.kw-chip:hover {
+  border-color: rgba(124,92,252,0.35);
+  color: var(--primary-light);
+}

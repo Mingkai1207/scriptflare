@@ -1253,6 +1253,7 @@ function clearOutput() {
   document.getElementById('channel-names')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('quality-tips')?.classList.add('hidden');
+  document.getElementById('quality-keywords')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('social-clips')?.classList.add('hidden');
@@ -1392,6 +1393,32 @@ function showQualityReport(script) {
     breakdownEl.classList.remove('hidden');
   } else if (breakdownEl) {
     breakdownEl.classList.add('hidden');
+  }
+
+  // Top keywords (stop-word filtered word frequency)
+  const STOPWORDS = new Set(['the','a','an','and','or','but','in','on','at','to','for','of','with','by','from','is','was','are','were','be','been','being','have','has','had','do','does','did','will','would','could','should','may','might','shall','can','that','this','these','those','it','its','i','you','your','we','our','they','their','he','she','his','her','what','which','who','how','when','where','why','not','no','so','as','if','then','than','there','here','about','into','through','after','before','between','up','down','out','off','over','under','again','further','once','just','more','most','other','some','such','own','same','too','very','s','t','re','ll','ve','d','m','now','also','even','each','any','all','both','few','more','while','because','during','every','only','where','whose','whom','against','while','without','within','along','following','across','behind','beyond','plus','except','up','out','around','upon','since','without']);
+  const topWords = (() => {
+    const freq = {};
+    const clean = script.replace(/\[VISUAL:[^\]]*\]/gi, '').replace(/\[[^\]]*\]/g, '');
+    for (const w of clean.toLowerCase().match(/\b[a-z]{4,}\b/g) || []) {
+      if (!STOPWORDS.has(w)) freq[w] = (freq[w] || 0) + 1;
+    }
+    return Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 8);
+  })();
+
+  let kwEl = document.getElementById('quality-keywords');
+  if (topWords.length >= 3) {
+    if (!kwEl) {
+      kwEl = document.createElement('div');
+      kwEl.id = 'quality-keywords';
+      kwEl.className = 'quality-keywords';
+      qDiv.insertAdjacentElement('afterend', kwEl);
+    }
+    kwEl.innerHTML = '<span class="kw-label">Top Keywords:</span>' +
+      topWords.map(([w, n]) => `<span class="kw-chip" title="${n} occurrences">${w}</span>`).join('');
+    kwEl.classList.remove('hidden');
+  } else if (kwEl) {
+    kwEl.classList.add('hidden');
   }
 
   // Show actionable improvement tips for any failing items
@@ -1658,6 +1685,31 @@ function downloadScript() {
   a.download = filename;
   a.click();
   URL.revokeObjectURL(url);
+}
+
+function copyAsMarkdown() {
+  if (!currentScript) return;
+  const topic = document.getElementById('topic').value.trim() || 'YouTube Script';
+  const nicheName = document.querySelector('#niche option:checked')?.textContent?.trim() || '';
+  const date = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  const md = currentScript.split('\n').map(line => {
+    const t = line.trim();
+    if (!t) return '';
+    if (/^\[VISUAL:/i.test(t)) return `> 🎬 ${t.replace(/^\[VISUAL:\s*/i, '').replace(/\]$/, '')}`;
+    if (/^\[HOOK\]$/i.test(t)) return '## Hook';
+    if (/^\[INTRO\]$/i.test(t)) return '## Intro';
+    if (/^\[CALL TO ACTION\]$/i.test(t)) return '## Call to Action';
+    if (/^\[CTA\]$/i.test(t)) return '## Call to Action';
+    if (/^\[SECTION \d+:\s*/i.test(t)) return `## ${t.replace(/^\[SECTION \d+:\s*/i, '').replace(/\]$/, '')}`;
+    if (/^\[.{2,60}\]$/.test(t)) return `## ${t.slice(1, -1)}`;
+    return t;
+  }).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+
+  const header = `# ${topic}\n\n_${nicheName}${nicheName ? ' · ' : ''}Generated ${date} by ScriptFlare_\n\n---\n\n`;
+  navigator.clipboard.writeText(header + md).then(() => {
+    showToast('✅ Markdown copied — paste into Notion, Obsidian, or any editor!', 'success');
+  }).catch(() => showToast('⚠️ Copy failed — try again', 'error'));
 }
 
 function printScript() {
