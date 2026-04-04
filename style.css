@@ -185,6 +185,16 @@ input, select, textarea { font-family: inherit; }
   border: none;
 }
 .btn-ghost:hover { color: var(--text); }
+.btn-improve {
+  background: rgba(250,190,50,0.1);
+  color: #f5a623;
+  border: 1px solid rgba(250,190,50,0.3);
+  border-radius: 8px;
+}
+.btn-improve:hover {
+  background: rgba(250,190,50,0.2);
+  border-color: rgba(250,190,50,0.5);
+}
 .btn-paypal {
   background: #ffc439;
   color: #333;

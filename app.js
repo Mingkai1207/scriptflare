@@ -2447,6 +2447,80 @@ function copySocialClip(btn, text) {
   });
 }
 
+// === IMPROVE SCRIPT ===
+async function improveScript() {
+  if (!currentScript || isGenerating) return;
+
+  const btn = document.getElementById('improve-btn');
+
+  if (!isProUser()) {
+    showToast('🔒 Script improvement is a Pro feature — upgrade to unlock.', 'warning');
+    setTimeout(() => scrollToPricing(), 600);
+    return;
+  }
+
+  // Diagnose quality gaps
+  const lower = currentScript.toLowerCase();
+  const hasHook = /\[hook\]/i.test(currentScript);
+  const brollCount = (currentScript.match(/\[VISUAL:/gi) || []).length;
+  const hasOpenLoop = ['stay tuned','coming up','find out','later in','keep watching','stick around','by the end'].some(p => lower.includes(p));
+  const hasCTA = /\[call to action\]/i.test(currentScript) || /\[cta\]/i.test(currentScript);
+
+  const improvements = [];
+  if (!hasHook) improvements.push('Add a dedicated [HOOK] section that grabs attention in the first 3 seconds');
+  if (brollCount < 4) improvements.push(`Increase B-roll cues — currently only ${brollCount}, aim for 6–8 spread throughout`);
+  if (!hasOpenLoop) improvements.push('Add an open loop early in the script (hint at a revelation to pay off later)');
+  if (!hasCTA) improvements.push('Add a [CALL TO ACTION] section at the end asking viewers to subscribe/comment');
+
+  if (!improvements.length) {
+    showToast('✅ Script already scores well — nothing major to improve!', 'success');
+    return;
+  }
+
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+  const tone = document.getElementById('tone').value;
+
+  if (btn) { btn.textContent = '⏳ Improving…'; btn.disabled = true; }
+
+  const improvementList = improvements.map((imp, i) => `${i + 1}. ${imp}`).join('\n');
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          { role: 'system', content: `You are a professional YouTube script editor. You receive a script and a list of specific improvements to make. Apply ONLY the listed improvements — keep everything else identical. Preserve all existing section headers, B-roll cues, and structure. Return only the improved script, no commentary.` },
+          { role: 'user', content: `Topic: "${topic}"\nNiche: ${niche}\nTone: ${tone}\n\nImprovements to apply:\n${improvementList}\n\nOriginal script:\n${currentScript}\n\nReturn the improved script:` }
+        ],
+        max_tokens: 2800,
+        temperature: 0.75,
+      }),
+    });
+
+    if (!response.ok) throw new Error('API error');
+    const data = await response.json();
+    const improved = data.choices?.[0]?.message?.content?.trim();
+    if (!improved || improved.length < 100) throw new Error('Bad response');
+
+    currentScript = improved;
+    autoSaveScript(improved, topic, niche);
+
+    const contentDiv = document.getElementById('script-content');
+    if (contentDiv) contentDiv.innerHTML = formatScript(improved);
+    const length = document.getElementById('length').value;
+    displayScript(improved, topic, length);
+    showQualityReport(improved);
+    showToast(`✨ Script improved! Applied ${improvements.length} fix${improvements.length > 1 ? 'es' : ''}.`, 'success');
+  } catch {
+    showToast('Improvement failed — try again', 'warning');
+  } finally {
+    if (btn) { btn.textContent = '✨ Improve'; btn.disabled = false; }
+  }
+}
+
 function extractHook(script) {
   const lines = (script || '').split('\n');
   let inHook = false, hookLines = [];
