@@ -2962,3 +2962,53 @@ kbd {
 .sc-lock { font-size: 1.8rem; }
 .social-clips-gate strong { font-size: 1rem; color: var(--text); }
 .social-clips-gate p { font-size: 0.84rem; color: var(--text-muted); margin: 0; max-width: 340px; }
+
+/* === NICHE REVENUE INSIGHTS === */
+.niche-revenue {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(124,92,252,0.05);
+  border: 1px solid rgba(124,92,252,0.2);
+  border-radius: 10px;
+  animation: fadeSlideIn 0.25s ease;
+  margin-top: 2px;
+}
+.nr-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; margin-top: 2px; }
+.nr-body { flex: 1; min-width: 0; }
+.nr-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.nr-cpm {
+  font-size: 0.92rem;
+  font-weight: 800;
+  color: var(--primary-light);
+}
+.nr-tier {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-faint);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 1px 8px;
+}
+.nr-note {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 3px;
+  line-height: 1.45;
+}
+.nr-channels {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin: 0;
+}
+.nr-channels em { font-style: normal; color: var(--text-muted); }

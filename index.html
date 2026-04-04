@@ -449,7 +449,7 @@
                 <button type="button" class="niche-pill" onclick="pickNiche('technology and AI')">🤖 Tech & AI</button>
                 <button type="button" class="niche-pill" onclick="pickNiche('business and entrepreneurship')">🏆 Business</button>
               </div>
-              <select id="niche" onchange="syncNichePill(this.value); showLengthHint(this.value)">
+              <select id="niche" onchange="syncNichePill(this.value); showLengthHint(this.value); showNicheRevenue(this.value)">
                 <option value="">Select your niche...</option>
                 <option value="personal finance">💰 Personal Finance</option>
                 <option value="motivation and mindset">🔥 Motivation & Mindset</option>
@@ -465,6 +465,7 @@
                 <option value="news and current events">📰 News & Current Events</option>
               </select>
             </div>
+            <div id="niche-revenue" class="niche-revenue hidden"></div>
             <div class="form-group">
               <label for="length">Video Length</label>
               <select id="length">

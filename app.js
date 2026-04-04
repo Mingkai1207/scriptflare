@@ -664,12 +664,47 @@ function showLengthHint(niche) {
   }
 }
 
+// === NICHE REVENUE INSIGHTS ===
+const NICHE_REVENUE = {
+  'personal finance': { cpm: '$12–$45', icon: '💰', tier: 'Top earner', note: 'Highest CPM on YouTube. Finance ads pay premium rates year-round.', channels: 'Andrei Jikh, Graham Stephan, Minority Mindset' },
+  'technology and AI': { cpm: '$8–$22', icon: '🤖', tier: 'High earner', note: 'Tech & AI CPM spikes in Q4 with product launches. SaaS ads dominate.', channels: 'Fireship, Two Minute Papers, AI Explained' },
+  'business and entrepreneurship': { cpm: '$10–$30', icon: '🏆', tier: 'Top earner', note: 'Business education + B2B ads = strong CPM. Evergreen content performs well.', channels: 'Ali Abdaal, MKBHD, Iman Gadzhi' },
+  'health and wellness': { cpm: '$4–$14', icon: '💪', tier: 'Mid-high earner', note: 'Supplement and fitness brands pay solid rates. January always spikes.', channels: 'Thomas DeLauer, Andrew Huberman clips, Dr. Mike' },
+  'self-improvement': { cpm: '$5–$16', icon: '📈', tier: 'Mid-high earner', note: 'Productivity and book-summary channels thrive. Strong affiliate opportunities.', channels: 'Better Ideas, Mike Dee, Clark Kegley' },
+  'true crime and mysteries': { cpm: '$3–$9', icon: '🔍', tier: 'Mid earner', note: 'Lower CPM but viral potential and massive audiences compensate.', channels: 'Cayleigh Elise, Stephanie Harlowe, Kendall Rae' },
+  'history and facts': { cpm: '$3–$10', icon: '📚', tier: 'Mid earner', note: 'Great for evergreen traffic. CPM lower but loyal audiences accumulate over time.', channels: 'Knowledgia, Historymarche, Cool History Bros' },
+  'motivation and mindset': { cpm: '$4–$12', icon: '🔥', tier: 'Mid earner', note: 'Clips-style channels can hit millions of views cheaply. Works well on Shorts too.', channels: 'Motiversity, Absolute Motivation, Ben Lionel Scott' },
+  'relationships and psychology': { cpm: '$4–$13', icon: '🧠', tier: 'Mid earner', note: 'Psychology content with therapy/wellness angle gets premium ads.', channels: 'Psych2Go, SciShow, Dr. Julie Smith' },
+  'travel and geography': { cpm: '$2–$8', icon: '🌍', tier: 'Lower CPM', note: 'Travel ads fluctuate. Strong sponsorship potential with tourism and hotels.', channels: 'geography now, FerdinandMakelaer, Wendover Productions' },
+  'spirituality and philosophy': { cpm: '$3–$9', icon: '✨', tier: 'Mid earner', note: 'Niche but loyal audience. Meditation apps and spiritual brands sponsor heavily.', channels: 'The School of Life, Einzelgänger, Aperture' },
+  'news and current events': { cpm: '$4–$12', icon: '📰', tier: 'Mid earner', note: 'High traffic potential but monetization can be limited. Balance with evergreen.', channels: 'TLDR News, Vox, Johnny Harris' },
+};
+
+function showNicheRevenue(niche) {
+  const el = document.getElementById('niche-revenue');
+  if (!el) return;
+  const data = NICHE_REVENUE[niche];
+  if (!data) { el.classList.add('hidden'); return; }
+  el.innerHTML = `
+    <div class="nr-icon">${data.icon}</div>
+    <div class="nr-body">
+      <div class="nr-row">
+        <span class="nr-cpm">${data.cpm} CPM</span>
+        <span class="nr-tier">${data.tier}</span>
+      </div>
+      <p class="nr-note">${data.note}</p>
+      <p class="nr-channels">Example channels: <em>${data.channels}</em></p>
+    </div>`;
+  el.classList.remove('hidden');
+}
+
 // === NICHE QUICK-SELECT ===
 function pickNiche(value) {
   const select = document.getElementById('niche');
   if (select) select.value = value;
   syncNichePill(value);
   showLengthHint(value);
+  showNicheRevenue(value);
 }
 
 function jumpToGenerator(niche) {
