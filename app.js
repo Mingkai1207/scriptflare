@@ -323,6 +323,61 @@ function unlockPro() {
   }
 }
 
+// === NICHE AUTO-DETECT ===
+const NICHE_KEYWORDS = {
+  'personal finance': ['money','invest','wealth','rich','budget','finance','million','stock','crypto','salary','income','debt','save','retire','afford','spending'],
+  'motivation and mindset': ['habit','success','mindset','discipline','goal','motivat','winner','produc','morning','achieve','failure','confidence','willpower'],
+  'true crime and mysteries': ['crime','murder','case','detective','unsolved','killer','disappear','mystery','investigation','fbi','serial','victim','cold case'],
+  'history and facts': ['history','ancient','civilization','empire','war','century','histor','roman','egypt','medieval','dynasty','revolution','world war','battle'],
+  'technology and AI': ['artificial intelligence','chatgpt','automation','digital','algorithm','software','machine learning','robot','tech ','gadget','cyber'],
+  'business and entrepreneurship': ['business','startup','entrepreneur','profit','revenue','market','brand','customer','founder','company','ecommerce','dropship','passive income'],
+  'health and wellness': ['health','sleep','diet','exercise','weight','fitness','wellness','mental','stress','nutrition','vitamin','longevity','inflammation'],
+  'self-improvement': ['improve','better life','transform','growth','self-','level up','skills','stoic','mindful','productivity'],
+  'relationships and psychology': ['relationship','psychology','dating','narciss','attachment','manipulat','toxic','breakup','boundaries','emotion','trauma'],
+};
+
+let _nicheDetectTimer = null;
+
+function detectNicheFromTopic() {
+  const topic = document.getElementById('topic').value.toLowerCase().trim();
+  if (!topic || topic.length < 10) { hideNicheHint(); return; }
+
+  clearTimeout(_nicheDetectTimer);
+  _nicheDetectTimer = setTimeout(() => {
+    let best = null, bestScore = 0;
+    for (const [niche, kws] of Object.entries(NICHE_KEYWORDS)) {
+      const score = kws.filter(kw => topic.includes(kw)).length;
+      if (score > bestScore) { bestScore = score; best = niche; }
+    }
+    const currentNiche = document.getElementById('niche').value;
+    if (best && bestScore >= 1 && best !== currentNiche) {
+      showNicheHint(best);
+    } else {
+      hideNicheHint();
+    }
+  }, 600);
+}
+
+function showNicheHint(niche) {
+  let hint = document.getElementById('niche-hint');
+  if (!hint) {
+    hint = document.createElement('div');
+    hint.id = 'niche-hint';
+    hint.className = 'niche-hint';
+    const nicheGroup = document.getElementById('niche').closest('.form-group');
+    if (nicheGroup) nicheGroup.appendChild(hint);
+  }
+  const nicheOption = document.querySelector(`#niche option[value="${niche}"]`);
+  const label = nicheOption?.textContent?.trim() || niche;
+  hint.innerHTML = `💡 Detected: <button class="niche-hint-btn" onclick="pickNiche('${niche}'); hideNicheHint()">${label} — click to apply</button>`;
+  hint.classList.add('visible');
+}
+
+function hideNicheHint() {
+  const hint = document.getElementById('niche-hint');
+  if (hint) hint.classList.remove('visible');
+}
+
 // === TOPIC SUGGESTIONS ===
 const TOPIC_SUGGESTIONS = {
   'personal finance': [
