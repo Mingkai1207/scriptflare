@@ -237,6 +237,12 @@
           <div class="form-row two-col">
             <div class="form-group">
               <label for="niche">Channel Niche <span class="required">*</span></label>
+              <div class="niche-pills">
+                <button type="button" class="niche-pill" onclick="pickNiche('personal finance')">💰 Finance</button>
+                <button type="button" class="niche-pill" onclick="pickNiche('motivation and mindset')">🔥 Motivation</button>
+                <button type="button" class="niche-pill" onclick="pickNiche('true crime and mysteries')">🔍 True Crime</button>
+                <button type="button" class="niche-pill" onclick="pickNiche('history and facts')">📚 History</button>
+              </div>
               <select id="niche">
                 <option value="">Select your niche...</option>
                 <option value="personal finance">💰 Personal Finance</option>

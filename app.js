@@ -269,6 +269,18 @@ function unlockPro() {
   }
 }
 
+// === NICHE QUICK-SELECT ===
+function pickNiche(value) {
+  const select = document.getElementById('niche');
+  if (select) {
+    select.value = value;
+    // Update active pill
+    document.querySelectorAll('.niche-pill').forEach(p => {
+      p.classList.toggle('active', p.getAttribute('onclick').includes(value));
+    });
+  }
+}
+
 // === PAYPAL ===
 function showPayPal() {
   const box = document.getElementById('paypal-box');
