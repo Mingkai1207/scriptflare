@@ -1586,23 +1586,63 @@ function generateTitleOptions(topic, niche) {
   ];
 }
 
+function generateThumbnailLines(topic, niche) {
+  const raw = (topic || '').trim();
+  const cap = raw.charAt(0).toUpperCase() + raw.slice(1).replace(/[?.!]+$/, '');
+  // Extract first 3-4 words as subject
+  const words = cap.split(/\s+/);
+  const shortSubject = words.slice(0, 4).join(' ');
+
+  const nicheThumb = {
+    'personal finance':            ['THE TRUTH', 'THEY LIED TO YOU', 'THIS CHANGES EVERYTHING'],
+    'motivation and mindset':      ['STOP WAITING', 'DO THIS NOW', 'YOUR LIFE CHANGES TODAY'],
+    'true crime and mysteries':    ['THE REAL STORY', 'THEY HID THIS', 'WHAT REALLY HAPPENED'],
+    'history and facts':           ['HISTORY LIED', 'THE HIDDEN TRUTH', 'YOU WERE NEVER TOLD'],
+    'technology and AI':           ['AI CHANGES THIS', 'THE FUTURE IS HERE', 'ARE YOU READY?'],
+    'business and entrepreneurship': ['DO THIS NOW', 'STOP LOSING MONEY', 'THE SECRET IS OUT'],
+    'self-improvement':            ['CHANGE THIS TODAY', 'YOU NEED THIS', '1% BETTER DAILY'],
+    'health and wellness':         ['DOCTORS HIDE THIS', 'DO THIS DAILY', 'STOP DOING THIS'],
+    'relationships and psychology': ['THE REAL REASON', 'THEY NEVER TELL YOU', 'PAY ATTENTION'],
+  };
+  return nicheThumb[niche] || ['THE TRUTH', 'WHAT THEY HIDE', 'THIS CHANGES EVERYTHING'];
+}
+
 function showTitleOptions(topic, niche) {
   const wrap = document.getElementById('title-options');
   if (!wrap || !topic) return;
   const titles = generateTitleOptions(topic, niche);
+  const thumbLines = generateThumbnailLines(topic, niche);
   if (!titles.length) return;
+
+  const titleRows = titles.map(t => {
+    const len = t.length;
+    const countClass = len <= 60 ? 'title-len-ok' : len <= 70 ? 'title-len-warn' : 'title-len-over';
+    const safeT = t.replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+    return `<div class="title-option" onclick="copyTitle(this, '${safeT}')">
+      <span class="title-option-text">${t}</span>
+      <span class="title-char-count ${countClass}">${len}</span>
+      <span class="title-option-copy">Copy</span>
+    </div>`;
+  }).join('');
+
+  const thumbRows = thumbLines.map(l => {
+    const safeL = l.replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+    return `<div class="thumb-line-option" onclick="copyTitle(this, '${safeL}')">
+      <span class="thumb-line-text">${l}</span>
+      <span class="title-option-copy">Copy</span>
+    </div>`;
+  }).join('');
+
   wrap.innerHTML = `
     <div class="title-options-header">
       <span class="title-options-icon">📺</span>
       <strong>YouTube Title Ideas</strong>
-      <span class="title-options-sub">Click any title to copy it</span>
+      <span class="title-options-sub">Click to copy · <span class="title-len-ok">≤60</span> chars = optimal</span>
     </div>
-    <div class="title-options-list">
-      ${titles.map(t => `
-        <div class="title-option" onclick="copyTitle(this, '${t.replace(/'/g, "&#39;").replace(/"/g, '&quot;')}')">
-          <span class="title-option-text">${t}</span>
-          <span class="title-option-copy">Copy</span>
-        </div>`).join('')}
+    <div class="title-options-list">${titleRows}</div>
+    <div class="title-options-thumb">
+      <div class="thumb-header">🖼️ Thumbnail Text Ideas</div>
+      <div class="thumb-lines-list">${thumbRows}</div>
     </div>`;
   wrap.classList.remove('hidden');
 }
