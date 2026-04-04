@@ -1315,6 +1315,7 @@ function regenerateScript() {
   document.getElementById('social-clips')?.classList.add('hidden');
   document.getElementById('prod-outline')?.classList.add('hidden');
   document.getElementById('hook-ab')?.classList.add('hidden');
+  document.getElementById('blog-post-panel')?.classList.add('hidden');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
@@ -1337,6 +1338,7 @@ function clearOutput() {
   document.getElementById('social-clips')?.classList.add('hidden');
   document.getElementById('prod-outline')?.classList.add('hidden');
   document.getElementById('hook-ab')?.classList.add('hidden');
+  document.getElementById('blog-post-panel')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -2847,6 +2849,110 @@ function applyHookVariant(btn, hookText) {
   btn.style.color = '#22c55e';
   setTimeout(() => { btn.textContent = orig; btn.style.cssText = ''; }, 2000);
   showToast('🎯 Hook applied — check the quality score!', 'success');
+}
+
+// === BLOG POST CONVERTER ===
+async function showBlogPost() {
+  if (!currentScript || isGenerating) return;
+  const panel = document.getElementById('blog-post-panel');
+  const btn = document.getElementById('blog-post-btn');
+  if (!panel) return;
+
+  if (!isProUser()) {
+    panel.innerHTML = `<div class="bp-gate">
+      <span class="bp-gate-icon">🔒</span>
+      <strong>Pro Feature</strong>
+      <p>Convert your YouTube script into an SEO-optimized blog post automatically.</p>
+      <a href="#pricing" class="btn btn-primary btn-sm" onclick="scrollToPricing()">Upgrade to Pro →</a>
+    </div>`;
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  // Toggle off
+  if (!panel.classList.contains('hidden') && panel.querySelector('.bp-content')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+
+  panel.innerHTML = `<div class="bp-loading"><span class="spinner"></span> Converting to blog post…</div>`;
+  panel.classList.remove('hidden');
+  if (btn) { btn.textContent = '⏳ Converting…'; btn.disabled = true; }
+
+  const scriptExcerpt = currentScript.slice(0, 2500);
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          { role: 'system', content: `You are an SEO content writer. Convert a YouTube script into a well-structured blog post.
+
+Rules:
+- Remove all [VISUAL: ...] cues and [SECTION] headers
+- Convert spoken language to written prose (remove "guys", "in this video", etc.)
+- Add an SEO-optimized H1 title
+- Use ## subheadings for each section
+- Add a 2-sentence SEO meta description at the very top, prefixed with "META: "
+- Add a natural intro paragraph (no "In this article" opener)
+- Add a conclusion paragraph with a call-to-action to watch the YouTube video
+- Target 700-900 words total
+- Return only the blog post content, no preamble` },
+          { role: 'user', content: `Topic: "${topic}"\nNiche: ${niche}\n\nScript to convert:\n${scriptExcerpt}\n\nConvert to blog post:` }
+        ],
+        max_tokens: 1200,
+        temperature: 0.7,
+      }),
+    });
+
+    if (!response.ok) throw new Error('API error');
+    const data = await response.json();
+    const post = data.choices?.[0]?.message?.content?.trim();
+    if (!post) throw new Error('Empty response');
+    renderBlogPost(panel, post, topic);
+  } catch {
+    panel.innerHTML = `<div class="bp-loading">⚠️ Conversion failed — try again.</div>`;
+  } finally {
+    if (btn) { btn.textContent = '📝 Blog Post'; btn.disabled = false; }
+  }
+}
+
+function renderBlogPost(panel, post, topic) {
+  // Extract and strip meta description
+  const metaMatch = post.match(/^META:\s*(.+)/m);
+  const meta = metaMatch ? metaMatch[1].trim() : '';
+  const content = post.replace(/^META:\s*.+\n?/m, '').trim();
+
+  // Simple markdown → HTML conversion for display
+  const html = content
+    .replace(/^# (.+)$/gm, '<h2 class="bp-h1">$1</h2>')
+    .replace(/^## (.+)$/gm, '<h3 class="bp-h2">$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^(?!<[hb])(.+)$/gm, '<p>$1</p>')
+    .replace(/<p><\/p>/g, '');
+
+  panel.innerHTML = `<div class="bp-header">
+    <strong>📝 Blog Post</strong>
+    <div class="bp-actions">
+      <button class="btn btn-outline btn-sm" onclick="copyBlogPost()">📋 Copy</button>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('blog-post-panel').classList.add('hidden')">✕</button>
+    </div>
+  </div>
+  ${meta ? `<div class="bp-meta-row"><span class="bp-meta-label">SEO Meta:</span> <span class="bp-meta-text">${escapeHtml(meta)}</span></div>` : ''}
+  <div class="bp-content" id="bp-content-text" data-raw="${escapeHtml(content)}">${html}</div>`;
+}
+
+function copyBlogPost() {
+  const el = document.getElementById('bp-content-text');
+  if (!el) return;
+  const raw = el.dataset.raw || el.textContent;
+  navigator.clipboard.writeText(raw).then(() => showToast('📋 Blog post copied!', 'success'));
 }
 
 // === IMPROVE SCRIPT ===

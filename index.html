@@ -605,6 +605,7 @@
                 <button class="btn btn-ghost btn-sm" onclick="openTeleprompter()">📺 Teleprompter</button>
                 <button class="btn btn-ghost btn-sm" onclick="showProductionOutline()">🎬 Outline</button>
                 <button class="btn btn-ghost btn-sm" onclick="showSocialClips()" id="social-clips-btn">📱 Repurpose</button>
+                <button class="btn btn-ghost btn-sm" onclick="showBlogPost()" id="blog-post-btn">📝 Blog Post</button>
                 <button class="btn btn-ghost btn-sm" onclick="showHistoryPanel()">📜 History</button>
                 <button class="btn btn-ghost btn-sm" onclick="exportSRT()">📄 .srt</button>
                 <button class="btn btn-ghost btn-sm" onclick="printScript()">🖨️ Print</button>
@@ -674,6 +675,9 @@
 
         <!-- HOOK A/B TEST PANEL -->
         <div class="hook-ab hidden" id="hook-ab"></div>
+
+        <!-- BLOG POST PANEL -->
+        <div class="blog-post-panel hidden" id="blog-post-panel"></div>
 
         <!-- CONTENT CALENDAR (shown after generating) -->
         <div class="content-calendar hidden" id="content-calendar">
