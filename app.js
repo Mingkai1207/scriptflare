@@ -62,6 +62,14 @@ function updateNavCTA() {
   }
 }
 
+// === KEYBOARD SHORTCUT ===
+document.addEventListener('keydown', (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+    e.preventDefault();
+    generateScript();
+  }
+});
+
 // === STICKY MOBILE CTA ===
 function initStickyCTA() {
   const bar = document.getElementById('sticky-cta-bar');

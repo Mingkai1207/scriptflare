@@ -1185,6 +1185,32 @@ footer {
   flex-shrink: 0;
 }
 
+/* === GENERATE TIP + KEYBOARD HINT === */
+.generate-tip {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin-bottom: 10px;
+  text-align: center;
+}
+kbd {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-family: inherit;
+  font-size: 0.75rem;
+}
+@media (max-width: 640px) {
+  .generate-tip { display: none; }
+}
+
+/* === PAYWALL SOCIAL PROOF === */
+.paywall-social {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  margin: 4px 0 12px;
+}
+
 /* === PAYWALL BENEFITS === */
 .paywall-benefits {
   list-style: none;
