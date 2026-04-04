@@ -2769,3 +2769,54 @@ kbd {
   transition: opacity 0.15s;
 }
 .channel-name-chip:hover .channel-name-copy { opacity: 1; }
+
+/* === SECTION WORD COUNT BREAKDOWN === */
+.section-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px 12px;
+  border-top: 1px solid var(--border);
+  background: rgba(124,92,252,0.02);
+  animation: fadeSlideIn 0.3s ease;
+}
+.breakdown-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 4px;
+}
+.sec-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: default;
+  transition: border-color 0.2s;
+}
+.sec-chip em {
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-faint);
+}
+.sec-chip:hover { border-color: rgba(124,92,252,0.3); }
+.sec-chip.sec-short {
+  border-color: rgba(255,160,64,0.4);
+  color: #f5a623;
+}
+.sec-chip.sec-short em { color: #f5a623; opacity: 0.7; }
+.sec-chip.sec-long {
+  border-color: rgba(255,72,72,0.35);
+  color: #ff6b6b;
+}
+.sec-chip.sec-long em { color: #ff6b6b; opacity: 0.7; }

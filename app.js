@@ -1244,6 +1244,41 @@ function showQualityReport(script) {
     scoreEl.className = 'quality-score ' + (score >= 80 ? 'score-high' : score >= 60 ? 'score-mid' : 'score-low');
   }
 
+  // Per-section word count breakdown
+  const sections = [];
+  let curSection = null, curWords = 0;
+  for (const line of script.split('\n')) {
+    const t = line.trim().replace(/^\*\*(.+)\*\*$/, '$1').trim();
+    const isHeader = /^\[.{2,60}\]$/.test(t) && !/^\[VISUAL:/i.test(t);
+    if (isHeader) {
+      if (curSection) sections.push({ label: curSection, words: curWords });
+      curSection = t.slice(1, -1).replace(/^SECTION\s*\d+:\s*/i, '').replace(/^CALL TO ACTION$/i, 'CTA');
+      if (curSection.length > 22) curSection = curSection.slice(0, 20) + '…';
+      curWords = 0;
+    } else if (curSection && t && !/^\[VISUAL:/i.test(t)) {
+      curWords += t.split(/\s+/).filter(Boolean).length;
+    }
+  }
+  if (curSection) sections.push({ label: curSection, words: curWords });
+
+  let breakdownEl = document.getElementById('section-breakdown');
+  if (sections.length >= 2) {
+    if (!breakdownEl) {
+      breakdownEl = document.createElement('div');
+      breakdownEl.id = 'section-breakdown';
+      breakdownEl.className = 'section-breakdown';
+      qDiv.insertAdjacentElement('afterend', breakdownEl);
+    }
+    breakdownEl.innerHTML = '<span class="breakdown-label">Sections:</span>' +
+      sections.map(({ label, words }) => {
+        const cls = words < 50 ? 'sec-short' : words > 600 ? 'sec-long' : '';
+        return `<span class="sec-chip ${cls}" title="${words} words">${label} <em>${words}w</em></span>`;
+      }).join('');
+    breakdownEl.classList.remove('hidden');
+  } else if (breakdownEl) {
+    breakdownEl.classList.add('hidden');
+  }
+
   // Show actionable improvement tips for any failing items
   const tips = [];
   if (!hasHook) tips.push('Add a <strong>[HOOK]</strong> section header — it tells the AI to write a dedicated retention-optimized opening.');
