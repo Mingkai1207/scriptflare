@@ -3117,3 +3117,78 @@ kbd {
 .sbr-pts.sbr-full { color: #22c55e; }
 .sbr-pts.sbr-part { color: #f59e0b; }
 .sbr-pts.sbr-zero { color: var(--text-faint); }
+
+/* === VOICE PROFILE === */
+.btn-voice-profile {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  padding: 2px 10px;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  vertical-align: middle;
+}
+.btn-voice-profile:hover { border-color: rgba(124,92,252,0.4); color: var(--primary-light); }
+.vp-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.vp-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 28px;
+  width: 100%;
+  max-width: 440px;
+  animation: fadeSlideIn 0.25s ease;
+}
+.vp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+}
+.vp-header strong { color: var(--text); }
+.vp-close {
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 2px 6px;
+  line-height: 1;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.vp-close:hover { background: var(--bg3); color: var(--text); }
+.vp-sub {
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  margin: 0 0 18px;
+}
+.vp-fields { display: flex; flex-direction: column; gap: 12px; margin-bottom: 18px; }
+.vp-field { display: flex; flex-direction: column; gap: 5px; }
+.vp-field label { font-size: 0.78rem; font-weight: 600; color: var(--text-muted); }
+.vp-field input {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.85rem;
+  padding: 8px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.vp-field input:focus { border-color: var(--primary); }
+.vp-footer { display: flex; gap: 8px; }
+.vp-pro-note { font-size: 0.76rem; margin: 10px 0 0; }
+.vp-pro-note a { color: var(--primary-light); text-decoration: underline; }

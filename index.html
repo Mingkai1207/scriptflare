@@ -521,7 +521,7 @@
             </div>
           </div>
 
-          <p class="generate-tip">Press <kbd>⌘ / Ctrl + Enter</kbd> to generate · <kbd>⌘ / Ctrl + S</kbd> to download</p>
+          <p class="generate-tip">Press <kbd>⌘ / Ctrl + Enter</kbd> to generate · <kbd>⌘ / Ctrl + S</kbd> to download · <button type="button" class="btn-voice-profile" onclick="openVoiceProfile()">⚙️ Voice Profile</button></p>
           <button class="btn btn-primary btn-xl" id="generate-btn" onclick="generateScript()">
             <span id="btn-text">⚡ Generate Script</span>
             <span id="btn-loading" class="hidden">
@@ -1150,6 +1150,40 @@
       <p>You haven't tried ScriptFlare yet. Generate a complete YouTube script in 30 seconds, free — no account, no credit card.</p>
       <a href="#generator" class="btn btn-primary btn-lg" onclick="closeExitModal(null, true)">Generate My Free Script →</a>
       <p class="exit-modal-note">Takes 30 seconds. No signup required.</p>
+    </div>
+  </div>
+
+  <!-- VOICE PROFILE MODAL -->
+  <div class="vp-modal hidden" id="vp-modal" onclick="closeVoiceProfile(event)">
+    <div class="vp-box">
+      <div class="vp-header">
+        <span>⚙️ <strong>Channel Voice Profile</strong></span>
+        <button class="vp-close" onclick="closeVoiceProfile(null, true)" aria-label="Close">✕</button>
+      </div>
+      <p class="vp-sub">Saved settings are injected into every script you generate — no more repeating yourself.</p>
+      <div class="vp-fields">
+        <div class="vp-field">
+          <label for="vp-channel-name">Channel Name</label>
+          <input type="text" id="vp-channel-name" placeholder="e.g. WealthPath" maxlength="60" />
+        </div>
+        <div class="vp-field">
+          <label for="vp-catchphrase">Catchphrase / Sign-off</label>
+          <input type="text" id="vp-catchphrase" placeholder="e.g. Stay curious, stay wealthy." maxlength="120" />
+        </div>
+        <div class="vp-field">
+          <label for="vp-avoid">Words / Topics to Avoid</label>
+          <input type="text" id="vp-avoid" placeholder="e.g. politics, crypto, get rich quick" maxlength="200" />
+        </div>
+        <div class="vp-field">
+          <label for="vp-style">Brand Voice Notes</label>
+          <input type="text" id="vp-style" placeholder="e.g. Always optimistic, use analogies, no jargon" maxlength="200" />
+        </div>
+      </div>
+      <div class="vp-footer">
+        <button class="btn btn-primary btn-sm" onclick="saveVoiceProfile()">💾 Save Profile</button>
+        <button class="btn btn-ghost btn-sm" onclick="clearVoiceProfile()">Clear</button>
+      </div>
+      <p class="vp-pro-note" id="vp-pro-note"></p>
     </div>
   </div>
 

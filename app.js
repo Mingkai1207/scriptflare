@@ -795,7 +795,7 @@ Rules for Shorts scripts:
 
 Topic: "${topic}"
 Niche: ${niche}
-Tone: ${tone}${langNote}${customNote}
+Tone: ${tone}${langNote}${customNote}${voiceNote}
 
 Write ONLY the spoken script text with 2–3 [VISUAL: ...] cues. No section headers. No preamble. Start with the hook word:`;
 
@@ -884,6 +884,7 @@ CRITICAL FORMATTING RULES:
   const nicheNote = nicheGuidance[niche] ? `\nNiche writing guidance: ${nicheGuidance[niche]}` : '';
   const langNote = scriptLang !== 'English' ? `\nLanguage: Write the ENTIRE script in ${scriptLang}. All section headers must also be in ${scriptLang}, but keep the bracket format: [HOOK], [INTRO], [SECTION 1: Title], [CALL TO ACTION].` : '';
   const customNote = customNotes ? `\nAdditional creator instructions: ${customNotes}` : '';
+  const voiceNote = getVoiceProfileNote();
 
   const userPrompt = `Create a complete ${length}-minute faceless YouTube script.
 
@@ -891,7 +892,7 @@ Topic: "${topic}"
 Niche: ${niche}
 Target audience: ${audience}
 Tone/Style: ${tone}
-Target word count: approximately ${wordCount} words${nicheNote}${langNote}${customNote}
+Target word count: approximately ${wordCount} words${nicheNote}${langNote}${customNote}${voiceNote}
 
 Script requirements:
 - Hook must grip attention in the first 3 seconds — curiosity, bold claim, or a stat that stops scrolling
@@ -2593,6 +2594,71 @@ function closeChecklist(e, force) {
     document.getElementById('checklist-modal')?.classList.add('hidden');
     document.body.style.overflow = '';
   }
+}
+
+// === VOICE PROFILE ===
+function openVoiceProfile() {
+  const modal = document.getElementById('vp-modal');
+  if (!modal) return;
+  // Load saved values
+  const saved = JSON.parse(localStorage.getItem('sf_voice_profile') || '{}');
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+  set('vp-channel-name', saved.channelName);
+  set('vp-catchphrase', saved.catchphrase);
+  set('vp-avoid', saved.avoid);
+  set('vp-style', saved.style);
+  const note = document.getElementById('vp-pro-note');
+  if (note) {
+    if (isProUser()) {
+      note.textContent = '✅ Pro active — voice profile applied to all scripts.';
+      note.style.color = '#22c55e';
+    } else {
+      note.innerHTML = '🔒 <a href="#pricing" onclick="scrollToPricing(); closeVoiceProfile(null,true)">Upgrade to Pro</a> to enable voice profile injection.';
+      note.style.color = 'var(--text-faint)';
+    }
+  }
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => document.getElementById('vp-channel-name')?.focus(), 100);
+}
+
+function closeVoiceProfile(e, force) {
+  if (force || (e && e.target === document.getElementById('vp-modal'))) {
+    document.getElementById('vp-modal')?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+}
+
+function saveVoiceProfile() {
+  const get = id => document.getElementById(id)?.value.trim() || '';
+  const profile = {
+    channelName: get('vp-channel-name'),
+    catchphrase: get('vp-catchphrase'),
+    avoid: get('vp-avoid'),
+    style: get('vp-style'),
+  };
+  localStorage.setItem('sf_voice_profile', JSON.stringify(profile));
+  closeVoiceProfile(null, true);
+  showToast('⚙️ Voice profile saved!', 'success');
+}
+
+function clearVoiceProfile() {
+  localStorage.removeItem('sf_voice_profile');
+  ['vp-channel-name','vp-catchphrase','vp-avoid','vp-style'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  showToast('Voice profile cleared.', 'success');
+}
+
+function getVoiceProfileNote() {
+  if (!isProUser()) return '';
+  const p = JSON.parse(localStorage.getItem('sf_voice_profile') || '{}');
+  const parts = [];
+  if (p.channelName) parts.push(`This script is for the YouTube channel "${p.channelName}".`);
+  if (p.style) parts.push(`Brand voice: ${p.style}.`);
+  if (p.avoid) parts.push(`Avoid these words/topics: ${p.avoid}.`);
+  if (p.catchphrase) parts.push(`End the CTA with the channel's sign-off: "${p.catchphrase}"`);
+  return parts.length ? `\nChannel voice profile: ${parts.join(' ')}` : '';
 }
 
 // === EXIT INTENT MODAL ===
