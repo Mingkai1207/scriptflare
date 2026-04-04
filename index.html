@@ -572,26 +572,32 @@
               </div>
             </div>
             <div class="output-actions">
+              <!-- Primary actions — always visible -->
               <button class="btn btn-outline btn-sm" onclick="copyScript()">
-                <span id="copy-text">📋 Copy Script</span>
+                <span id="copy-text">📋 Copy</span>
               </button>
-              <button class="btn btn-outline btn-sm" onclick="downloadScript()">⬇ Download .txt</button>
-              <button class="btn btn-outline btn-sm" onclick="copyAsMarkdown()">⬇ Copy .md</button>
-              <button class="btn btn-outline btn-sm" onclick="copyHook()">🎣 Copy Hook</button>
-              <button class="btn btn-ghost btn-sm" onclick="shareOnX()">𝕏 Share</button>
-              <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">🔄 Regenerate</button>
-              <button class="btn btn-ghost btn-sm" id="regen-hook-btn" onclick="regenerateHook()">🎣 New Hook</button>
-              <button class="btn btn-ghost btn-sm" id="hook-ab-btn" onclick="showHookAB()">🎯 Test Hooks</button>
+              <button class="btn btn-outline btn-sm" onclick="downloadScript()">⬇ Download</button>
+              <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">🔄 Regen</button>
+              <button class="btn btn-ghost btn-sm" id="regen-hook-btn" onclick="regenerateHook()">🎣 Hook</button>
               <button class="btn btn-improve btn-sm" id="improve-btn" onclick="improveScript()">✨ Improve</button>
-              <button class="btn btn-ghost btn-sm" id="broll-toggle" onclick="toggleBroll()">🎬 B-Roll</button>
-              <button class="btn btn-ghost btn-sm" onclick="showDescriptionPanel()">📝 Description</button>
-              <button class="btn btn-ghost btn-sm" onclick="exportToGoogleDocs()">📄 Google Docs</button>
-              <button class="btn btn-ghost btn-sm" onclick="openTeleprompter()">📺 Teleprompter</button>
-              <button class="btn btn-ghost btn-sm" onclick="showProductionOutline()">🎬 Outline</button>
-              <button class="btn btn-ghost btn-sm" onclick="printScript()">🖨️ Print</button>
-              <button class="btn btn-ghost btn-sm" onclick="showSocialClips()" id="social-clips-btn">📱 Repurpose</button>
-              <button class="btn btn-ghost btn-sm" onclick="showHistoryPanel()">📜 History</button>
-              <button class="btn btn-ghost btn-sm" onclick="clearOutput()">New Script</button>
+              <button class="btn btn-ghost btn-sm" onclick="clearOutput()">✕ New</button>
+              <!-- More toggle (always shown, expands secondary row) -->
+              <button class="btn btn-ghost btn-sm output-more-toggle" id="output-more-toggle" onclick="toggleMoreActions()">⋯ More</button>
+              <!-- Secondary actions — toggled by More button -->
+              <div class="output-actions-more hidden" id="output-actions-more">
+                <button class="btn btn-outline btn-sm" onclick="copyAsMarkdown()">⬇ .md</button>
+                <button class="btn btn-outline btn-sm" onclick="copyHook()">🎣 Copy Hook</button>
+                <button class="btn btn-ghost btn-sm" onclick="shareOnX()">𝕏 Share</button>
+                <button class="btn btn-ghost btn-sm" id="hook-ab-btn" onclick="showHookAB()">🎯 Test Hooks</button>
+                <button class="btn btn-ghost btn-sm" id="broll-toggle" onclick="toggleBroll()">🎬 B-Roll</button>
+                <button class="btn btn-ghost btn-sm" onclick="showDescriptionPanel()">📝 Desc</button>
+                <button class="btn btn-ghost btn-sm" onclick="exportToGoogleDocs()">📄 Docs</button>
+                <button class="btn btn-ghost btn-sm" onclick="openTeleprompter()">📺 Teleprompter</button>
+                <button class="btn btn-ghost btn-sm" onclick="showProductionOutline()">🎬 Outline</button>
+                <button class="btn btn-ghost btn-sm" onclick="showSocialClips()" id="social-clips-btn">📱 Repurpose</button>
+                <button class="btn btn-ghost btn-sm" onclick="showHistoryPanel()">📜 History</button>
+                <button class="btn btn-ghost btn-sm" onclick="printScript()">🖨️ Print</button>
+              </div>
             </div>
           </div>
           <div class="script-content" id="script-content"></div>

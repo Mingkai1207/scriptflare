@@ -1581,6 +1581,16 @@ function surpriseTopic() {
   showToast('🎲 Random topic loaded — hit generate!', 'success');
 }
 
+// === MORE ACTIONS TOGGLE ===
+function toggleMoreActions() {
+  const more = document.getElementById('output-actions-more');
+  const btn = document.getElementById('output-more-toggle');
+  if (!more) return;
+  const open = !more.classList.contains('hidden');
+  more.classList.toggle('hidden', open);
+  if (btn) btn.textContent = open ? '⋯ More' : '▲ Less';
+}
+
 // === VOICE INPUT ===
 function startVoiceInput() {
   const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;

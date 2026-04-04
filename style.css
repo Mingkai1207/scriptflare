@@ -648,9 +648,26 @@ select {
 }
 .output-actions {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   flex-wrap: wrap;
+  align-items: center;
 }
+.output-actions-more {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 100%;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+  margin-top: 2px;
+  animation: fadeSlideIn 0.2s ease;
+}
+.output-more-toggle {
+  font-size: 0.78rem !important;
+  opacity: 0.7;
+}
+.output-more-toggle:hover { opacity: 1; }
 .script-content {
   padding: 28px 32px;
   max-height: 640px;
