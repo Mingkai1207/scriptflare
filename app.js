@@ -201,14 +201,27 @@ function updateNavCTA() {
 
 // === KEYBOARD SHORTCUTS ===
 document.addEventListener('keydown', (e) => {
+  const inInput = ['INPUT','TEXTAREA','SELECT'].includes(document.activeElement?.tagName);
+
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
     e.preventDefault();
     generateScript();
   }
-  // Ctrl/Cmd+S downloads script when output is visible
   if ((e.metaKey || e.ctrlKey) && e.key === 's' && currentScript) {
     e.preventDefault();
     downloadScript();
+  }
+  // ? = show keyboard shortcuts (not when typing)
+  if (!inInput && e.key === '?' && !e.metaKey && !e.ctrlKey) {
+    e.preventDefault();
+    toggleShortcutsModal();
+  }
+  // Escape closes any open modal/panel
+  if (e.key === 'Escape') {
+    closeVoiceProfile(null, true);
+    closeChecklist(null, true);
+    closeExitModal(null, true);
+    document.getElementById('score-breakdown-pop')?.remove();
   }
 });
 
@@ -2832,6 +2845,45 @@ function getVoiceProfileNote() {
   if (p.avoid) parts.push(`Avoid these words/topics: ${p.avoid}.`);
   if (p.catchphrase) parts.push(`End the CTA with the channel's sign-off: "${p.catchphrase}"`);
   return parts.length ? `\nChannel voice profile: ${parts.join(' ')}` : '';
+}
+
+// === KEYBOARD SHORTCUTS MODAL ===
+const SHORTCUTS = [
+  { keys: ['⌘', 'Enter'], desc: 'Generate script' },
+  { keys: ['⌘', 'S'], desc: 'Download script (.txt)' },
+  { keys: ['?'], desc: 'Show this help modal' },
+  { keys: ['Esc'], desc: 'Close any open panel or modal' },
+  { keys: ['Space'], desc: 'Play / pause teleprompter' },
+  { keys: ['↑', '↓'], desc: 'Speed up / slow down teleprompter' },
+];
+
+function toggleShortcutsModal() {
+  const existing = document.getElementById('shortcuts-modal');
+  if (existing) { existing.remove(); document.body.style.overflow = ''; return; }
+
+  const el = document.createElement('div');
+  el.id = 'shortcuts-modal';
+  el.className = 'shortcuts-modal';
+  el.onclick = (e) => { if (e.target === el) { el.remove(); document.body.style.overflow = ''; } };
+
+  el.innerHTML = `<div class="shortcuts-box">
+    <div class="shortcuts-header">
+      <strong>Keyboard Shortcuts</strong>
+      <button class="vp-close" onclick="document.getElementById('shortcuts-modal').remove(); document.body.style.overflow='';">✕</button>
+    </div>
+    <div class="shortcuts-list">
+      ${SHORTCUTS.map(({ keys, desc }) =>
+        `<div class="shortcut-row">
+          <span class="shortcut-keys">${keys.map(k => `<kbd>${k}</kbd>`).join(' + ')}</span>
+          <span class="shortcut-desc">${desc}</span>
+        </div>`
+      ).join('')}
+    </div>
+    <p class="shortcuts-tip">Press <kbd>?</kbd> or <kbd>Esc</kbd> to close</p>
+  </div>`;
+
+  document.body.appendChild(el);
+  document.body.style.overflow = 'hidden';
 }
 
 // === EXIT INTENT MODAL ===
