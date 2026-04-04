@@ -911,6 +911,18 @@
     </div>
   </footer>
 
+  <!-- EXIT INTENT MODAL -->
+  <div class="exit-modal hidden" id="exit-modal" onclick="closeExitModal(event)">
+    <div class="exit-modal-box">
+      <button class="exit-modal-close" onclick="closeExitModal(null, true)" aria-label="Close">✕</button>
+      <div class="exit-modal-icon">⚡</div>
+      <h3>Wait — your 3 free scripts are still available</h3>
+      <p>You haven't tried ScriptFlare yet. Generate a complete YouTube script in 30 seconds, free — no account, no credit card.</p>
+      <a href="#generator" class="btn btn-primary btn-lg" onclick="closeExitModal(null, true)">Generate My Free Script →</a>
+      <p class="exit-modal-note">Takes 30 seconds. No signup required.</p>
+    </div>
+  </div>
+
   <!-- SCROLL TO TOP -->
   <button class="scroll-top hidden" id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Scroll to top">↑</button>
 

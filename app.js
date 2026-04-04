@@ -92,6 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDemandStrip();
   renderTopicHistory();
   initPricingCountdown();
+  initExitIntent();
   // Auto-open first FAQ item
   const firstFaq = document.querySelector('.faq-q');
   if (firstFaq) toggleFaq(firstFaq);
@@ -1561,6 +1562,51 @@ const CALENDAR_IDEAS = {
     ['Sat', '🗣️', 'The one communication skill that changes every relationship you have'],
     ['Sun', '🎯', 'How to design the version of yourself you want to be in 12 months'],
   ],
+  'health and wellness': [
+    ['Mon', '😴', 'The sleep science that doctors aren\'t telling you — and how to fix it tonight'],
+    ['Tue', '🥗', 'Why 80% of diets fail in month 2 (and the one approach that doesn\'t)'],
+    ['Wed', '🧠', 'The gut-brain connection that explains your mood, energy, and focus'],
+    ['Thu', '💊', '5 supplements with actual science behind them — and 5 that are a waste'],
+    ['Fri', '🏋️', 'The minimum effective dose of exercise for maximum health benefits'],
+    ['Sat', '🫀', 'What your resting heart rate reveals about your biological age'],
+    ['Sun', '⚡', 'The morning habit that reduces cortisol and stress within 10 minutes'],
+  ],
+  'relationships and psychology': [
+    ['Mon', '🪞', 'The narcissism spectrum: how to spot it before you\'re trapped'],
+    ['Tue', '💔', 'Why you keep attracting the same type of person — the real reason'],
+    ['Wed', '🧩', 'Attachment theory explained: which type are you and what it means'],
+    ['Thu', '🗣️', 'The 3 conversation patterns that destroy relationships slowly'],
+    ['Fri', '🔮', 'Cognitive biases that are silently sabotaging your decisions every day'],
+    ['Sat', '💞', 'What science says about the relationships that actually make people happy'],
+    ['Sun', '🏗️', 'How to set boundaries without guilt (the psychology behind why it\'s hard)'],
+  ],
+  'travel and geography': [
+    ['Mon', '🌏', 'The most isolated place on Earth — and the people who live there'],
+    ['Tue', '🗺️', 'Why the map of the world you grew up with is technically a lie'],
+    ['Wed', '🏔️', 'The country that borders the most others — and why it matters geopolitically'],
+    ['Thu', '✈️', '5 places that will disappear within your lifetime due to climate change'],
+    ['Fri', '🌊', 'The tiny island nation that\'s surprisingly one of the richest countries on Earth'],
+    ['Sat', '🏙️', 'Why this "dangerous" city is actually one of the safest in the world'],
+    ['Sun', '🌐', 'The hidden geography fact that explains every major war in history'],
+  ],
+  'spirituality and philosophy': [
+    ['Mon', '📿', 'Marcus Aurelius\'s daily practice — and why it\'s more relevant now than ever'],
+    ['Tue', '☯️', 'The Buddhist principle that removes 90% of modern suffering'],
+    ['Wed', '🔬', 'What quantum physics accidentally revealed about consciousness'],
+    ['Thu', '🎭', 'The Stoic exercise that completely reframes how you see problems'],
+    ['Fri', '🌿', 'Taoism in one video — the philosophy that stops you fighting reality'],
+    ['Sat', '🕯️', 'Viktor Frankl\'s framework for finding meaning in the hardest moments'],
+    ['Sun', '🧭', 'The philosophical question that changes how you make every decision'],
+  ],
+  'news and current events': [
+    ['Mon', '📡', 'The geopolitical shift that most people are completely unprepared for'],
+    ['Tue', '💹', 'What the latest economic data actually means for your money'],
+    ['Wed', '🤖', 'The AI regulation debate — and what governments are getting wrong'],
+    ['Thu', '🌍', 'The hidden story behind the biggest headline of the week'],
+    ['Fri', '🏛️', 'Why this policy decision will affect everyone in 5 years'],
+    ['Sat', '📊', 'The data story nobody is covering — what the numbers actually show'],
+    ['Sun', '🔭', 'What\'s coming next week: the events that will matter most'],
+  ],
 };
 
 function getCalendarIdeas(niche, currentTopic) {
@@ -1739,6 +1785,27 @@ function exportToGoogleDocs() {
     window.open('https://docs.google.com/document/create', '_blank', 'noopener,noreferrer');
     showToast('Script copied! Paste it into your new Google Doc (Ctrl+V / ⌘+V)', 'success');
   }, 300);
+}
+
+// === EXIT INTENT MODAL ===
+let _exitShown = false;
+function initExitIntent() {
+  // Only show to non-Pro users who haven't generated a script yet
+  if (isProUser()) return;
+  document.addEventListener('mouseleave', (e) => {
+    if (_exitShown) return;
+    if (e.clientY > 20) return; // only trigger when cursor leaves from top
+    const usage = parseInt(localStorage.getItem(CONFIG.storageKey) || '0', 10);
+    if (usage > 0) return; // already used the tool — don't interrupt
+    _exitShown = true;
+    setTimeout(() => document.getElementById('exit-modal')?.classList.remove('hidden'), 200);
+  });
+}
+
+function closeExitModal(e, force) {
+  if (force || (e && e.target === document.getElementById('exit-modal'))) {
+    document.getElementById('exit-modal')?.classList.add('hidden');
+  }
 }
 
 // === COPY PAYPAL EMAIL ===
