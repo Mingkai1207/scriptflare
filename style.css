@@ -3475,3 +3475,42 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   font-size: 0.86rem;
   color: var(--text-muted);
 }
+
+/* === SCRIPT FORMAT TEMPLATES === */
+.format-templates {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.ft-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+.ft-chip {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.ft-chip:hover {
+  background: rgba(124,92,252,0.1);
+  border-color: rgba(124,92,252,0.35);
+  color: var(--primary-light);
+}
+.ft-chip.ft-active {
+  background: rgba(124,92,252,0.15);
+  border-color: var(--primary);
+  color: var(--primary-light);
+}

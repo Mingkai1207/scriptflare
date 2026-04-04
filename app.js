@@ -1581,6 +1581,53 @@ function surpriseTopic() {
   showToast('🎲 Random topic loaded — hit generate!', 'success');
 }
 
+// === SCRIPT FORMAT TEMPLATES ===
+const FORMAT_TEMPLATES = {
+  listicle: {
+    tone: 'listicle and punchy',
+    notes: 'Use a numbered countdown format (e.g. #5 to #1). Each item should have its own [SECTION] header. End with a surprise or bonus item.',
+    label: '🔢 Top Listicle',
+  },
+  story: {
+    tone: 'storytelling and narrative',
+    notes: 'Open with a hook about the subject before they were famous/successful. Use chronological story structure with a clear turning point and takeaway.',
+    label: '📖 Origin Story',
+  },
+  mistakes: {
+    tone: 'engaging and educational',
+    notes: 'Structure as "X Mistakes [audience] Makes With [topic]". Each mistake = one section with the mistake, why it\'s wrong, and the correct approach.',
+    label: '❌ Common Mistakes',
+  },
+  deepdive: {
+    tone: 'documentary-style',
+    notes: 'Go deeper than surface-level. Cover history, context, expert perspectives, and implications. Use the open loop to promise a controversial insight early.',
+    label: '🔍 Deep Dive',
+  },
+  quicktips: {
+    tone: 'conversational and casual',
+    notes: 'Fast-paced, one practical tip per section. Each tip should be 2-3 sentences max. Prioritize tips the viewer can act on today.',
+    label: '⚡ Quick Tips',
+  },
+  transformation: {
+    tone: 'storytelling and narrative',
+    notes: 'Use a Before → Turning Point → After structure. Open with the "before" state the audience recognizes, reveal the turning point mid-video, close with the transformation outcome.',
+    label: '🎭 Before & After',
+  },
+};
+
+function applyTemplate(key) {
+  const tpl = FORMAT_TEMPLATES[key];
+  if (!tpl) return;
+  const toneEl = document.getElementById('tone');
+  const notesEl = document.getElementById('custom-notes');
+  if (toneEl) toneEl.value = tpl.tone;
+  if (notesEl) notesEl.value = tpl.notes;
+  // Visual active state
+  document.querySelectorAll('.ft-chip').forEach(c => c.classList.remove('ft-active'));
+  event?.target?.classList.add('ft-active');
+  showToast(`${tpl.label} template applied!`, 'success');
+}
+
 // === MORE ACTIONS TOGGLE ===
 function toggleMoreActions() {
   const more = document.getElementById('output-actions-more');
