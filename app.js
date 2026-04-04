@@ -33,10 +33,51 @@ let currentScript = '';
 let isGenerating = false;
 let _progressTimer = null;
 
+// === SCRIPT AUTO-SAVE ===
+function autoSaveScript(script, topic, niche) {
+  try {
+    localStorage.setItem('sf_autosave', JSON.stringify({
+      script, topic, niche, ts: Date.now()
+    }));
+  } catch (_) {}
+}
+
+function restoreLastScript() {
+  try {
+    const raw = localStorage.getItem('sf_autosave');
+    if (!raw) return;
+    const saved = JSON.parse(raw);
+    if (!saved?.script) return;
+    // Only restore if saved within last 48 hours
+    if (Date.now() - saved.ts > 172800000) { localStorage.removeItem('sf_autosave'); return; }
+
+    // Restore form state
+    if (saved.topic) { document.getElementById('topic').value = saved.topic; updateTopicCounter(); }
+    if (saved.niche) { document.getElementById('niche').value = saved.niche; syncNichePill(saved.niche); }
+
+    // Restore output (without auto-scroll)
+    currentScript = saved.script;
+    const outputDiv = document.getElementById('gen-output');
+    const contentDiv = document.getElementById('script-content');
+    const statsSpan = document.getElementById('output-stats');
+    const badge = document.querySelector('.output-badge');
+    if (!outputDiv || !contentDiv) return;
+
+    const words = saved.script.split(/\s+/).filter(Boolean).length;
+    const mins = Math.round(words / 150);
+    if (statsSpan) statsSpan.textContent = `↩️ Restored · ~${words.toLocaleString()} words · ~${mins} min`;
+    if (badge) badge.textContent = '↩️ Last Script';
+    contentDiv.innerHTML = formatScript(saved.script);
+    outputDiv.classList.remove('hidden');
+    document.getElementById('gen-form').classList.add('hidden');
+  } catch (_) {}
+}
+
 // === INIT ===
 document.addEventListener('DOMContentLoaded', () => {
   updateUsageBar();
   checkProStatus();
+  restoreLastScript();
   initNavbarScroll();
   updateGenerateBtnState();
   updateNavCTA();
@@ -587,6 +628,7 @@ Write the complete, production-ready script now:`;
     clearTimeout(skeletonTimer);
     currentScript = script;
     incrementUsage();
+    autoSaveScript(script, topic, document.getElementById('niche').value);
 
     displayScript(script, topic, length);
 
@@ -829,6 +871,8 @@ function clearOutput() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
+  document.getElementById('niche-hint')?.classList.remove('visible');
+  localStorage.removeItem('sf_autosave');
   currentScript = '';
   const topicEl = document.getElementById('topic');
   topicEl.value = '';
