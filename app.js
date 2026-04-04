@@ -394,6 +394,35 @@ function incrementUsage() {
   localStorage.setItem(CONFIG.storageKey, current + 1);
   const total = parseInt(localStorage.getItem('sf_total') || '0', 10);
   localStorage.setItem('sf_total', total + 1);
+  updateStreak();
+}
+
+function updateStreak() {
+  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const last = localStorage.getItem('sf_last_date') || '';
+  let streak = parseInt(localStorage.getItem('sf_streak') || '0', 10);
+
+  if (last === today) return; // already counted today
+
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  streak = last === yesterday ? streak + 1 : 1;
+
+  localStorage.setItem('sf_last_date', today);
+  localStorage.setItem('sf_streak', streak);
+
+  // Celebrate milestones
+  if ([3, 7, 14, 30, 50, 100].includes(streak)) {
+    setTimeout(() => showToast(`🔥 ${streak}-day streak! You're on fire — keep the momentum!`, 'success'), 1200);
+  }
+}
+
+function getStreak() {
+  const today = new Date().toISOString().slice(0, 10);
+  const last = localStorage.getItem('sf_last_date') || '';
+  const streak = parseInt(localStorage.getItem('sf_streak') || '0', 10);
+  // Streak is still alive if last was today or yesterday
+  const yesterday = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  return (last === today || last === yesterday) ? streak : 0;
 }
 
 function getRemainingScripts() {
@@ -1043,7 +1072,8 @@ function displayScript(script, topic, length) {
   // Reset output badge and add niche label + personal counter
   const badge = document.querySelector('.output-badge');
   const totalGenerated = parseInt(localStorage.getItem('sf_total') || '1', 10);
-  if (badge) badge.textContent = `✅ Script #${totalGenerated} Ready`;
+  const streak = getStreak();
+  if (badge) badge.textContent = streak >= 2 ? `✅ Script #${totalGenerated} · 🔥 ${streak}-day streak` : `✅ Script #${totalGenerated} Ready`;
   const niche = document.getElementById('niche')?.value || '';
   const nicheOption = niche ? document.querySelector(`#niche option[value="${niche}"]`) : null;
   const nicheLabel = nicheOption?.textContent?.replace(/\s+/g, ' ')?.trim() || '';
