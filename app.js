@@ -1330,6 +1330,22 @@ function initDemandStrip() {
   el.style.transition = 'opacity 0.25s ease';
 }
 
+// === MOBILE NAV ===
+function toggleMobileNav() {
+  const links = document.querySelector('.nav-links');
+  const btn = document.getElementById('nav-hamburger');
+  if (!links || !btn) return;
+  const open = links.classList.toggle('open');
+  btn.classList.toggle('open', open);
+}
+// Close mobile nav when any nav link is clicked
+document.querySelectorAll('.nav-links a').forEach(a => {
+  a.addEventListener('click', () => {
+    document.querySelector('.nav-links')?.classList.remove('open');
+    document.getElementById('nav-hamburger')?.classList.remove('open');
+  });
+});
+
 // === GENERATION PROGRESS BAR ===
 function animateGenProgress(loading) {
   const wrap = document.getElementById('gen-progress-wrap');
