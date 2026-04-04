@@ -40,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateGenerateBtnState();
   initScrollReveal();
   initLiveTicker();
+  initStatCounters();
 });
 
 // === NAVBAR SCROLL ===
@@ -50,6 +51,40 @@ function initNavbarScroll() {
       ? 'rgba(6, 6, 15, 0.97)'
       : 'rgba(6, 6, 15, 0.85)';
   });
+}
+
+// === STAT COUNTER ANIMATION ===
+function initStatCounters() {
+  const stats = document.querySelectorAll('.stat-num[data-count]');
+  if (!stats.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      observer.unobserve(entry.target);
+      const el = entry.target;
+      const target = parseInt(el.dataset.count, 10);
+      const suffix = el.dataset.suffix || '';
+      const divisor = parseInt(el.dataset.decimal || '1', 10);
+      const duration = 1400;
+      const start = performance.now();
+
+      const tick = (now) => {
+        const progress = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = Math.round(eased * target) / divisor;
+        if (divisor > 1) {
+          el.textContent = current.toFixed(1) + suffix;
+        } else {
+          el.textContent = current.toLocaleString() + suffix;
+        }
+        if (progress < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }, { threshold: 0.5 });
+
+  stats.forEach(el => observer.observe(el));
 }
 
 // === SCROLL REVEAL ===
