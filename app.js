@@ -1142,7 +1142,8 @@ function formatScript(script) {
     // Section headers: [HOOK], [INTRO], [SECTION 1: Title], [CALL TO ACTION], etc.
     // Matches any [...] that's the entire line (case-insensitive)
     if (/^\[.{2,60}\]$/.test(stripped)) {
-      html += `<span class="script-section-header">${escapeHtml(stripped)}</span>`;
+      const label = stripped.slice(1, -1).replace(/^SECTION \d+:\s*/i, '').replace(/^CALL TO ACTION$/i, 'Call to Action');
+      html += `<span class="script-section-header" data-section="${escapeHtml(label)}">${escapeHtml(stripped)} <button class="sec-copy-btn" onclick="copySectionText(this)" title="Copy this section">⎘</button></span>`;
       continue;
     }
 
@@ -1158,6 +1159,27 @@ function formatScript(script) {
   }
 
   return html;
+}
+
+function copySectionText(btn) {
+  // Collect all text until next section header
+  const headerEl = btn.closest('.script-section-header');
+  if (!headerEl) return;
+  const sectionLabel = headerEl.dataset.section || '';
+  const parts = [];
+  let node = headerEl.nextSibling;
+  while (node) {
+    if (node.classList?.contains('script-section-header')) break;
+    if (node.textContent?.trim()) parts.push(node.textContent.trim());
+    node = node.nextSibling;
+  }
+  const text = `[${sectionLabel.toUpperCase()}]\n` + parts.filter(Boolean).join('\n');
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓';
+    btn.style.color = '#22c55e';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500);
+  });
 }
 
 function escapeHtml(text) {
