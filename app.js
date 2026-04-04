@@ -111,11 +111,16 @@ function updateNavCTA() {
   }
 }
 
-// === KEYBOARD SHORTCUT ===
+// === KEYBOARD SHORTCUTS ===
 document.addEventListener('keydown', (e) => {
   if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
     e.preventDefault();
     generateScript();
+  }
+  // Ctrl/Cmd+S downloads script when output is visible
+  if ((e.metaKey || e.ctrlKey) && e.key === 's' && currentScript) {
+    e.preventDefault();
+    downloadScript();
   }
 });
 
@@ -278,6 +283,8 @@ function getUsage() {
 function incrementUsage() {
   const current = getUsage();
   localStorage.setItem(CONFIG.storageKey, current + 1);
+  const total = parseInt(localStorage.getItem('sf_total') || '0', 10);
+  localStorage.setItem('sf_total', total + 1);
 }
 
 function getRemainingScripts() {
@@ -747,9 +754,10 @@ function displayScript(script, topic, length) {
   const targetBadge = onTarget ? ' · ✅ On target' : ` · ⚠️ ${words < targetWords ? 'shorter' : 'longer'} than target`;
   if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues${targetBadge}`;
 
-  // Reset output badge and add niche label
+  // Reset output badge and add niche label + personal counter
   const badge = document.querySelector('.output-badge');
-  if (badge) badge.textContent = '✅ Script Ready';
+  const totalGenerated = parseInt(localStorage.getItem('sf_total') || '1', 10);
+  if (badge) badge.textContent = `✅ Script #${totalGenerated} Ready`;
   const niche = document.getElementById('niche')?.value || '';
   const nicheOption = niche ? document.querySelector(`#niche option[value="${niche}"]`) : null;
   const nicheLabel = nicheOption?.textContent?.replace(/\s+/g, ' ')?.trim() || '';
