@@ -45,6 +45,44 @@
     ]
   }
   </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is a faceless YouTube channel?",
+        "acceptedAnswer": { "@type": "Answer", "text": "A faceless YouTube channel publishes videos where the creator never appears on camera. Content is delivered through voiceovers paired with stock footage, animations, slideshows, or screen recordings. This format is popular for finance, history, motivation, true crime, and educational channels." }
+      },
+      {
+        "@type": "Question",
+        "name": "Is ScriptFlare better than just using ChatGPT?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes, significantly. ChatGPT gives you generic text. ScriptFlare uses a specialized YouTube prompting system that knows about hooks, open loops, retention curves, B-roll pacing, and CTA placement — calibrated for your niche, audience, and target length." }
+      },
+      {
+        "@type": "Question",
+        "name": "How long are the generated scripts?",
+        "acceptedAnswer": { "@type": "Answer", "text": "You control the length — 5 minutes (~750 words), 8 minutes (~1,200 words), 10 minutes (~1,500 words), 12 minutes (~1,800 words), or 15 minutes (~2,250 words). Each length is calibrated for optimal YouTube ad break placement and watch time." }
+      },
+      {
+        "@type": "Question",
+        "name": "Does ScriptFlare work with AI voiceover tools like ElevenLabs or Murf?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes — ScriptFlare scripts are written to sound natural when spoken aloud, which makes them ideal for AI voiceover tools like ElevenLabs, Murf, or Play.ht. B-roll cues are clearly marked so you always know what footage to overlay." }
+      },
+      {
+        "@type": "Question",
+        "name": "How does the Pro unlock code work?",
+        "acceptedAnswer": { "@type": "Answer", "text": "After upgrading via PayPal, email liumingkai1207@gmail.com with subject ScriptFlare Pro and your PayPal email. You will receive a unique unlock code within 1 hour. Enter it in the tool to unlock unlimited scripts." }
+      },
+      {
+        "@type": "Question",
+        "name": "Can I cancel my ScriptFlare Pro subscription anytime?",
+        "acceptedAnswer": { "@type": "Answer", "text": "Yes. Cancel directly through your PayPal account at any time — no questions, no retention flow, no hassle. Your Pro access continues until the end of the current billing period." }
+      }
+    ]
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
@@ -294,7 +332,7 @@
             </div>
           </div>
 
-          <p class="generate-tip">⌘ Press <kbd>Ctrl+Enter</kbd> to generate from anywhere on the page</p>
+          <p class="generate-tip">Press <kbd>⌘ / Ctrl + Enter</kbd> to generate from anywhere on the page</p>
           <button class="btn btn-primary btn-xl" id="generate-btn" onclick="generateScript()">
             <span id="btn-text">⚡ Generate Script</span>
             <span id="btn-loading" class="hidden">
@@ -321,7 +359,8 @@
                 <span id="copy-text">📋 Copy Script</span>
               </button>
               <button class="btn btn-outline btn-sm" onclick="downloadScript()">⬇ Download .txt</button>
-              <button class="btn btn-ghost btn-sm" onclick="clearOutput()">Generate Another</button>
+              <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">🔄 Regenerate</button>
+              <button class="btn btn-ghost btn-sm" onclick="clearOutput()">New Script</button>
             </div>
           </div>
           <div class="script-content" id="script-content"></div>

@@ -692,6 +692,15 @@ function shakeField(id) {
   }, 1000);
 }
 
+function regenerateScript() {
+  // Keep current form values, just re-generate
+  document.getElementById('gen-output').classList.add('hidden');
+  document.getElementById('gen-form').classList.remove('hidden');
+  document.getElementById('topic-suggestions')?.classList.add('hidden');
+  currentScript = '';
+  generateScript();
+}
+
 function clearOutput() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
