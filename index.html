@@ -231,8 +231,11 @@
           <div class="form-row">
             <div class="form-group full">
               <label for="topic">Video Topic / Idea <span class="required">*</span></label>
-              <input type="text" id="topic" placeholder="e.g. 5 habits that made me a millionaire before 30" maxlength="200" />
-              <span class="form-hint">Be specific — better input = better script</span>
+              <input type="text" id="topic" placeholder="e.g. 5 habits that made me a millionaire before 30" maxlength="200" oninput="updateTopicCounter()" />
+              <div class="form-hint-row">
+                <span class="form-hint">Be specific — better input = better script</span>
+                <span class="topic-counter" id="topic-counter">0 / 200</span>
+              </div>
             </div>
           </div>
           <div class="form-row two-col">

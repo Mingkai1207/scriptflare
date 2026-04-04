@@ -956,6 +956,7 @@ footer {
   .unlock-row { flex-direction: column; }
   .sf-toast { bottom: 80px; }
   .niche-pills { gap: 6px; }
+  body { padding-bottom: 68px; }
 }
 
 /* === SCRIPT PREVIEW SECTION === */
@@ -1135,6 +1136,19 @@ footer {
 .sticky-cta-btn { white-space: nowrap; }
 @media (min-width: 769px) {
   .sticky-cta-bar { display: none; }
+}
+
+/* === TOPIC CHARACTER COUNTER === */
+.form-hint-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
+}
+.topic-counter {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  flex-shrink: 0;
 }
 
 /* === PAYWALL BENEFITS === */

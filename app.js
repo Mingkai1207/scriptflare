@@ -448,10 +448,11 @@ function displayScript(script, topic, length) {
   const contentDiv = document.getElementById('script-content');
   const statsSpan = document.getElementById('output-stats');
 
-  // Word count
+  // Word count + topic label
   const words = script.split(/\s+/).filter(Boolean).length;
   const estimatedMins = Math.round(words / 150);
-  if (statsSpan) statsSpan.textContent = `~${words.toLocaleString()} words · ~${estimatedMins} min read aloud`;
+  const topicLabel = topic ? `"${topic.length > 50 ? topic.slice(0, 47) + '...' : topic}" · ` : '';
+  if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min read aloud`;
 
   // Format the script with nice HTML
   contentDiv.innerHTML = formatScript(script);
@@ -601,8 +602,19 @@ function shakeField(id) {
 function clearOutput() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
-  document.getElementById('topic').focus();
   currentScript = '';
+  const topicEl = document.getElementById('topic');
+  topicEl.focus();
+  topicEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function updateTopicCounter() {
+  const input = document.getElementById('topic');
+  const counter = document.getElementById('topic-counter');
+  if (!input || !counter) return;
+  const len = input.value.length;
+  counter.textContent = `${len} / 200`;
+  counter.style.color = len > 160 ? 'var(--yellow)' : '';
 }
 
 // === TOAST ===
