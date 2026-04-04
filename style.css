@@ -921,6 +921,42 @@ footer {
   .unlock-row { flex-direction: column; }
 }
 
+/* === TOAST NOTIFICATIONS === */
+.sf-toast {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--surface);
+  border: 1px solid var(--border-hover);
+  color: var(--text);
+  padding: 12px 22px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  opacity: 0;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  max-width: 420px;
+  text-align: center;
+  white-space: nowrap;
+}
+.sf-toast.sf-toast-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+.sf-toast.sf-toast-warning {
+  border-color: rgba(251, 191, 36, 0.4);
+  background: rgba(25, 20, 8, 0.95);
+  color: #fde68a;
+}
+.sf-toast.sf-toast-success {
+  border-color: rgba(16, 185, 129, 0.4);
+  background: rgba(4, 20, 14, 0.95);
+  color: #6ee7b7;
+}
+
 /* === SCROLL REVEAL === */
 .reveal {
   opacity: 0;

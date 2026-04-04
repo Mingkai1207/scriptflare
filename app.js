@@ -280,6 +280,11 @@ async function generateScript() {
     return;
   }
 
+  // Show "last script" nudge
+  if (remaining === 1 && !isProUser()) {
+    showToast('⚡ Last free script — make it count! Upgrade after to keep going.', 'warning');
+  }
+
   // Start generation
   isGenerating = true;
   setLoadingState(true);
@@ -515,6 +520,25 @@ function clearOutput() {
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic').focus();
   currentScript = '';
+}
+
+// === TOAST ===
+function showToast(message, type = 'info') {
+  const existing = document.querySelector('.sf-toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'sf-toast sf-toast-' + type;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add('sf-toast-visible');
+    setTimeout(() => {
+      toast.classList.remove('sf-toast-visible');
+      setTimeout(() => toast.remove(), 400);
+    }, 4000);
+  });
 }
 
 // === COPY & DOWNLOAD ===
