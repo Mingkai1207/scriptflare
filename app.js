@@ -39,12 +39,28 @@ document.addEventListener('DOMContentLoaded', () => {
   checkProStatus();
   initNavbarScroll();
   updateGenerateBtnState();
+  updateNavCTA();
   initScrollReveal();
   initLiveTicker();
   initStatCounters();
   initTopicPlaceholder();
   initStickyCTA();
 });
+
+// === NAV CTA DYNAMIC ===
+function updateNavCTA() {
+  const btn = document.querySelector('.nav-cta');
+  if (!btn || isProUser()) return;
+  const remaining = getRemainingScripts();
+  if (remaining === 0) {
+    btn.textContent = 'Upgrade to Pro →';
+    btn.style.background = 'linear-gradient(135deg, var(--primary), var(--pink))';
+    btn.href = '#pricing';
+  } else if (remaining === 1) {
+    btn.textContent = '⚡ 1 Script Left';
+    btn.style.background = 'linear-gradient(135deg, #b45309, #92400e)';
+  }
+}
 
 // === STICKY MOBILE CTA ===
 function initStickyCTA() {
@@ -282,6 +298,72 @@ function unlockPro() {
   }
 }
 
+// === TOPIC SUGGESTIONS ===
+const TOPIC_SUGGESTIONS = {
+  'personal finance': [
+    'How I saved $50,000 on a $45,000 salary',
+    'The 4 investing mistakes killing your portfolio returns',
+    'Why most people will never be rich — and how to be different',
+  ],
+  'motivation and mindset': [
+    'Why discipline beats motivation every single time',
+    'The morning routine that quietly changed my life',
+    '5 mindset shifts that separate top 1% from everyone else',
+  ],
+  'true crime and mysteries': [
+    'The unsolved disappearance that baffled investigators for decades',
+    'Inside the most elaborate con in American history',
+    'The cold case that cracked open 30 years later',
+  ],
+  'history and facts': [
+    'The ancient civilization that was more advanced than we thought',
+    'Why the Roman Empire really collapsed — the true story',
+    '10 historical "facts" that are completely wrong',
+  ],
+  'technology and AI': [
+    'How AI will replace 40% of jobs by 2030',
+    'The dark side of social media algorithms nobody talks about',
+    '5 technologies that will change everything in the next 5 years',
+  ],
+  'business and entrepreneurship': [
+    'The $0 business model making people millionaires in 2026',
+    'Why 90% of businesses fail in year one — and how to avoid it',
+    'From side hustle to $10K/month: the exact playbook',
+  ],
+  'self-improvement': [
+    'The 1% rule that quietly transforms your life in 6 months',
+    '7 habits successful people do before 8am',
+    'Why reading books changed my income and how to start',
+  ],
+  'health and wellness': [
+    'The sleep science that doctors aren\'t telling you',
+    'Why most diets fail — and what actually works long-term',
+    '5 daily habits that add 10 years to your life',
+  ],
+};
+
+function showTopicSuggestions(niche) {
+  const container = document.getElementById('topic-suggestions');
+  const chips = document.getElementById('topic-sug-chips');
+  if (!container || !chips) return;
+
+  const suggestions = TOPIC_SUGGESTIONS[niche] || TOPIC_SUGGESTIONS['motivation and mindset'];
+  chips.innerHTML = suggestions.map(t =>
+    `<button class="topic-sug-chip" onclick="useSuggestion(this, '${t.replace(/'/g, "&#39;")}')">${t}</button>`
+  ).join('');
+  container.classList.remove('hidden');
+}
+
+function useSuggestion(btn, topic) {
+  document.getElementById('topic').value = topic;
+  updateTopicCounter();
+  // Scroll to generate button
+  document.getElementById('generate-btn').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  // Visual feedback
+  btn.style.background = 'rgba(124,92,252,0.2)';
+  btn.style.borderColor = 'rgba(124,92,252,0.5)';
+}
+
 // === NICHE QUICK-SELECT ===
 function pickNiche(value) {
   const select = document.getElementById('niche');
@@ -434,6 +516,7 @@ Write the complete, production-ready script now:`;
 
     updateUsageBar();
     updateGenerateBtnState();
+    updateNavCTA();
 
   } catch (err) {
     showError(err.message);
@@ -457,9 +540,11 @@ function displayScript(script, topic, length) {
   // Format the script with nice HTML
   contentDiv.innerHTML = formatScript(script);
 
-  // Show output, scroll to it
+  // Show output + topic suggestions
   outputDiv.classList.remove('hidden');
   outputDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  const niche = document.getElementById('niche')?.value || '';
+  showTopicSuggestions(niche);
 
   // Success toast with upgrade nudge if on last remaining (0 left now)
   const nowRemaining = getRemainingScripts();
@@ -602,8 +687,11 @@ function shakeField(id) {
 function clearOutput() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
+  document.getElementById('topic-suggestions')?.classList.add('hidden');
   currentScript = '';
   const topicEl = document.getElementById('topic');
+  topicEl.value = '';
+  updateTopicCounter();
   topicEl.focus();
   topicEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
