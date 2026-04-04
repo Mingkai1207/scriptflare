@@ -546,11 +546,13 @@ function displayScript(script, topic, length) {
   const contentDiv = document.getElementById('script-content');
   const statsSpan = document.getElementById('output-stats');
 
-  // Word count + topic label
+  // Word count + topic label + script stats
   const words = script.split(/\s+/).filter(Boolean).length;
   const estimatedMins = Math.round(words / 150);
-  const topicLabel = topic ? `"${topic.length > 50 ? topic.slice(0, 47) + '...' : topic}" · ` : '';
-  if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min read aloud`;
+  const brollCount = (script.match(/\[VISUAL:/gi) || []).length;
+  const sectionCount = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length;
+  const topicLabel = topic ? `"${topic.length > 46 ? topic.slice(0, 43) + '...' : topic}" · ` : '';
+  if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues`;
 
   // Reset output badge and format the script
   const badge = document.querySelector('.output-badge');
@@ -590,7 +592,8 @@ function formatScript(script) {
 
     // Visual cues [VISUAL: ...] — check first to avoid false positives
     if (/^\[VISUAL:/i.test(stripped)) {
-      html += `<span class="visual-cue">${escapeHtml(stripped)}</span><br>`;
+      const cueText = stripped.replace(/^\[VISUAL:\s*/i, '').replace(/\]$/, '');
+      html += `<span class="visual-cue">🎬 <em>${escapeHtml(cueText)}</em></span><br>`;
       continue;
     }
 

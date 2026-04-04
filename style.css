@@ -584,12 +584,13 @@ select {
 .script-section-header:first-child { margin-top: 0; }
 .visual-cue {
   display: block;
-  color: var(--text-faint);
-  font-style: italic;
-  font-size: 0.84rem;
-  margin: 8px 0;
-  padding: 5px 12px;
-  border-left: 2px solid rgba(255,255,255,0.1);
+  color: #7dd3fc;
+  font-size: 0.83rem;
+  margin: 10px 0;
+  padding: 6px 12px 6px 10px;
+  border-left: 2px solid rgba(125, 211, 252, 0.25);
+  background: rgba(56, 189, 248, 0.04);
+  border-radius: 0 6px 6px 0;
 }
 .script-para {
   display: block;
