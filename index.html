@@ -914,7 +914,7 @@
     <div class="container">
       <div class="section-badge">Creator toolkit</div>
       <h2 class="section-title">Everything else you need to launch</h2>
-      <p class="section-sub">ScriptFlare handles the script. These tools handle the rest.</p>
+      <p class="section-sub">ScriptFlare handles the script. These tools handle the rest. <button class="checklist-trigger" onclick="openChecklist()">📋 See the 7-day launch checklist →</button></p>
       <div class="resources-grid">
         <div class="resource-category">
           <h3 class="resource-cat-title">🎙️ AI Voiceover</h3>
@@ -1070,6 +1070,53 @@
       <button class="tp-close" onclick="closeTeleprompter()">✕ Close</button>
     </div>
     <div class="tp-script" id="tp-script"></div>
+  </div>
+
+  <!-- STARTER CHECKLIST MODAL -->
+  <div class="checklist-modal hidden" id="checklist-modal" onclick="closeChecklist(event)">
+    <div class="checklist-box">
+      <button class="exit-modal-close" onclick="closeChecklist(null, true)" aria-label="Close">✕</button>
+      <div class="checklist-header">
+        <span class="checklist-icon">🚀</span>
+        <h3>Faceless YouTube Starter Checklist</h3>
+        <p>Everything you need to launch your first faceless channel in 7 days</p>
+      </div>
+      <div class="checklist-steps">
+        <div class="checklist-day">
+          <span class="checklist-day-label">Day 1</span>
+          <ul>
+            <li>✅ Pick your niche (finance, true crime, motivation, etc.)</li>
+            <li>✅ Research 10 video ideas using ScriptFlare's content calendar</li>
+            <li>✅ Create your YouTube channel + write your channel description</li>
+          </ul>
+        </div>
+        <div class="checklist-day">
+          <span class="checklist-day-label">Day 2–3</span>
+          <ul>
+            <li>✅ Generate your first 3 scripts with ScriptFlare</li>
+            <li>✅ Record voiceovers with ElevenLabs or Murf</li>
+            <li>✅ Download free B-roll from Pexels or Pixabay</li>
+          </ul>
+        </div>
+        <div class="checklist-day">
+          <span class="checklist-day-label">Day 4–5</span>
+          <ul>
+            <li>✅ Edit videos in CapCut or DaVinci Resolve</li>
+            <li>✅ Design thumbnails in Canva (use thumbnail text ideas from ScriptFlare)</li>
+            <li>✅ Copy your video description template from ScriptFlare</li>
+          </ul>
+        </div>
+        <div class="checklist-day">
+          <span class="checklist-day-label">Day 6–7</span>
+          <ul>
+            <li>✅ Upload your first 3 videos (batch publishing builds momentum)</li>
+            <li>✅ Add tags, chapters, and end screens</li>
+            <li>✅ Post on schedule — consistency beats perfection</li>
+          </ul>
+        </div>
+      </div>
+      <a href="#generator" class="btn btn-primary btn-lg" onclick="closeChecklist(null, true)">Generate My First Script →</a>
+    </div>
   </div>
 
   <!-- EXIT INTENT MODAL -->

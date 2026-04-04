@@ -2090,6 +2090,19 @@ function replaceHookInScript(script, newHook) {
   return hookReplaced ? result.join('\n') : script;
 }
 
+// === STARTER CHECKLIST MODAL ===
+function openChecklist() {
+  document.getElementById('checklist-modal')?.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeChecklist(e, force) {
+  if (force || (e && e.target === document.getElementById('checklist-modal'))) {
+    document.getElementById('checklist-modal')?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+}
+
 // === EXIT INTENT MODAL ===
 let _exitShown = false;
 function initExitIntent() {

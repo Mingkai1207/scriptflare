@@ -2582,3 +2582,97 @@ kbd {
   flex-shrink: 0;
   align-self: center;
 }
+
+/* === CHECKLIST TRIGGER BUTTON === */
+.checklist-trigger {
+  background: none;
+  border: none;
+  color: var(--primary-light);
+  font-size: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  transition: color 0.2s;
+}
+.checklist-trigger:hover { color: var(--text); }
+
+/* === STARTER CHECKLIST MODAL === */
+.checklist-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  z-index: 9998;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  backdrop-filter: blur(4px);
+  animation: fadeSlideIn 0.25s ease;
+  overflow-y: auto;
+}
+.checklist-modal.hidden { display: none; }
+.checklist-box {
+  background: var(--surface);
+  border: 1px solid rgba(124, 92, 252, 0.3);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px 32px;
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  box-shadow: 0 0 60px rgba(124, 92, 252, 0.15);
+  text-align: left;
+}
+.checklist-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.checklist-icon { font-size: 2rem; display: block; margin-bottom: 10px; }
+.checklist-header h3 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+.checklist-header p {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+}
+.checklist-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.checklist-day {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.checklist-day-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--primary-light);
+  margin-bottom: 8px;
+}
+.checklist-day ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.checklist-day li {
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+@media (max-width: 480px) {
+  .checklist-box { padding: 24px 18px 24px; }
+}
