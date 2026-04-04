@@ -171,6 +171,7 @@ document.addEventListener('DOMContentLoaded', () => {
   renderTopicHistory();
   initPricingCountdown();
   initExitIntent();
+  initTheme();
   // Auto-open first FAQ item
   const firstFaq = document.querySelector('.faq-q');
   if (firstFaq) toggleFaq(firstFaq);
@@ -906,6 +907,7 @@ function displayScript(script, topic, length) {
   showQualityReport(script);
   showTitleOptions(topic, niche);
   showContentCalendar(niche, topic);
+  showChannelNames(niche);
   showTopicSuggestions(niche);
 
   // Success toast + upgrade nudge
@@ -1115,6 +1117,7 @@ function regenerateScript() {
   document.getElementById('title-options')?.classList.add('hidden');
   document.getElementById('desc-panel')?.classList.add('hidden');
   document.getElementById('content-calendar')?.classList.add('hidden');
+  document.getElementById('channel-names')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('upgrade-nudge')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
@@ -1133,6 +1136,7 @@ function clearOutput() {
   document.getElementById('title-options')?.classList.add('hidden');
   document.getElementById('desc-panel')?.classList.add('hidden');
   document.getElementById('content-calendar')?.classList.add('hidden');
+  document.getElementById('channel-names')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
@@ -2088,6 +2092,105 @@ function replaceHookInScript(script, newHook) {
     result.push(line);
   }
   return hookReplaced ? result.join('\n') : script;
+}
+
+// === CHANNEL NAME GENERATOR ===
+const CHANNEL_NAME_POOLS = {
+  'personal finance': [
+    'WealthWire', 'The Compound Effect', 'MoneyMindset Daily', 'Fiscal Forward', 'The Wealth Blueprint',
+    'Stack & Scale', 'The Money Mechanic', 'Quiet Millionaire', 'Net Worth Narrative', 'The Financial Edge',
+  ],
+  'motivation and mindset': [
+    'MindShift Daily', 'The Discipline Lab', 'Forge & Focus', 'Inner Drive', 'The Mindset Engine',
+    'Unshaken', 'The 1% Journal', 'Rise Mechanics', 'Clarity Over Comfort', 'Built Not Born',
+  ],
+  'true crime and mysteries': [
+    'Cold Case Files', 'The Evidence Room', 'Unsolved Files', 'Dark Archives', 'Crime Chronicle',
+    'The Case Files', 'Shadow Dossier', 'True Crime Vault', 'The Incident Room', 'Mystery Dispatch',
+  ],
+  'history and facts': [
+    'History Unlocked', 'The Archive', 'Past Redefined', 'Hidden Centuries', 'The History Vault',
+    'Chronicles Untold', 'The Real Record', 'Forgotten Pages', 'History Rewired', 'The Epoch',
+  ],
+  'technology and AI': [
+    'Future Decoded', 'The Algorithm', 'AI Insider', 'Tech Horizon', 'Digital Frontiers',
+    'The Neural Path', 'Code & Consequence', 'Silicon Brief', 'The Tech Signal', 'Beyond Beta',
+  ],
+  'business and entrepreneurship': [
+    'Founder Mode', 'The Startup Brief', 'Built to Scale', 'Zero to Revenue', 'The Operator',
+    'Leverage & Growth', 'The Business Playbook', 'Founder\'s Edge', 'Revenue Mechanics', 'The Pivot',
+  ],
+  'self-improvement': [
+    'Level Up Daily', 'The Upgrade', 'Better by Design', 'The Growth Lab', 'Compound Self',
+    'The 1% Shift', 'Habit Architecture', 'The Self Project', 'Optimized Life', 'The Upgrade Files',
+  ],
+  'health and wellness': [
+    'Longevity Lab', 'The Wellness Brief', 'Body Intelligence', 'Vitality Decoded', 'The Health Signal',
+    'Optimal Human', 'The Wellness Stack', 'Biology Unlocked', 'Prime Protocol', 'The Recovery Room',
+  ],
+  'relationships and psychology': [
+    'Mind Mechanics', 'The Psychology Files', 'Human Pattern', 'The Inner Map', 'Behavioral Brief',
+    'The Relationship Lab', 'Psych Decoded', 'The Human Condition', 'Pattern Recognition', 'Mind Architecture',
+  ],
+  'travel and geography': [
+    'Terra Incognita', 'The World Brief', 'Geography Unlocked', 'Unknown Coordinates', 'The Atlas',
+    'Wander Decoded', 'The Globe Files', 'Maps & Meaning', 'Hidden Nations', 'The World Report',
+  ],
+  'spirituality and philosophy': [
+    'The Examined Life', 'Stoic Daily', 'Wisdom Protocol', 'The Philosophy Brief', 'Inner Compass',
+    'The Meaning Engine', 'Ancient Forward', 'Logos & Life', 'The Virtue Path', 'Mind & Meaning',
+  ],
+  'news and current events': [
+    'The Briefing', 'Signal vs Noise', 'Context First', 'The Deep Dive', 'Behind the Headline',
+    'The Explainer', 'Current Intelligence', 'The World Desk', 'Ground Truth', 'The Real Story',
+  ],
+};
+
+function showChannelNames(niche) {
+  const wrap = document.getElementById('channel-names');
+  const list = document.getElementById('channel-names-list');
+  if (!wrap || !list || !niche) return;
+
+  const pool = CHANNEL_NAME_POOLS[niche] || CHANNEL_NAME_POOLS['motivation and mindset'];
+  // Pick 5 random names
+  const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, 5);
+
+  list.innerHTML = shuffled.map(name => {
+    const safe = name.replace(/'/g, "&#39;");
+    return `<div class="channel-name-chip" onclick="copyChannelName(this, '${safe}')">${name}<span class="channel-name-copy">Copy</span></div>`;
+  }).join('');
+  wrap.classList.remove('hidden');
+}
+
+function copyChannelName(el, name) {
+  navigator.clipboard.writeText(name).then(() => {
+    const copy = el.querySelector('.channel-name-copy');
+    if (copy) { copy.textContent = '✓'; setTimeout(() => { copy.textContent = 'Copy'; }, 1800); }
+  }).catch(() => {});
+}
+
+// === LIGHT/DARK MODE TOGGLE ===
+function initTheme() {
+  const saved = localStorage.getItem('sf_theme');
+  if (saved === 'light') applyTheme('light');
+}
+
+function toggleTheme() {
+  const isLight = document.body.classList.contains('light-mode');
+  applyTheme(isLight ? 'dark' : 'light');
+}
+
+function applyTheme(mode) {
+  const btn = document.getElementById('theme-toggle');
+  if (mode === 'light') {
+    document.body.classList.add('light-mode');
+    if (btn) btn.textContent = '☀️';
+    localStorage.setItem('sf_theme', 'light');
+  } else {
+    document.body.classList.remove('light-mode');
+    if (btn) btn.textContent = '🌙';
+    localStorage.setItem('sf_theme', 'dark');
+  }
 }
 
 // === STARTER CHECKLIST MODAL ===

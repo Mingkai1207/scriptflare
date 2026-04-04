@@ -148,6 +148,7 @@
         <a href="#resources">Resources</a>
         <a href="#faq">FAQ</a>
       </div>
+      <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" aria-label="Toggle light/dark mode" title="Toggle light/dark mode">🌙</button>
       <a href="#generator" class="btn btn-primary btn-sm nav-cta">Generate Free →</a>
       <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileNav()" aria-label="Open menu">
         <span></span><span></span><span></span>
@@ -602,6 +603,15 @@
             <a href="https://murf.ai" target="_blank" rel="noopener noreferrer" class="voiceover-chip">🎤 Murf</a>
             <a href="https://play.ht" target="_blank" rel="noopener noreferrer" class="voiceover-chip">🔊 Play.ht</a>
           </div>
+        </div>
+
+        <!-- CHANNEL NAME IDEAS (shown after generating) -->
+        <div class="channel-names hidden" id="channel-names">
+          <div class="channel-names-header">
+            <span>📺 <strong>Channel Name Ideas</strong></span>
+            <span class="channel-names-sub">Based on your niche — click to copy</span>
+          </div>
+          <div class="channel-names-list" id="channel-names-list"></div>
         </div>
 
         <!-- SCRIPT HISTORY PANEL -->
