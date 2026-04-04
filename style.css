@@ -690,8 +690,11 @@ select {
 #testimonials { background: var(--bg2); }
 .testimonials-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
+}
+@media (min-width: 1000px) {
+  .testimonials-grid { grid-template-columns: repeat(4, 1fr); }
 }
 .testimonial-card {
   background: var(--bg3);
@@ -840,6 +843,45 @@ select {
 .paypal-note {
   font-size: 0.8rem;
   color: var(--text-faint);
+}
+.paypal-steps {
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+.paypal-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.step-num-small {
+  background: rgba(124,92,252,0.15);
+  border: 1px solid rgba(124,92,252,0.3);
+  color: var(--primary-light);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.paypal-guarantee {
+  font-size: 0.82rem;
+  color: var(--green);
+  margin-top: 4px;
+  padding: 8px 14px;
+  background: rgba(16,185,129,0.06);
+  border: 1px solid rgba(16,185,129,0.15);
+  border-radius: 8px;
 }
 
 /* === FAQ === */
