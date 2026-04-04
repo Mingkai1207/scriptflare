@@ -331,6 +331,10 @@
                 <span class="form-hint">Be specific — better input = better script</span>
                 <span class="topic-counter" id="topic-counter">0 / 200</span>
               </div>
+              <div class="topic-history hidden" id="topic-history">
+                <span class="topic-history-label">Recent:</span>
+                <div class="topic-history-chips" id="topic-history-chips"></div>
+              </div>
             </div>
           </div>
           <div class="form-row two-col">
@@ -416,6 +420,7 @@
                 <span id="copy-text">📋 Copy Script</span>
               </button>
               <button class="btn btn-outline btn-sm" onclick="downloadScript()">⬇ Download .txt</button>
+              <button class="btn btn-outline btn-sm" onclick="copyHook()">🎣 Copy Hook</button>
               <button class="btn btn-ghost btn-sm" onclick="shareOnX()">𝕏 Share</button>
               <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">🔄 Regenerate</button>
               <button class="btn btn-ghost btn-sm" onclick="printScript()">🖨️ Print</button>
@@ -574,9 +579,13 @@
         <div class="pricing-card featured reveal reveal-delay-2">
           <div class="popular-badge">Most Popular</div>
           <div class="plan-name">Pro</div>
+          <div class="launch-price-badge">🚀 Launch Price</div>
           <div class="guarantee-badge">🛡️ 30-Day Money-Back Guarantee</div>
-          <div class="plan-price">$19</div>
-          <div class="plan-period">per month</div>
+          <div class="plan-price-row">
+            <span class="plan-price-was">$49</span>
+            <span class="plan-price">$19</span>
+          </div>
+          <div class="plan-period">per month — save 60%</div>
           <ul class="plan-features">
             <li>✅ Unlimited scripts</li>
             <li>✅ All niches</li>

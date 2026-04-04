@@ -89,6 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initTopicPlaceholder();
   initStickyCTA();
   initDemandStrip();
+  renderTopicHistory();
 });
 
 // === NAV CTA DYNAMIC ===
@@ -695,6 +696,7 @@ Write the complete, production-ready script now:`;
     clearTimeout(skeletonTimer);
     currentScript = script;
     incrementUsage();
+    saveTopicHistory(topic);
     autoSaveScript(script, topic, document.getElementById('niche').value);
 
     displayScript(script, topic, length);
@@ -1021,6 +1023,63 @@ function showQualityReport(script) {
   }
 
   qDiv.classList.remove('hidden');
+}
+
+// === TOPIC HISTORY ===
+function saveTopicHistory(topic) {
+  if (!topic || topic.length < 5) return;
+  try {
+    const raw = localStorage.getItem('sf_topic_history');
+    let hist = raw ? JSON.parse(raw) : [];
+    hist = hist.filter(t => t !== topic);  // remove duplicate
+    hist.unshift(topic);
+    hist = hist.slice(0, 5);  // keep last 5
+    localStorage.setItem('sf_topic_history', JSON.stringify(hist));
+    renderTopicHistory();
+  } catch (_) {}
+}
+
+function renderTopicHistory() {
+  try {
+    const raw = localStorage.getItem('sf_topic_history');
+    if (!raw) return;
+    const hist = JSON.parse(raw);
+    if (!hist?.length) return;
+    const wrap = document.getElementById('topic-history');
+    const chips = document.getElementById('topic-history-chips');
+    if (!wrap || !chips) return;
+    chips.innerHTML = hist.map(t =>
+      `<button class="topic-history-chip" title="${t.replace(/"/g, '&quot;')}" onclick="reuseHistoryTopic(this)">${t.length > 40 ? t.slice(0, 38) + '…' : t}</button>`
+    ).join('');
+    wrap.classList.remove('hidden');
+  } catch (_) {}
+}
+
+function reuseHistoryTopic(btn) {
+  const full = btn.title || btn.textContent;
+  document.getElementById('topic').value = full;
+  updateTopicCounter();
+  detectNicheFromTopic();
+}
+
+// === COPY HOOK ===
+function copyHook() {
+  if (!currentScript) return;
+  const hookMatch = currentScript.match(/\[HOOK\]([\s\S]*?)(?=\[(?!VISUAL:))/i);
+  const hookText = hookMatch ? hookMatch[1].trim() : '';
+  if (!hookText) { showToast('⚠️ No [HOOK] section found in this script.', 'warning'); return; }
+  navigator.clipboard.writeText(hookText).then(() => {
+    showToast('✅ Hook copied to clipboard!', 'success');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = hookText;
+    ta.style.cssText = 'position:fixed;opacity:0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('✅ Hook copied!', 'success');
+  });
 }
 
 // === SHARE ON X ===
