@@ -34,13 +34,91 @@ let isGenerating = false;
 let _progressTimer = null;
 let _progressBarTimer = null;
 
-// === SCRIPT AUTO-SAVE ===
+// === SCRIPT AUTO-SAVE + HISTORY ===
+const SF_HISTORY_KEY = 'sf_history';
+const SF_HISTORY_MAX = 5;
+
 function autoSaveScript(script, topic, niche) {
   try {
-    localStorage.setItem('sf_autosave', JSON.stringify({
-      script, topic, niche, ts: Date.now()
-    }));
+    const entry = { script, topic, niche, ts: Date.now() };
+    localStorage.setItem('sf_autosave', JSON.stringify(entry));
+    // Also append to history
+    const raw = localStorage.getItem(SF_HISTORY_KEY);
+    const history = raw ? JSON.parse(raw) : [];
+    // Deduplicate by topic+niche
+    const filtered = history.filter(e => !(e.topic === topic && e.niche === niche));
+    filtered.unshift(entry);
+    localStorage.setItem(SF_HISTORY_KEY, JSON.stringify(filtered.slice(0, SF_HISTORY_MAX)));
   } catch (_) {}
+}
+
+function getScriptHistory() {
+  try { return JSON.parse(localStorage.getItem(SF_HISTORY_KEY) || '[]'); } catch (_) { return []; }
+}
+
+function showHistoryPanel() {
+  const history = getScriptHistory();
+  if (!history.length) { showToast('No script history yet — generate your first script!', 'success'); return; }
+
+  const wrap = document.getElementById('history-panel');
+  if (!wrap) return;
+
+  if (!wrap.classList.contains('hidden')) { wrap.classList.add('hidden'); return; }
+
+  wrap.innerHTML = `
+    <div class="history-header">
+      <strong>📜 Script History</strong>
+      <span class="history-sub">Last ${history.length} script${history.length > 1 ? 's' : ''}</span>
+    </div>
+    <div class="history-list">
+      ${history.map((e, i) => {
+        const date = new Date(e.ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const words = (e.script || '').split(/\s+/).filter(Boolean).length;
+        const safeI = i;
+        return `<div class="history-item" onclick="loadHistoryEntry(${safeI})">
+          <div class="history-item-meta">
+            <span class="history-item-date">${date}</span>
+            <span class="history-item-niche">${e.niche || 'General'}</span>
+            <span class="history-item-words">${words.toLocaleString()} words</span>
+          </div>
+          <div class="history-item-topic">${escapeHtml((e.topic || 'Untitled').slice(0, 80))}</div>
+        </div>`;
+      }).join('')}
+    </div>`;
+  wrap.classList.remove('hidden');
+}
+
+function loadHistoryEntry(idx) {
+  const history = getScriptHistory();
+  const entry = history[idx];
+  if (!entry) return;
+
+  currentScript = entry.script;
+  if (entry.topic) { document.getElementById('topic').value = entry.topic; updateTopicCounter(); }
+  if (entry.niche) { document.getElementById('niche').value = entry.niche; syncNichePill(entry.niche); }
+
+  const outputDiv = document.getElementById('gen-output');
+  const contentDiv = document.getElementById('script-content');
+  const statsSpan = document.getElementById('output-stats');
+  const badge = document.querySelector('.output-badge');
+  if (!outputDiv || !contentDiv) return;
+
+  const words = entry.script.split(/\s+/).filter(Boolean).length;
+  const mins = Math.round(words / 150);
+  const date = new Date(entry.ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  if (statsSpan) statsSpan.textContent = `📜 From history (${date}) · ~${words.toLocaleString()} words · ~${mins} min`;
+  if (badge) badge.textContent = '📜 History Script';
+  contentDiv.innerHTML = formatScript(entry.script);
+  outputDiv.classList.remove('hidden');
+  document.getElementById('voiceover-links')?.classList.remove('hidden');
+  document.getElementById('history-panel')?.classList.add('hidden');
+  if (entry.niche) {
+    showNichePerfTip(entry.niche);
+    showQualityReport(entry.script);
+    showTitleOptions(entry.topic, entry.niche);
+  }
+  outputDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  showToast(`📜 Loaded: "${(entry.topic || '').slice(0, 40)}"`, 'success');
 }
 
 function restoreLastScript() {
