@@ -655,28 +655,46 @@ async function generateScript() {
     '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250
   }[length] || 1500;
 
-  const systemPrompt = `You are ScriptFlare, an expert YouTube script writer specializing in faceless YouTube channels. You deeply understand YouTube retention psychology, the algorithm, and what makes viewers watch videos all the way through.
+  const nicheGuidance = {
+    'personal finance':            'Use specific numbers and dollar amounts — they signal authority. Speak directly to the viewer\'s financial anxiety ("If you\'re living paycheck to paycheck..."). Include at least one surprising statistic from a credible source in the hook.',
+    'motivation and mindset':      'Open with a bold counter-intuitive claim or uncomfortable truth. Use second-person ("you") throughout. Build emotional escalation — the viewer should feel seen and understood before you give them the solution.',
+    'true crime and mysteries':    'Build suspense through chronological storytelling with strategic information withholds. Use sensory language to put viewers in the scene. Tease the most shocking detail in the hook, then make them wait for it.',
+    'history and facts':           'Frame history as a correction — "here\'s what really happened." Use present tense for key moments to create immediacy. Include one genuinely surprising fact that contradicts popular belief.',
+    'technology and AI':           'Open with an implication for the viewer\'s life or job. Use concrete examples and analogies over abstract technical concepts. Include the current year to signal the content is fresh and relevant.',
+    'business and entrepreneurship': 'Use case study structure — real numbers, real timelines. Speak to both the ambition and the fear of failure. Break complex strategies into a numbered system the viewer can follow.',
+    'self-improvement':            'Balance inspiration with actionable steps — every section should include something the viewer can do today. Use "I used to X until I discovered Y" framing to trigger identification.',
+    'health and wellness':         'Lead with a relatable symptom the viewer likely has. Use authoritative but accessible language — cite the research without being academic. Always pair a problem with a specific, actionable solution.',
+    'relationships and psychology': 'Use vulnerability and specificity to build connection. Psychological concepts should feel like revelations about the viewer\'s own life. Avoid generic advice — give specific, named frameworks.',
+    'travel and geography':        'Build a sense of wonder and discovery. Use vivid descriptive language and surprising contrasts. Connect geography to human stories and historical events.',
+    'spirituality and philosophy':  'Start with a universal human problem the philosophy addresses. Translate ancient wisdom into modern, practical terms. Use concrete examples and scenarios to make abstract concepts tangible.',
+    'news and current events':     'Provide context and backstory the viewer won\'t find in a 2-minute news clip. Explain the "why" behind events, not just the "what." Be balanced but give the viewer a clear analytical lens.',
+  };
 
-Your scripts:
-- Open with a psychologically powerful hook in the FIRST 15-30 seconds (curiosity gap, bold claim, or surprising fact)
+  const systemPrompt = `You are ScriptFlare, an expert YouTube script writer specializing in faceless YouTube channels. You deeply understand YouTube retention psychology, the algorithm, and what makes viewers watch all the way through.
+
+Your scripts always:
+- Open with a psychologically powerful hook in the FIRST 15-30 seconds (curiosity gap, bold claim, or surprising statistic)
 - Follow proven retention structure: Hook → Intro → Main Content (with open loops) → Resolution → CTA
-- Include [VISUAL: description] cues throughout for B-roll guidance
-- Use natural, spoken language (not formal/essay style)
-- Build tension and release it strategically
-- End with a specific, compelling CTA that drives likes, comments, and subscriptions
-- Are calibrated precisely to the target length
+- Include [VISUAL: description] cues throughout for B-roll footage guidance
+- Use natural, spoken language — conversational, not formal or essay-style
+- Plant and resolve at least one "open loop" (hint at a revelation, deliver it in the final third)
+- End with a specific CTA that feels earned, not tacked on
 
-Format EVERY script with these exact section headers (plain text, no markdown bold or asterisks):
+Format EVERY script with these exact headers (plain text — no markdown bold, no asterisks):
 [HOOK]
 [INTRO]
-[SECTION 1: title]
-[SECTION 2: title]
-[SECTION 3: title]
-(add more sections as needed for longer scripts)
+[SECTION 1: Title]
+[SECTION 2: Title]
+[SECTION 3: Title]
+(add more [SECTION N: Title] headers as needed to hit the target length)
 [CALL TO ACTION]
 
-CRITICAL: Write headers exactly as shown — [HOOK] not **[HOOK]**, [INTRO] not **[INTRO]**.
-Keep all [VISUAL: ...] cues on their own line.`;
+CRITICAL FORMATTING RULES:
+- Write headers exactly as shown: [HOOK] not **[HOOK]**, [SECTION 1: Title] not **SECTION 1**
+- Every [VISUAL: ...] cue must be on its own line
+- Do not use asterisks, hashes, or any markdown formatting in the spoken text`;
+
+  const nicheNote = nicheGuidance[niche] ? `\nNiche writing guidance: ${nicheGuidance[niche]}` : '';
 
   const userPrompt = `Create a complete ${length}-minute faceless YouTube script.
 
@@ -684,15 +702,15 @@ Topic: "${topic}"
 Niche: ${niche}
 Target audience: ${audience}
 Tone/Style: ${tone}
-Target word count: approximately ${wordCount} words
+Target word count: approximately ${wordCount} words${nicheNote}
 
-Requirements:
-- Hook must make someone STOP scrolling in the first 3 seconds
-- Include at least 6-8 [VISUAL: ...] cues for B-roll footage suggestions
-- Use the "open loop" technique (hint at something, then deliver it later)
-- Language should sound natural when spoken aloud — no robotic sentences
-- Naturally weave in the niche's key vocabulary without keyword stuffing
-- Make the viewer feel they'd miss something important if they click away
+Script requirements:
+- Hook must grip attention in the first 3 seconds — curiosity, bold claim, or a stat that stops scrolling
+- Include 6–10 [VISUAL: ...] cues spread throughout for B-roll pacing
+- Plant an open loop early ("By the end of this video, you'll know exactly why...") and resolve it
+- Language must sound natural when read aloud — avoid passive voice and complex sentence structure
+- Every section must earn its place — cut anything the viewer could skip without losing the story
+- End with a CTA that asks for a specific action (subscribe, comment with their answer, watch next)
 
 Write the complete, production-ready script now:`;
 
