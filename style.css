@@ -3350,3 +3350,37 @@ kbd {
   text-align: center;
   margin: 14px 0 0;
 }
+
+/* === REVENUE CALCULATOR === */
+.nr-calc { margin-top: 8px; }
+.nr-calc-toggle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--primary-light);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+.nr-calc-toggle::-webkit-details-marker { display: none; }
+.nr-calc-toggle::before { content: '▶ '; font-size: 0.65rem; }
+details[open] .nr-calc-toggle::before { content: '▼ '; }
+.nr-calc-body { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.nr-slider-row { display: flex; flex-direction: column; gap: 3px; }
+.nr-slider-row label { font-size: 0.75rem; color: var(--text-muted); }
+.nr-slider-row label strong { color: var(--text); }
+.nr-slider-row input[type="range"] {
+  width: 100%;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+.nr-result {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  padding: 8px 10px;
+  background: rgba(124,92,252,0.07);
+  border-radius: 8px;
+  line-height: 1.5;
+}
+.nr-est-label { color: var(--text-faint); }
+.nr-est-range { color: #22c55e; font-size: 0.88rem; }
+.nr-est-note { color: var(--text-faint); font-size: 0.72rem; }

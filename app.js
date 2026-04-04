@@ -679,18 +679,18 @@ function showLengthHint(niche) {
 
 // === NICHE REVENUE INSIGHTS ===
 const NICHE_REVENUE = {
-  'personal finance': { cpm: '$12–$45', icon: '💰', tier: 'Top earner', note: 'Highest CPM on YouTube. Finance ads pay premium rates year-round.', channels: 'Andrei Jikh, Graham Stephan, Minority Mindset' },
-  'technology and AI': { cpm: '$8–$22', icon: '🤖', tier: 'High earner', note: 'Tech & AI CPM spikes in Q4 with product launches. SaaS ads dominate.', channels: 'Fireship, Two Minute Papers, AI Explained' },
-  'business and entrepreneurship': { cpm: '$10–$30', icon: '🏆', tier: 'Top earner', note: 'Business education + B2B ads = strong CPM. Evergreen content performs well.', channels: 'Ali Abdaal, MKBHD, Iman Gadzhi' },
-  'health and wellness': { cpm: '$4–$14', icon: '💪', tier: 'Mid-high earner', note: 'Supplement and fitness brands pay solid rates. January always spikes.', channels: 'Thomas DeLauer, Andrew Huberman clips, Dr. Mike' },
-  'self-improvement': { cpm: '$5–$16', icon: '📈', tier: 'Mid-high earner', note: 'Productivity and book-summary channels thrive. Strong affiliate opportunities.', channels: 'Better Ideas, Mike Dee, Clark Kegley' },
-  'true crime and mysteries': { cpm: '$3–$9', icon: '🔍', tier: 'Mid earner', note: 'Lower CPM but viral potential and massive audiences compensate.', channels: 'Cayleigh Elise, Stephanie Harlowe, Kendall Rae' },
-  'history and facts': { cpm: '$3–$10', icon: '📚', tier: 'Mid earner', note: 'Great for evergreen traffic. CPM lower but loyal audiences accumulate over time.', channels: 'Knowledgia, Historymarche, Cool History Bros' },
-  'motivation and mindset': { cpm: '$4–$12', icon: '🔥', tier: 'Mid earner', note: 'Clips-style channels can hit millions of views cheaply. Works well on Shorts too.', channels: 'Motiversity, Absolute Motivation, Ben Lionel Scott' },
-  'relationships and psychology': { cpm: '$4–$13', icon: '🧠', tier: 'Mid earner', note: 'Psychology content with therapy/wellness angle gets premium ads.', channels: 'Psych2Go, SciShow, Dr. Julie Smith' },
-  'travel and geography': { cpm: '$2–$8', icon: '🌍', tier: 'Lower CPM', note: 'Travel ads fluctuate. Strong sponsorship potential with tourism and hotels.', channels: 'geography now, FerdinandMakelaer, Wendover Productions' },
-  'spirituality and philosophy': { cpm: '$3–$9', icon: '✨', tier: 'Mid earner', note: 'Niche but loyal audience. Meditation apps and spiritual brands sponsor heavily.', channels: 'The School of Life, Einzelgänger, Aperture' },
-  'news and current events': { cpm: '$4–$12', icon: '📰', tier: 'Mid earner', note: 'High traffic potential but monetization can be limited. Balance with evergreen.', channels: 'TLDR News, Vox, Johnny Harris' },
+  'personal finance':             { cpm: '$12–$45', min: 12, max: 45, icon: '💰', tier: 'Top earner', note: 'Highest CPM on YouTube. Finance ads pay premium rates year-round.', channels: 'Andrei Jikh, Graham Stephan, Minority Mindset' },
+  'technology and AI':            { cpm: '$8–$22',  min: 8,  max: 22, icon: '🤖', tier: 'High earner', note: 'Tech & AI CPM spikes in Q4 with product launches. SaaS ads dominate.', channels: 'Fireship, Two Minute Papers, AI Explained' },
+  'business and entrepreneurship':{ cpm: '$10–$30', min: 10, max: 30, icon: '🏆', tier: 'Top earner', note: 'Business education + B2B ads = strong CPM. Evergreen content performs well.', channels: 'Ali Abdaal, MKBHD, Iman Gadzhi' },
+  'health and wellness':          { cpm: '$4–$14',  min: 4,  max: 14, icon: '💪', tier: 'Mid-high earner', note: 'Supplement and fitness brands pay solid rates. January always spikes.', channels: 'Thomas DeLauer, Andrew Huberman clips, Dr. Mike' },
+  'self-improvement':             { cpm: '$5–$16',  min: 5,  max: 16, icon: '📈', tier: 'Mid-high earner', note: 'Productivity and book-summary channels thrive. Strong affiliate opportunities.', channels: 'Better Ideas, Mike Dee, Clark Kegley' },
+  'true crime and mysteries':     { cpm: '$3–$9',   min: 3,  max: 9,  icon: '🔍', tier: 'Mid earner', note: 'Lower CPM but viral potential and massive audiences compensate.', channels: 'Cayleigh Elise, Stephanie Harlowe, Kendall Rae' },
+  'history and facts':            { cpm: '$3–$10',  min: 3,  max: 10, icon: '📚', tier: 'Mid earner', note: 'Great for evergreen traffic. CPM lower but loyal audiences accumulate over time.', channels: 'Knowledgia, Historymarche, Cool History Bros' },
+  'motivation and mindset':       { cpm: '$4–$12',  min: 4,  max: 12, icon: '🔥', tier: 'Mid earner', note: 'Clips-style channels can hit millions of views cheaply. Works well on Shorts too.', channels: 'Motiversity, Absolute Motivation, Ben Lionel Scott' },
+  'relationships and psychology': { cpm: '$4–$13',  min: 4,  max: 13, icon: '🧠', tier: 'Mid earner', note: 'Psychology content with therapy/wellness angle gets premium ads.', channels: 'Psych2Go, SciShow, Dr. Julie Smith' },
+  'travel and geography':         { cpm: '$2–$8',   min: 2,  max: 8,  icon: '🌍', tier: 'Lower CPM', note: 'Travel ads fluctuate. Strong sponsorship potential with tourism and hotels.', channels: 'geography now, FerdinandMakelaer, Wendover Productions' },
+  'spirituality and philosophy':  { cpm: '$3–$9',   min: 3,  max: 9,  icon: '✨', tier: 'Mid earner', note: 'Niche but loyal audience. Meditation apps and spiritual brands sponsor heavily.', channels: 'The School of Life, Einzelgänger, Aperture' },
+  'news and current events':      { cpm: '$4–$12',  min: 4,  max: 12, icon: '📰', tier: 'Mid earner', note: 'High traffic potential but monetization can be limited. Balance with evergreen.', channels: 'TLDR News, Vox, Johnny Harris' },
 };
 
 function showNicheRevenue(niche) {
@@ -707,8 +707,40 @@ function showNicheRevenue(niche) {
       </div>
       <p class="nr-note">${data.note}</p>
       <p class="nr-channels">Example channels: <em>${data.channels}</em></p>
+      <details class="nr-calc">
+        <summary class="nr-calc-toggle">💰 Estimate my monthly earnings</summary>
+        <div class="nr-calc-body">
+          <div class="nr-slider-row">
+            <label>Views per video: <strong id="nr-views-val">10,000</strong></label>
+            <input type="range" id="nr-views" min="1000" max="500000" step="1000" value="10000" oninput="updateRevenueCalc('${niche}')">
+          </div>
+          <div class="nr-slider-row">
+            <label>Videos per month: <strong id="nr-vids-val">4</strong></label>
+            <input type="range" id="nr-vids" min="1" max="30" step="1" value="4" oninput="updateRevenueCalc('${niche}')">
+          </div>
+          <div class="nr-result" id="nr-result"></div>
+        </div>
+      </details>
     </div>`;
   el.classList.remove('hidden');
+  updateRevenueCalc(niche);
+}
+
+function updateRevenueCalc(niche) {
+  const data = NICHE_REVENUE[niche];
+  if (!data) return;
+  const views = parseInt(document.getElementById('nr-views')?.value || 10000, 10);
+  const vids = parseInt(document.getElementById('nr-vids')?.value || 4, 10);
+  document.getElementById('nr-views-val').textContent = views.toLocaleString();
+  document.getElementById('nr-vids-val').textContent = vids;
+  const totalViews = views * vids;
+  // YouTube pays ~55% of CPM to creators (RPM ≈ CPM × 0.55)
+  const minRev = Math.round(totalViews / 1000 * data.min * 0.55);
+  const maxRev = Math.round(totalViews / 1000 * data.max * 0.55);
+  const result = document.getElementById('nr-result');
+  if (result) {
+    result.innerHTML = `<span class="nr-est-label">Estimated monthly AdSense:</span> <strong class="nr-est-range">$${minRev.toLocaleString()} – $${maxRev.toLocaleString()}</strong> <span class="nr-est-note">at ${totalViews.toLocaleString()} total views</span>`;
+  }
 }
 
 // === NICHE QUICK-SELECT ===
