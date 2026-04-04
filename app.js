@@ -879,7 +879,19 @@ function displayScript(script, topic, length) {
   const targetWords = { '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250 }[length] || 1500;
   const onTarget = Math.abs(words - targetWords) <= 120;
   const targetBadge = onTarget ? ' · ✅ On target' : ` · ⚠️ ${words < targetWords ? 'shorter' : 'longer'} than target`;
-  if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues${targetBadge}`;
+  if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues`;
+
+  // Word count progress bar
+  const wcWrap = document.getElementById('wc-bar-wrap');
+  const wcFill = document.getElementById('wc-bar-fill');
+  const wcLabel = document.getElementById('wc-bar-label');
+  if (wcWrap && wcFill && wcLabel) {
+    const pct = Math.min(100, Math.round((words / targetWords) * 100));
+    wcFill.style.width = pct + '%';
+    wcFill.className = 'wc-bar-fill' + (onTarget ? ' wc-ok' : words < targetWords ? ' wc-short' : ' wc-over');
+    wcLabel.textContent = `${words.toLocaleString()} / ${targetWords.toLocaleString()} words (${pct}%)`;
+    wcWrap.classList.remove('hidden');
+  }
 
   // Reset output badge and add niche label + personal counter
   const badge = document.querySelector('.output-badge');
@@ -1344,6 +1356,43 @@ function surpriseTopic() {
   const btn = document.querySelector('.btn-surprise');
   if (btn) { btn.style.transform = 'rotate(360deg)'; setTimeout(() => { btn.style.transform = ''; }, 400); }
   showToast('🎲 Random topic loaded — hit generate!', 'success');
+}
+
+// === VOICE INPUT ===
+function startVoiceInput() {
+  const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const btn = document.getElementById('btn-mic');
+  if (!SpeechRec) {
+    showToast('🎙️ Voice input not supported in this browser — try Chrome.', 'error');
+    return;
+  }
+  if (btn.classList.contains('mic-active')) return; // already listening
+
+  const rec = new SpeechRec();
+  rec.lang = 'en-US';
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+
+  btn.classList.add('mic-active');
+  btn.title = 'Listening…';
+
+  rec.onresult = (e) => {
+    const transcript = e.results[0][0].transcript;
+    const input = document.getElementById('topic');
+    input.value = transcript;
+    updateTopicCounter();
+    detectNicheFromTopic();
+    input.focus();
+    showToast('🎙️ Got it! Review your topic and hit Generate.', 'success');
+  };
+  rec.onerror = () => {
+    showToast('🎙️ Could not hear you — try again.', 'error');
+  };
+  rec.onend = () => {
+    btn.classList.remove('mic-active');
+    btn.title = 'Speak your topic idea';
+  };
+  rec.start();
 }
 
 // === LOADING TIPS ===

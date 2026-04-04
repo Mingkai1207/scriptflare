@@ -608,6 +608,34 @@ select {
   font-size: 0.82rem;
   color: var(--text-muted);
 }
+.wc-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+.wc-bar-track {
+  flex: 1;
+  max-width: 200px;
+  height: 5px;
+  background: var(--bg3);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.wc-bar-fill {
+  height: 100%;
+  border-radius: 100px;
+  background: var(--primary);
+  transition: width 0.5s ease;
+}
+.wc-bar-fill.wc-ok { background: #22c55e; }
+.wc-bar-fill.wc-short { background: #f59e0b; }
+.wc-bar-fill.wc-over { background: #ef4444; }
+.wc-bar-label {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
 .output-actions {
   display: flex;
   gap: 8px;
@@ -1693,6 +1721,33 @@ footer {
   background: rgba(124,92,252,0.1);
   border-color: rgba(124,92,252,0.4);
   transform: rotate(20deg) scale(1.1);
+}
+
+/* === MIC BUTTON === */
+.btn-mic {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  padding: 0 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.btn-mic:hover {
+  background: rgba(124,92,252,0.1);
+  border-color: rgba(124,92,252,0.4);
+}
+.btn-mic.mic-active {
+  background: rgba(255,72,72,0.12);
+  border-color: rgba(255,72,72,0.5);
+  color: #ff6b6b;
+  animation: mic-pulse 1s ease-in-out infinite;
+}
+@keyframes mic-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,72,72,0.25); }
+  50% { box-shadow: 0 0 0 6px rgba(255,72,72,0); }
 }
 
 /* === LOADING TIPS === */

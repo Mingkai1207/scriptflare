@@ -426,6 +426,7 @@
               <div class="topic-input-row">
                 <input type="text" id="topic" placeholder="e.g. 5 habits that made me a millionaire before 30" maxlength="200" oninput="updateTopicCounter(); detectNicheFromTopic()" />
                 <button type="button" class="btn-surprise" onclick="surpriseTopic()" title="Pick a random trending topic">🎲</button>
+                <button type="button" class="btn-mic" id="btn-mic" onclick="startVoiceInput()" title="Speak your topic idea">🎙️</button>
               </div>
               <div class="form-hint-row">
                 <span class="form-hint">Be specific — better input = better script</span>
@@ -543,6 +544,10 @@
             <div class="output-meta">
               <span class="output-badge">✅ Script Ready</span>
               <span class="output-stats" id="output-stats"></span>
+              <div class="wc-bar-wrap hidden" id="wc-bar-wrap">
+                <div class="wc-bar-track"><div class="wc-bar-fill" id="wc-bar-fill"></div></div>
+                <span class="wc-bar-label" id="wc-bar-label"></span>
+              </div>
             </div>
             <div class="output-actions">
               <button class="btn btn-outline btn-sm" onclick="copyScript()">
