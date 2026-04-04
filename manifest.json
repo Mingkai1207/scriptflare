@@ -1,0 +1,21 @@
+{
+  "name": "ScriptFlare — AI Script Writer for Faceless YouTube",
+  "short_name": "ScriptFlare",
+  "description": "Generate complete, hook-optimized YouTube scripts in 30 seconds. Finance, motivation, true crime, and more.",
+  "start_url": "/scriptflare/",
+  "scope": "/scriptflare/",
+  "display": "standalone",
+  "background_color": "#06060f",
+  "theme_color": "#7c5cfc",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%2306060f'/><text y='.9em' font-size='80'>⚡</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "lang": "en",
+  "orientation": "portrait-primary"
+}
