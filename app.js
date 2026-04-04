@@ -1352,12 +1352,29 @@ function showQualityReport(script) {
   const sectionCount = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length;
   if (sectionCount >= 4) score = Math.min(100, score + 4);
 
+  const hookPts = hasHook ? 22 : 0;
+  const hookStrPts = hookStrength >= 4 ? 8 : hookStrength >= 2 ? 4 : 0;
+  const brollPts = brollCount >= 6 ? 22 : brollCount >= 4 ? 18 : brollCount >= 2 ? 10 : 0;
+  const loopPts = hasOpenLoop ? 22 : 0;
+  const ctaPts = hasCTA ? 22 : 0;
+  const secPts = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length >= 4 ? 4 : 0;
+
+  const scoreBreakdown = [
+    { label: 'Hook section', pts: hookPts, max: 22 },
+    { label: 'Hook strength', pts: hookStrPts, max: 8 },
+    { label: 'B-roll cues', pts: brollPts, max: 22 },
+    { label: 'Open loop', pts: loopPts, max: 22 },
+    { label: 'CTA', pts: ctaPts, max: 22 },
+    { label: 'Structure', pts: secPts, max: 4 },
+  ];
+
   const scoreEl = document.getElementById('quality-score');
   if (scoreEl) {
     const grade = score >= 90 ? 'A+' : score >= 80 ? 'A' : score >= 70 ? 'B+' : score >= 60 ? 'B' : 'C';
     scoreEl.textContent = grade;
-    scoreEl.title = `Script score: ${score}/100`;
-    scoreEl.className = 'quality-score ' + (score >= 80 ? 'score-high' : score >= 60 ? 'score-mid' : 'score-low');
+    scoreEl.title = `Click to see score breakdown`;
+    scoreEl.className = 'quality-score clickable ' + (score >= 80 ? 'score-high' : score >= 60 ? 'score-mid' : 'score-low');
+    scoreEl.onclick = () => toggleScoreBreakdown(score, scoreBreakdown);
   }
 
   // Per-section word count breakdown
@@ -1443,6 +1460,32 @@ function showQualityReport(script) {
   }
 
   qDiv.classList.remove('hidden');
+}
+
+function toggleScoreBreakdown(score, breakdown) {
+  let el = document.getElementById('score-breakdown-pop');
+  if (el) { el.remove(); return; }
+
+  const qDiv = document.getElementById('script-quality');
+  if (!qDiv) return;
+
+  el = document.createElement('div');
+  el.id = 'score-breakdown-pop';
+  el.className = 'score-breakdown-pop';
+
+  const rows = breakdown.map(({ label, pts, max }) => {
+    const pct = Math.round((pts / max) * 100);
+    const cls = pts === max ? 'sbr-full' : pts > 0 ? 'sbr-part' : 'sbr-zero';
+    return `<div class="sbr-row">
+      <span class="sbr-label">${label}</span>
+      <div class="sbr-track"><div class="sbr-fill ${cls}" style="width:${pct}%"></div></div>
+      <span class="sbr-pts ${cls}">${pts}/${max}</span>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="sbr-header">Score: <strong>${score}/100</strong> <button class="sbr-close" onclick="document.getElementById('score-breakdown-pop').remove()">✕</button></div>${rows}`;
+  qDiv.insertAdjacentElement('afterend', el);
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 // === NICHE PERFORMANCE TIPS ===
