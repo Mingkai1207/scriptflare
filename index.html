@@ -84,6 +84,16 @@
         "@type": "Question",
         "name": "Can I cancel my ScriptFlare Pro subscription anytime?",
         "acceptedAnswer": { "@type": "Answer", "text": "Yes. Cancel directly through your PayPal account at any time — no questions, no retention flow, no hassle. Your Pro access continues until the end of the current billing period." }
+      },
+      {
+        "@type": "Question",
+        "name": "How many videos can I publish per month with ScriptFlare?",
+        "acceptedAnswer": { "@type": "Answer", "text": "With Pro, there is no limit. Most successful faceless channels publish 3–5 videos per week, which means 12–20 scripts per month. At $19/month, that works out to under $2 per script — compared to $100–500 from a freelance writer." }
+      },
+      {
+        "@type": "Question",
+        "name": "What video length is best for growing a new faceless YouTube channel?",
+        "acceptedAnswer": { "@type": "Answer", "text": "For new channels, 8–12 minute videos perform best. They qualify for mid-roll ads once you hit monetization thresholds, while still maintaining high retention. ScriptFlare auto-suggests the optimal length when you select your niche." }
       }
     ]
   }
@@ -570,6 +580,15 @@
           </div>
         </div>
 
+        <!-- CONTENT CALENDAR (shown after generating) -->
+        <div class="content-calendar hidden" id="content-calendar">
+          <div class="cal-header">
+            <span>🗓️ <strong>7-Day Content Calendar</strong></span>
+            <span class="cal-sub">Click any idea to use it as your next topic</span>
+          </div>
+          <div class="cal-ideas" id="cal-ideas"></div>
+        </div>
+
         <!-- TOPIC SUGGESTIONS (shown after generating, below output) -->
         <div class="topic-suggestions hidden" id="topic-suggestions">
           <p class="topic-sug-label">Try these next →</p>
@@ -844,6 +863,20 @@
             <span class="faq-arrow">▼</span>
           </div>
           <div class="faq-a">Yes — ScriptFlare scripts are written to sound natural when spoken aloud, which makes them ideal for AI voiceover tools like ElevenLabs, Murf, or Play.ht. Just copy your script, paste it into your voiceover tool, and record. The B-roll cues are clearly marked so you always know exactly what footage to overlay.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span>How many videos can I publish per month with ScriptFlare?</span>
+            <span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">With Pro, there's no limit — generate as many scripts as you need. Most successful faceless channels publish 3–5 videos per week, which typically means 12–20 scripts per month. At $19/month, that works out to under $2 per script. Compare that to $100–500 per script from a freelance writer, and the math is obvious. The only limit is how fast you can film, edit, and upload.</div>
+        </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span>What video length is best for growing a new faceless channel?</span>
+            <span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">For new channels, 8–12 minute videos tend to perform best. They're long enough to qualify for mid-roll ads once you hit 1,000 subscribers and 4,000 watch hours, but short enough to maintain high audience retention while your channel is still building trust with the algorithm. Finance and true crime channels can push 12–15 minutes once they have a proven audience. ScriptFlare auto-suggests the optimal length when you pick your niche.</div>
         </div>
       </div>
     </div>

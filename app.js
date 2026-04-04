@@ -523,6 +523,15 @@ function showTopicSuggestions(niche) {
   container.classList.remove('hidden');
 }
 
+function useCalendarIdea(topic) {
+  document.getElementById('topic').value = topic;
+  updateTopicCounter();
+  detectNicheFromTopic();
+  document.getElementById('generator').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => document.getElementById('topic').focus(), 500);
+  showToast('Topic set! Hit Generate when ready.', 'success');
+}
+
 function useSuggestion(btn, topic) {
   document.getElementById('topic').value = topic;
   updateTopicCounter();
@@ -787,6 +796,7 @@ function displayScript(script, topic, length) {
   showNichePerfTip(niche);
   showQualityReport(script);
   showTitleOptions(topic, niche);
+  showContentCalendar(niche, topic);
   showTopicSuggestions(niche);
 
   // Success toast + upgrade nudge
@@ -995,6 +1005,7 @@ function regenerateScript() {
   document.getElementById('topic-suggestions')?.classList.add('hidden');
   document.getElementById('title-options')?.classList.add('hidden');
   document.getElementById('desc-panel')?.classList.add('hidden');
+  document.getElementById('content-calendar')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('upgrade-nudge')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
@@ -1012,6 +1023,7 @@ function clearOutput() {
   document.getElementById('topic-suggestions')?.classList.add('hidden');
   document.getElementById('title-options')?.classList.add('hidden');
   document.getElementById('desc-panel')?.classList.add('hidden');
+  document.getElementById('content-calendar')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
@@ -1482,6 +1494,100 @@ function animateGenProgress(loading) {
       if (pctEl) pctEl.textContent = Math.round(pct) + '%';
     }, 500);
   });
+}
+
+// === CONTENT CALENDAR ===
+const CALENDAR_IDEAS = {
+  'personal finance': [
+    ['Mon', '📈', 'Why the stock market always goes up long-term — and how to profit'],
+    ['Tue', '💳', 'The credit card strategy that earns $1,200+ in rewards per year'],
+    ['Wed', '🏠', 'Renting vs buying in 2026: the real math nobody shows you'],
+    ['Thu', '📊', '5 index fund mistakes that cost beginners thousands'],
+    ['Fri', '💰', 'How to build a $1,000/month passive income in 18 months'],
+    ['Sat', '🧾', 'The tax deductions W-2 employees almost never know about'],
+    ['Sun', '🎯', 'Zero-based budgeting: the method that actually works for overspenders'],
+  ],
+  'motivation and mindset': [
+    ['Mon', '⏰', 'Why waking up at 5am changed everything (and how to actually do it)'],
+    ['Tue', '🧠', 'The psychology of why you keep procrastinating — and how to stop'],
+    ['Wed', '💪', '30-day challenge: the habit stack that rewired my brain'],
+    ['Thu', '🎯', 'Why most goals fail by February — and how to set ones that stick'],
+    ['Fri', '🔥', 'The Stoic daily practice that removes 80% of your stress'],
+    ['Sat', '📚', '5 books that permanently changed how I think about success'],
+    ['Sun', '🌅', 'How to design your ideal week — and actually execute it'],
+  ],
+  'true crime and mysteries': [
+    ['Mon', '🔍', 'The disappearance that baffled the FBI for 20 years'],
+    ['Tue', '🕵️', 'Inside the most sophisticated bank heist in history'],
+    ['Wed', '📁', 'The cold case that was solved by a 23andMe test'],
+    ['Thu', '🚨', 'The con artist who fooled an entire city — twice'],
+    ['Fri', '🗂️', 'Unsolved: the mysterious death that looks like suicide but wasn\'t'],
+    ['Sat', '⚖️', 'How forensic accountants caught a $50M fraud hiding in plain sight'],
+    ['Sun', '🎭', 'The true story of the imposter who lived someone else\'s life for 3 years'],
+  ],
+  'history and facts': [
+    ['Mon', '🏛️', 'The Roman engineering secret that modern builders still can\'t replicate'],
+    ['Tue', '⚔️', 'The battle that changed history — and nobody talks about it'],
+    ['Wed', '🌍', 'The ancient civilization more advanced than Greece that history erased'],
+    ['Thu', '📜', '10 "facts" from history class that are completely wrong'],
+    ['Fri', '🗺️', 'Why the map of the world you grew up with is a lie'],
+    ['Sat', '👑', 'The ruler who shaped the modern world — and you\'ve never heard of them'],
+    ['Sun', '🔬', 'The scientific discovery that was made 2,000 years before we "invented" it'],
+  ],
+  'technology and AI': [
+    ['Mon', '🤖', 'The AI tool that replaces 3 hours of work in 10 minutes'],
+    ['Tue', '📱', 'Why your phone is making you less productive — and how to fix it'],
+    ['Wed', '⚡', '5 AI tools in 2026 that most people haven\'t discovered yet'],
+    ['Thu', '🔐', 'The cybersecurity threat hiding in your browser right now'],
+    ['Fri', '💻', 'How AI is about to change your job — whether you like it or not'],
+    ['Sat', '🌐', 'The internet is breaking: what happens when AI writes most of the web'],
+    ['Sun', '🚀', 'The technology that will be bigger than the smartphone'],
+  ],
+  'business and entrepreneurship': [
+    ['Mon', '💼', 'The $0 startup model making people $10K/month from a laptop'],
+    ['Tue', '📣', 'Why most business ideas fail in year one — and the one that survives'],
+    ['Wed', '🛒', 'The e-commerce niche nobody is targeting (yet)'],
+    ['Thu', '🤝', 'How to land your first client with no portfolio and no experience'],
+    ['Fri', '📊', 'The one metric that predicts business success better than revenue'],
+    ['Sat', '🔑', '7 things every entrepreneur learns too late — learn them now'],
+    ['Sun', '🏆', 'From $0 to $50K MRR: the exact 12-month playbook'],
+  ],
+  'self-improvement': [
+    ['Mon', '🌱', 'The compound effect: why 1% better every day changes everything in a year'],
+    ['Tue', '📵', 'A 30-day digital detox — what I learned and how my life changed'],
+    ['Wed', '🧘', 'The focus technique that doubled my output without working more hours'],
+    ['Thu', '📖', 'How to read 52 books a year (the system, not the motivation)'],
+    ['Fri', '🏃', 'The science of building habits that actually last longer than 2 weeks'],
+    ['Sat', '🗣️', 'The one communication skill that changes every relationship you have'],
+    ['Sun', '🎯', 'How to design the version of yourself you want to be in 12 months'],
+  ],
+};
+
+function getCalendarIdeas(niche, currentTopic) {
+  const pool = CALENDAR_IDEAS[niche] || CALENDAR_IDEAS['self-improvement'];
+  // Filter out if it matches current topic too closely
+  return pool;
+}
+
+function showContentCalendar(niche, topic) {
+  const wrap = document.getElementById('content-calendar');
+  const list = document.getElementById('cal-ideas');
+  if (!wrap || !list || !niche) return;
+
+  const ideas = getCalendarIdeas(niche, topic);
+  const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+  list.innerHTML = ideas.map(([day, icon, idea]) => {
+    const safeIdea = idea.replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+    return `<div class="cal-idea" onclick="useCalendarIdea('${safeIdea}')">
+      <span class="cal-day">${day}</span>
+      <span class="cal-icon">${icon}</span>
+      <span class="cal-idea-text">${idea}</span>
+      <span class="cal-use">Use →</span>
+    </div>`;
+  }).join('');
+
+  wrap.classList.remove('hidden');
 }
 
 // === VIDEO DESCRIPTION GENERATOR ===
