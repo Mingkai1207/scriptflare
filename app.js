@@ -492,6 +492,12 @@ function pickNiche(value) {
   syncNichePill(value);
 }
 
+function jumpToGenerator(niche) {
+  pickNiche(niche);
+  document.getElementById('generator').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => document.getElementById('topic').focus(), 600);
+}
+
 function syncNichePill(value) {
   document.querySelectorAll('.niche-pill').forEach(p => {
     p.classList.toggle('active', value && p.getAttribute('onclick').includes(`'${value}'`));

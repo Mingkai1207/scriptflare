@@ -1257,6 +1257,36 @@ footer {
   background: rgba(124,92,252,0.06);
 }
 
+/* === HERO NICHE QUICK-START === */
+.hero-niches {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 28px;
+}
+.hero-niche-label {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.hero-niche-chip {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: var(--text-muted);
+  padding: 5px 14px;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.hero-niche-chip:hover {
+  background: rgba(124,92,252,0.1);
+  border-color: rgba(124,92,252,0.35);
+  color: var(--text);
+}
+
 /* === NICHE AUTO-DETECT HINT === */
 .niche-hint {
   font-size: 0.8rem;
