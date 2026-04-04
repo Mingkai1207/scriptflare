@@ -1200,9 +1200,14 @@ footer {
   margin-top: 12px;
 }
 @media (max-width: 600px) {
+  .comparison-table { overflow-x: auto; }
   .compare-header,
-  .compare-row { grid-template-columns: 1fr 1fr; }
-  .col-feature { display: none; }
+  .compare-row {
+    grid-template-columns: minmax(120px,1fr) minmax(100px,1fr) minmax(120px,1fr);
+    min-width: 340px;
+  }
+  .col-feature { font-size: 0.78rem; }
+  .col-gpt, .col-sf { font-size: 0.75rem; }
 }
 
 /* === SCRIPT PREVIEW SECTION === */

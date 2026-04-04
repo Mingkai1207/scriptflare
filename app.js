@@ -70,7 +70,8 @@ function restoreLastScript() {
     if (badge) badge.textContent = '↩️ Last Script';
     contentDiv.innerHTML = formatScript(saved.script);
     outputDiv.classList.remove('hidden');
-    document.getElementById('gen-form').classList.add('hidden');
+    document.getElementById('voiceover-links')?.classList.remove('hidden');
+    if (saved.niche) { showNichePerfTip(saved.niche); showQualityReport(saved.script); }
   } catch (_) {}
 }
 
@@ -955,6 +956,9 @@ function regenerateScript() {
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
+  document.getElementById('upgrade-nudge')?.classList.add('hidden');
+  document.getElementById('niche-perf-tip')?.classList.add('hidden');
+  document.getElementById('script-quality')?.classList.add('hidden');
   currentScript = '';
   generateScript();
 }
