@@ -1805,6 +1805,91 @@ function exportToGoogleDocs() {
   }, 300);
 }
 
+// === REGENERATE HOOK ONLY ===
+async function regenerateHook() {
+  if (!currentScript || isGenerating) return;
+  const btn = document.getElementById('regen-hook-btn');
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+  const tone = document.getElementById('tone').value;
+
+  if (btn) { btn.textContent = '⏳ Writing...'; btn.disabled = true; }
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          { role: 'system', content: 'You are an expert YouTube hook writer. Write only the [HOOK] section of a script — 3–5 sentences maximum. No section headers, no markdown. Just the spoken hook text, written to stop scrolling in the first 3 seconds. Include one [VISUAL: ...] cue on its own line.' },
+          { role: 'user', content: `Write a brand new hook for a YouTube video.\nTopic: "${topic}"\nNiche: ${niche}\nTone: ${tone}\n\nMake it different from: "${extractHook(currentScript).slice(0, 200)}"\n\nWrite only the new hook text:` }
+        ],
+        max_tokens: 300,
+        temperature: 0.9,
+      }),
+    });
+
+    if (!response.ok) throw new Error('API error');
+    const data = await response.json();
+    const newHook = data.choices?.[0]?.message?.content?.trim();
+    if (!newHook) throw new Error('No hook returned');
+
+    // Splice the new hook into the current script
+    currentScript = replaceHookInScript(currentScript, newHook);
+    autoSaveScript(currentScript, topic, niche);
+
+    // Re-render
+    const contentDiv = document.getElementById('script-content');
+    if (contentDiv) contentDiv.innerHTML = formatScript(currentScript);
+    showQualityReport(currentScript);
+    showToast('🎣 New hook generated!', 'success');
+    contentDiv?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } catch (err) {
+    showToast('Hook generation failed — try again', 'warning');
+  } finally {
+    if (btn) { btn.textContent = '🎣 New Hook'; btn.disabled = false; }
+  }
+}
+
+function extractHook(script) {
+  const lines = (script || '').split('\n');
+  let inHook = false, hookLines = [];
+  for (const line of lines) {
+    const t = line.trim();
+    if (/^\[HOOK\]$/i.test(t)) { inHook = true; continue; }
+    if (inHook && /^\[.{2,60}\]$/.test(t) && !/^\[VISUAL:/i.test(t)) break;
+    if (inHook && t) hookLines.push(t);
+  }
+  return hookLines.join(' ');
+}
+
+function replaceHookInScript(script, newHook) {
+  const lines = script.split('\n');
+  const result = [];
+  let inHook = false, hookReplaced = false;
+  for (const line of lines) {
+    const t = line.trim();
+    if (/^\[HOOK\]$/i.test(t)) {
+      inHook = true;
+      result.push(line);
+      result.push('');
+      result.push(newHook);
+      result.push('');
+      hookReplaced = true;
+      continue;
+    }
+    if (inHook) {
+      // Skip old hook lines until next section header
+      if (/^\[.{2,60}\]$/.test(t) && !/^\[VISUAL:/i.test(t)) { inHook = false; result.push(line); }
+      continue;
+    }
+    result.push(line);
+  }
+  return hookReplaced ? result.join('\n') : script;
+}
+
 // === EXIT INTENT MODAL ===
 let _exitShown = false;
 function initExitIntent() {
