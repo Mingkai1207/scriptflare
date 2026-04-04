@@ -736,7 +736,10 @@ function displayScript(script, topic, length) {
   const brollCount = (script.match(/\[VISUAL:/gi) || []).length;
   const sectionCount = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length;
   const topicLabel = topic ? `"${topic.length > 46 ? topic.slice(0, 43) + '...' : topic}" · ` : '';
-  if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues`;
+  const targetWords = { '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250 }[length] || 1500;
+  const onTarget = Math.abs(words - targetWords) <= 120;
+  const targetBadge = onTarget ? ' · ✅ On target' : ` · ⚠️ ${words < targetWords ? 'shorter' : 'longer'} than target`;
+  if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues${targetBadge}`;
 
   // Reset output badge and add niche label
   const badge = document.querySelector('.output-badge');
@@ -963,6 +966,14 @@ function clearOutput() {
   updateTopicCounter();
   topicEl.focus();
   topicEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+// === AUDIENCE PRESET PICK ===
+function setAudience(value) {
+  document.getElementById('audience').value = value;
+  document.querySelectorAll('.audience-preset').forEach(b => {
+    b.classList.toggle('active', b.getAttribute('onclick').includes(`'${value}'`));
+  });
 }
 
 function updateTopicCounter() {

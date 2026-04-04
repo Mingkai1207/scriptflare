@@ -393,6 +393,12 @@
             </div>
             <div class="form-group">
               <label for="audience">Target Audience</label>
+              <div class="audience-presets">
+                <button type="button" class="audience-preset" onclick="setAudience('beginners just starting out')">Beginners</button>
+                <button type="button" class="audience-preset" onclick="setAudience('general YouTube audience 18-35')">General</button>
+                <button type="button" class="audience-preset" onclick="setAudience('busy professionals 25-45')">Professionals</button>
+                <button type="button" class="audience-preset" onclick="setAudience('young adults 18-25')">18–25</button>
+              </div>
               <input type="text" id="audience" placeholder="e.g. young adults 18-35, beginners" maxlength="100" />
             </div>
           </div>

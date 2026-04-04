@@ -1670,6 +1670,30 @@ footer {
   flex-shrink: 0;
 }
 
+/* === AUDIENCE PRESETS === */
+.audience-presets {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.audience-preset {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-faint);
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.audience-preset:hover,
+.audience-preset.active {
+  border-color: rgba(124,92,252,0.5);
+  color: var(--primary-light);
+  background: rgba(124,92,252,0.07);
+}
+
 /* === LENGTH HINT === */
 .length-hint {
   font-size: 0.73rem;
