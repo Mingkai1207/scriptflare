@@ -91,6 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initStickyCTA();
   initDemandStrip();
   renderTopicHistory();
+  // Auto-open first FAQ item
+  const firstFaq = document.querySelector('.faq-q');
+  if (firstFaq) toggleFaq(firstFaq);
 });
 
 // === NAV CTA DYNAMIC ===
@@ -1052,7 +1055,9 @@ function showQualityReport(script) {
 
   const scoreEl = document.getElementById('quality-score');
   if (scoreEl) {
-    scoreEl.textContent = score + '/100';
+    const grade = score >= 90 ? 'A+' : score >= 80 ? 'A' : score >= 70 ? 'B+' : score >= 60 ? 'B' : 'C';
+    scoreEl.textContent = grade;
+    scoreEl.title = `Script score: ${score}/100`;
     scoreEl.className = 'quality-score ' + (score >= 80 ? 'score-high' : score >= 60 ? 'score-mid' : 'score-low');
   }
 
@@ -1332,6 +1337,16 @@ function initDemandStrip() {
     }, 250);
   }, 6000);
   el.style.transition = 'opacity 0.25s ease';
+}
+
+// === B-ROLL TOGGLE ===
+function toggleBroll() {
+  const content = document.getElementById('script-content');
+  const btn = document.getElementById('broll-toggle');
+  if (!content) return;
+  const hiding = content.classList.toggle('hide-broll');
+  if (btn) btn.classList.toggle('broll-off', hiding);
+  showToast(hiding ? '🎬 B-roll cues hidden' : '🎬 B-roll cues shown', 'info');
 }
 
 // === MOBILE NAV ===

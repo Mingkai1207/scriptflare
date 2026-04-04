@@ -597,6 +597,10 @@ select {
 .script-content::-webkit-scrollbar-track { background: transparent; }
 .script-content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
+/* B-roll hidden state */
+#script-content.hide-broll .visual-cue { display: none; }
+#broll-toggle.broll-off { opacity: 0.45; text-decoration: line-through; }
+
 /* Section headers in script */
 .script-section-header {
   color: var(--primary-light);
