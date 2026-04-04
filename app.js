@@ -31,6 +31,7 @@ const VALID_CODES = new Set([
 // === STATE ===
 let currentScript = '';
 let isGenerating = false;
+let _progressTimer = null;
 
 // === INIT ===
 document.addEventListener('DOMContentLoaded', () => {
@@ -538,14 +539,33 @@ function showError(message) {
 }
 
 // === UI HELPERS ===
+const LOADING_STEPS = [
+  'Analyzing your topic...',
+  'Crafting your hook...',
+  'Building the content structure...',
+  'Writing main sections...',
+  'Adding B-roll cues...',
+  'Polishing for virality...',
+];
+
 function setLoadingState(loading) {
   const btn = document.getElementById('generate-btn');
   const btnText = document.getElementById('btn-text');
   const btnLoading = document.getElementById('btn-loading');
+  const loadingText = document.getElementById('loading-text');
 
   if (loading) {
     btn.disabled = true;
+    // Cycle through progress messages every 2.2s
+    let step = 0;
+    if (loadingText) loadingText.textContent = LOADING_STEPS[0];
+    clearInterval(_progressTimer);
+    _progressTimer = setInterval(() => {
+      step = Math.min(step + 1, LOADING_STEPS.length - 1);
+      if (loadingText) loadingText.textContent = LOADING_STEPS[step];
+    }, 2200);
   } else {
+    clearInterval(_progressTimer);
     const outOfScripts = getRemainingScripts() <= 0 && !isProUser();
     btn.disabled = false;
     btn.style.background = '';
