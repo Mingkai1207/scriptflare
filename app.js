@@ -433,6 +433,11 @@ async function generateScript() {
   isGenerating = true;
   setLoadingState(true);
 
+  // Show skeleton after 1.5s to give user preview of what's coming
+  const skeletonTimer = setTimeout(() => {
+    if (isGenerating) showLoadingSkeleton();
+  }, 1500);
+
   const wordCount = {
     '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250
   }[length] || 1500;
@@ -506,6 +511,7 @@ Write the complete, production-ready script now:`;
 
     if (!script) throw new Error('No script returned from API.');
 
+    clearTimeout(skeletonTimer);
     currentScript = script;
     incrementUsage();
 
@@ -527,6 +533,7 @@ Write the complete, production-ready script now:`;
     updateNavCTA();
 
   } catch (err) {
+    clearTimeout(skeletonTimer);
     showError(err.message);
   } finally {
     isGenerating = false;
@@ -545,7 +552,9 @@ function displayScript(script, topic, length) {
   const topicLabel = topic ? `"${topic.length > 50 ? topic.slice(0, 47) + '...' : topic}" · ` : '';
   if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min read aloud`;
 
-  // Format the script with nice HTML
+  // Reset output badge and format the script
+  const badge = document.querySelector('.output-badge');
+  if (badge) badge.textContent = '✅ Script Ready';
   contentDiv.innerHTML = formatScript(script);
 
   // Show output + topic suggestions
@@ -690,6 +699,34 @@ function shakeField(id) {
     el.style.borderColor = '';
     el.style.animation = '';
   }, 1000);
+}
+
+function showLoadingSkeleton() {
+  const outputDiv = document.getElementById('gen-output');
+  const contentDiv = document.getElementById('script-content');
+  const statsSpan = document.getElementById('output-stats');
+  if (!outputDiv || !contentDiv) return;
+  if (statsSpan) statsSpan.textContent = 'Writing your script...';
+  contentDiv.innerHTML = `
+    <div class="skeleton-header"></div>
+    <div class="skeleton-line w-95"></div>
+    <div class="skeleton-line w-88"></div>
+    <div class="skeleton-line w-92"></div>
+    <div class="skeleton-line w-75"></div>
+    <div class="skeleton-spacer"></div>
+    <div class="skeleton-header w-40"></div>
+    <div class="skeleton-line w-90"></div>
+    <div class="skeleton-line w-85"></div>
+    <div class="skeleton-line w-95"></div>
+    <div class="skeleton-line w-70"></div>
+    <div class="skeleton-spacer"></div>
+    <div class="skeleton-header w-40"></div>
+    <div class="skeleton-line w-92"></div>
+    <div class="skeleton-line w-88"></div>
+  `;
+  outputDiv.classList.remove('hidden');
+  const header = document.querySelector('.output-meta .output-badge');
+  if (header) header.textContent = '✍️ Generating...';
 }
 
 function regenerateScript() {
