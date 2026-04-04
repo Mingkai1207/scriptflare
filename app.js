@@ -1284,6 +1284,7 @@ function regenerateScript() {
   document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('social-clips')?.classList.add('hidden');
   document.getElementById('prod-outline')?.classList.add('hidden');
+  document.getElementById('hook-ab')?.classList.add('hidden');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
@@ -1305,6 +1306,7 @@ function clearOutput() {
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('social-clips')?.classList.add('hidden');
   document.getElementById('prod-outline')?.classList.add('hidden');
+  document.getElementById('hook-ab')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -2589,6 +2591,124 @@ function copyProductionOutline() {
   }).join('\n\n');
 
   navigator.clipboard.writeText(text).then(() => showToast('📋 Outline copied!', 'success'));
+}
+
+// === HOOK A/B TESTER ===
+async function showHookAB() {
+  if (!currentScript || isGenerating) return;
+  const panel = document.getElementById('hook-ab');
+  const btn = document.getElementById('hook-ab-btn');
+  if (!panel) return;
+
+  if (!isProUser()) {
+    showToast('🔒 Hook A/B testing is a Pro feature — upgrade to unlock.', 'warning');
+    setTimeout(() => scrollToPricing(), 600);
+    return;
+  }
+
+  // Toggle off
+  if (!panel.classList.contains('hidden')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+  const tone = document.getElementById('tone').value;
+
+  panel.innerHTML = `<div class="hab-loading"><span class="spinner"></span> Generating 3 hook variations…</div>`;
+  panel.classList.remove('hidden');
+  if (btn) { btn.textContent = '⏳ Testing…'; btn.disabled = true; }
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          { role: 'system', content: `You write YouTube script hooks. Generate exactly 3 distinct hook variations for the same video. Each uses a different psychological trigger:
+- Hook 1: Curiosity gap (start with "What if..." or a surprising question)
+- Hook 2: Bold claim / stat (start with a specific number or counter-intuitive claim)
+- Hook 3: Relatable pain point (start with "If you've ever..." or a common frustration)
+
+Format your output EXACTLY like this:
+HOOK 1:
+[3–5 sentences of spoken hook text]
+[VISUAL: relevant visual cue]
+
+HOOK 2:
+[3–5 sentences]
+[VISUAL: relevant visual cue]
+
+HOOK 3:
+[3–5 sentences]
+[VISUAL: relevant visual cue]
+
+Write only the hooks. No extra commentary.` },
+          { role: 'user', content: `Topic: "${topic}"\nNiche: ${niche}\nTone: ${tone}\n\nGenerate 3 hook variations:` }
+        ],
+        max_tokens: 700,
+        temperature: 0.9,
+      }),
+    });
+    if (!response.ok) throw new Error('API error');
+    const data = await response.json();
+    const raw = data.choices?.[0]?.message?.content?.trim() || '';
+    renderHookAB(panel, raw);
+  } catch {
+    panel.innerHTML = `<div class="hab-error">⚠️ Generation failed — try again.</div>`;
+  } finally {
+    if (btn) { btn.textContent = '🎯 Test Hooks'; btn.disabled = false; }
+  }
+}
+
+function renderHookAB(panel, raw) {
+  const LABELS = ['Curiosity Gap', 'Bold Claim', 'Pain Point'];
+  const ICONS = ['🤔', '💥', '😓'];
+  const parts = raw.split(/HOOK \d+:/i).slice(1);
+
+  if (!parts.length) {
+    panel.innerHTML = `<div class="hab-error">⚠️ Could not parse hooks — try again.</div>`;
+    return;
+  }
+
+  const cards = parts.slice(0, 3).map((text, i) => {
+    const clean = text.trim();
+    const safe = clean.replace(/`/g, "'").replace(/</g, '&lt;');
+    const preview = clean.slice(0, 160).replace(/\[VISUAL:[^\]]*\]/gi, '').trim();
+    return `<div class="hab-card">
+      <div class="hab-card-head">
+        <span class="hab-type">${ICONS[i] || '🎣'} ${LABELS[i] || `Hook ${i+1}`}</span>
+        <button class="hab-use" onclick="applyHookVariant(this, \`${safe.replace(/`/g, '\\`')}\`)">Use this hook</button>
+      </div>
+      <p class="hab-preview">${escapeHtml(preview)}${clean.length > 160 ? '…' : ''}</p>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `<div class="hab-header">
+    <strong>🎯 Hook A/B Variations</strong>
+    <span class="hab-sub">Click "Use this hook" to splice it into your script</span>
+  </div>
+  <div class="hab-cards">${cards}</div>`;
+}
+
+function applyHookVariant(btn, hookText) {
+  if (!currentScript) return;
+  currentScript = replaceHookInScript(currentScript, hookText);
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+  autoSaveScript(currentScript, topic, niche);
+  const contentDiv = document.getElementById('script-content');
+  if (contentDiv) contentDiv.innerHTML = formatScript(currentScript);
+  showQualityReport(currentScript);
+  const orig = btn.textContent;
+  btn.textContent = '✅ Applied!';
+  btn.style.background = 'rgba(34,197,94,0.15)';
+  btn.style.borderColor = 'rgba(34,197,94,0.4)';
+  btn.style.color = '#22c55e';
+  setTimeout(() => { btn.textContent = orig; btn.style.cssText = ''; }, 2000);
+  showToast('🎯 Hook applied — check the quality score!', 'success');
 }
 
 // === IMPROVE SCRIPT ===

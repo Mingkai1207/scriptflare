@@ -581,6 +581,7 @@
               <button class="btn btn-ghost btn-sm" onclick="shareOnX()">𝕏 Share</button>
               <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">🔄 Regenerate</button>
               <button class="btn btn-ghost btn-sm" id="regen-hook-btn" onclick="regenerateHook()">🎣 New Hook</button>
+              <button class="btn btn-ghost btn-sm" id="hook-ab-btn" onclick="showHookAB()">🎯 Test Hooks</button>
               <button class="btn btn-improve btn-sm" id="improve-btn" onclick="improveScript()">✨ Improve</button>
               <button class="btn btn-ghost btn-sm" id="broll-toggle" onclick="toggleBroll()">🎬 B-Roll</button>
               <button class="btn btn-ghost btn-sm" onclick="showDescriptionPanel()">📝 Description</button>
@@ -653,6 +654,9 @@
 
         <!-- PRODUCTION OUTLINE PANEL -->
         <div class="prod-outline hidden" id="prod-outline"></div>
+
+        <!-- HOOK A/B TEST PANEL -->
+        <div class="hook-ab hidden" id="hook-ab"></div>
 
         <!-- CONTENT CALENDAR (shown after generating) -->
         <div class="content-calendar hidden" id="content-calendar">
