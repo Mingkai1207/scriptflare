@@ -1591,6 +1591,63 @@ function showContentCalendar(niche, topic) {
 }
 
 // === VIDEO DESCRIPTION GENERATOR ===
+function generateChapterTimestamps(script) {
+  // Parse script sections and estimate timestamps at ~143 WPM narration speed
+  const WPM = 143;
+  const lines = (script || '').split('\n');
+  const sections = [];
+  let currentSection = null;
+  let currentWords = 0;
+
+  for (const line of lines) {
+    const t = line.trim().replace(/^\*\*(.+)\*\*$/, '$1').trim();
+    const isHeader = /^\[.{2,60}\]$/.test(t) && !/^\[VISUAL:/i.test(t);
+    if (isHeader) {
+      if (currentSection) sections.push({ label: currentSection, words: currentWords });
+      // Clean label: [SECTION 1: Title] → "Title", [HOOK] → "Hook", etc.
+      let label = t.slice(1, -1);
+      label = label.replace(/^SECTION\s*\d+:\s*/i, '').replace(/^CALL TO ACTION$/i, 'Call to Action');
+      label = label.charAt(0).toUpperCase() + label.slice(1).toLowerCase()
+               .replace(/\b\w/g, c => c.toUpperCase());
+      currentSection = label;
+      currentWords = 0;
+    } else if (currentSection && t && !/^\[VISUAL:/i.test(t)) {
+      currentWords += t.split(/\s+/).filter(Boolean).length;
+    }
+  }
+  if (currentSection) sections.push({ label: currentSection, words: currentWords });
+
+  if (!sections.length) return '0:00 Introduction\n[Add more timestamps]';
+
+  let totalSeconds = 0;
+  return sections.map(({ label, words }) => {
+    const mins = Math.floor(totalSeconds / 60);
+    const secs = totalSeconds % 60;
+    const stamp = `${mins}:${String(secs).padStart(2, '0')} ${label}`;
+    totalSeconds += Math.round((words / WPM) * 60);
+    return stamp;
+  }).join('\n');
+}
+
+function generateYouTubeTags(topic, niche) {
+  const topicWords = (topic || '').toLowerCase().split(/\s+/).filter(w => w.length > 3);
+  const nicheTags = {
+    'personal finance':            ['personal finance','money tips','wealth building','financial freedom','investing for beginners','how to save money','budgeting','passive income','financial advice','money management'],
+    'motivation and mindset':      ['motivation','mindset','success habits','self improvement','personal development','morning routine','discipline','growth mindset','how to be successful','productivity tips'],
+    'true crime and mysteries':    ['true crime','crime documentary','unsolved mysteries','cold case','crime story','mystery','true crime story','criminal investigation','forensics','crime facts'],
+    'history and facts':           ['history facts','world history','history documentary','historical facts','ancient history','history channel','history explained','interesting facts','hidden history','true history'],
+    'technology and AI':           ['artificial intelligence','AI technology','tech news','future technology','AI tools','machine learning','technology explained','tech 2026','digital transformation','AI explained'],
+    'business and entrepreneurship': ['business tips','entrepreneur','startup advice','how to make money','passive income','business ideas','entrepreneurship','side hustle','make money online','business strategy'],
+    'self-improvement':            ['self improvement','personal growth','habits','productivity','how to improve yourself','better habits','self help','daily routine','life advice','positive habits'],
+    'health and wellness':         ['health tips','wellness','healthy living','mental health','fitness','nutrition','longevity','healthy habits','wellness tips','health facts'],
+    'relationships and psychology': ['psychology facts','relationship advice','human psychology','toxic relationships','self awareness','mental health','emotional intelligence','psychology explained','relationships','attachment theory'],
+  };
+  const base = nicheTags[niche] || ['educational','facts','explained','youtube','viral'];
+  // Add topic-derived tags
+  const topicTags = topicWords.slice(0, 3).map(w => w.replace(/[^a-z0-9]/g, ''));
+  return [...new Set([...topicTags, ...base])].slice(0, 15).join(', ');
+}
+
 function generateVideoDescription(script, topic, niche) {
   const topicCap = (topic || '').trim();
   const topicCap2 = topicCap.charAt(0).toUpperCase() + topicCap.slice(1);
@@ -1603,6 +1660,8 @@ function generateVideoDescription(script, topic, niche) {
   });
   const bulletLines = headers.slice(0, 5).map(h => `▶ ${h}`).join('\n') ||
     '▶ The key facts nobody tells you\n▶ What experts actually recommend\n▶ How to apply this starting today';
+
+  const chapters = generateChapterTimestamps(script);
 
   const nicheHashtags = {
     'personal finance':            '#PersonalFinance #MoneyTips #WealthBuilding #FinancialFreedom #Investing',
@@ -1619,6 +1678,7 @@ function generateVideoDescription(script, topic, niche) {
     'news and current events':     '#News #CurrentEvents #WorldNews #Analysis #Explainer',
   };
   const hashtags = nicheHashtags[niche] || '#YouTube #Educational #Faceless #Viral';
+  const tags = generateYouTubeTags(topic, niche);
 
   return `${topicCap2}
 
@@ -1627,12 +1687,11 @@ In this video, I break down everything you need to know about ${topicCap.toLower
 📌 WHAT YOU'LL LEARN:
 ${bulletLines}
 
-⏱️ TIMESTAMPS:
-0:00 Introduction
-1:30 [Add your own timestamps]
+⏱️ CHAPTERS:
+${chapters}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
-👍 If this was helpful, like and subscribe for more content like this.
+👍 If this helped you, like and subscribe for more content like this.
 🔔 Hit the bell so you never miss a video.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -1640,6 +1699,8 @@ ${bulletLines}
 🌐 WEBSITE: [your website]
 
 ${hashtags}
+
+TAGS: ${tags}
 
 Script generated with ScriptFlare — https://mingkai1207.github.io/scriptflare/`;
 }
