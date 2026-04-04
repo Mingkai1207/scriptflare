@@ -2161,3 +2161,31 @@ kbd {
   transition: opacity 0.15s;
 }
 .thumb-line-option:hover .title-option-copy { opacity: 1; }
+
+/* === VIDEO DESCRIPTION PANEL === */
+.desc-panel {
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.12);
+  animation: fadeSlideIn 0.3s ease;
+}
+.desc-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.88rem;
+  color: var(--text-muted);
+}
+.desc-content {
+  margin: 0;
+  padding: 16px 20px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  line-height: 1.7;
+  color: var(--text-muted);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 340px;
+  overflow-y: auto;
+}

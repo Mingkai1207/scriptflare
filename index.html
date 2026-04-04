@@ -521,6 +521,8 @@
               <button class="btn btn-ghost btn-sm" onclick="shareOnX()">𝕏 Share</button>
               <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">🔄 Regenerate</button>
               <button class="btn btn-ghost btn-sm" id="broll-toggle" onclick="toggleBroll()">🎬 B-Roll</button>
+              <button class="btn btn-ghost btn-sm" onclick="showDescriptionPanel()">📝 Description</button>
+              <button class="btn btn-ghost btn-sm" onclick="exportToGoogleDocs()">📄 Google Docs</button>
               <button class="btn btn-ghost btn-sm" onclick="printScript()">🖨️ Print</button>
               <button class="btn btn-ghost btn-sm" onclick="clearOutput()">New Script</button>
             </div>
@@ -548,6 +550,15 @@
 
         <!-- TITLE OPTIONS (shown after generating) -->
         <div class="title-options hidden" id="title-options"></div>
+
+        <!-- VIDEO DESCRIPTION PANEL -->
+        <div class="desc-panel hidden" id="desc-panel">
+          <div class="desc-panel-header">
+            <span>📝 <strong>Video Description Template</strong></span>
+            <button class="btn btn-outline btn-sm" onclick="copyDescription()"><span id="desc-copy-text">📋 Copy Description</span></button>
+          </div>
+          <pre class="desc-content" id="desc-content"></pre>
+        </div>
 
         <!-- VOICEOVER QUICK LINKS -->
         <div class="voiceover-links hidden" id="voiceover-links">

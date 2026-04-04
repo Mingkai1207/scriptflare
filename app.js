@@ -994,6 +994,7 @@ function regenerateScript() {
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
   document.getElementById('title-options')?.classList.add('hidden');
+  document.getElementById('desc-panel')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('upgrade-nudge')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
@@ -1010,6 +1011,7 @@ function clearOutput() {
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
   document.getElementById('title-options')?.classList.add('hidden');
+  document.getElementById('desc-panel')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
@@ -1480,6 +1482,96 @@ function animateGenProgress(loading) {
       if (pctEl) pctEl.textContent = Math.round(pct) + '%';
     }, 500);
   });
+}
+
+// === VIDEO DESCRIPTION GENERATOR ===
+function generateVideoDescription(script, topic, niche) {
+  const topicCap = (topic || '').trim();
+  const topicCap2 = topicCap.charAt(0).toUpperCase() + topicCap.slice(1);
+
+  // Extract section headers from script for bullet points
+  const headers = [];
+  (script || '').split('\n').forEach(line => {
+    const m = line.trim().match(/^\[SECTION\s*\d*:?\s*(.+)\]$/i);
+    if (m) headers.push(m[1].trim());
+  });
+  const bulletLines = headers.slice(0, 5).map(h => `▶ ${h}`).join('\n') ||
+    '▶ The key facts nobody tells you\n▶ What experts actually recommend\n▶ How to apply this starting today';
+
+  const nicheHashtags = {
+    'personal finance':            '#PersonalFinance #MoneyTips #WealthBuilding #FinancialFreedom #Investing',
+    'motivation and mindset':      '#Motivation #Mindset #Success #SelfImprovement #GrowthMindset',
+    'true crime and mysteries':    '#TrueCrime #Mystery #ColdCase #Crime #TrueCrimeStory',
+    'history and facts':           '#History #HistoryFacts #DidYouKnow #HistoryChannel #TrueHistory',
+    'technology and AI':           '#Technology #AI #ArtificialIntelligence #TechNews #FutureTech',
+    'business and entrepreneurship': '#Business #Entrepreneur #Startup #PassiveIncome #BusinessTips',
+    'self-improvement':            '#SelfImprovement #PersonalGrowth #Habits #Productivity #Success',
+    'health and wellness':         '#Health #Wellness #HealthTips #Fitness #Longevity',
+    'relationships and psychology': '#Psychology #Relationships #MentalHealth #SelfAwareness #PersonalGrowth',
+    'travel and geography':        '#Travel #Geography #TravelTips #WorldFacts #Explore',
+    'spirituality and philosophy': '#Philosophy #Stoicism #Mindfulness #SpiritualGrowth #Wisdom',
+    'news and current events':     '#News #CurrentEvents #WorldNews #Analysis #Explainer',
+  };
+  const hashtags = nicheHashtags[niche] || '#YouTube #Educational #Faceless #Viral';
+
+  return `${topicCap2}
+
+In this video, I break down everything you need to know about ${topicCap.toLowerCase() || 'this topic'}.
+
+📌 WHAT YOU'LL LEARN:
+${bulletLines}
+
+⏱️ TIMESTAMPS:
+0:00 Introduction
+1:30 [Add your own timestamps]
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+👍 If this was helpful, like and subscribe for more content like this.
+🔔 Hit the bell so you never miss a video.
+━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📬 CONTACT: [your email]
+🌐 WEBSITE: [your website]
+
+${hashtags}
+
+Script generated with ScriptFlare — https://mingkai1207.github.io/scriptflare/`;
+}
+
+function showDescriptionPanel() {
+  if (!currentScript) return;
+  const panel = document.getElementById('desc-panel');
+  const content = document.getElementById('desc-content');
+  if (!panel || !content) return;
+
+  if (!panel.classList.contains('hidden')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+  content.textContent = generateVideoDescription(currentScript, topic, niche);
+  panel.classList.remove('hidden');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyDescription() {
+  const content = document.getElementById('desc-content');
+  if (!content?.textContent) return;
+  navigator.clipboard.writeText(content.textContent).then(() => {
+    const btn = document.getElementById('desc-copy-text');
+    if (btn) { btn.textContent = '✅ Copied!'; setTimeout(() => { btn.textContent = '📋 Copy Description'; }, 2000); }
+  }).catch(() => {});
+}
+
+function exportToGoogleDocs() {
+  if (!currentScript) return;
+  copyScript();
+  setTimeout(() => {
+    window.open('https://docs.google.com/document/create', '_blank', 'noopener,noreferrer');
+    showToast('Script copied! Paste it into your new Google Doc (Ctrl+V / ⌘+V)', 'success');
+  }, 300);
 }
 
 // === COPY PAYPAL EMAIL ===
