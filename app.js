@@ -755,9 +755,10 @@ function displayScript(script, topic, length) {
   }
   contentDiv.innerHTML = formatScript(script);
 
-  // Show output + quality report + topic suggestions
+  // Show output + performance tip + quality report + topic suggestions
   outputDiv.classList.remove('hidden');
   outputDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  showNichePerfTip(niche);
   showQualityReport(script);
   showTopicSuggestions(niche);
 
@@ -1033,6 +1034,31 @@ function showQualityReport(script) {
   }
 
   qDiv.classList.remove('hidden');
+}
+
+// === NICHE PERFORMANCE TIPS ===
+const NICHE_PERF_TIPS = {
+  'personal finance':             '📊 <strong>Finance tip:</strong> Titles like "I tried X and made $Y" consistently outperform generic "how to make money" titles by 2–3×.',
+  'motivation and mindset':       '🔥 <strong>Mindset tip:</strong> Open with a bold counter-intuitive claim — motivation viewers specifically seek out content that challenges their assumptions.',
+  'true crime and mysteries':     '🔍 <strong>True crime tip:</strong> Tease the most shocking detail in your hook, then withhold it until 30–40% through the video to maximize retention.',
+  'history and facts':            '📚 <strong>History tip:</strong> Titles framed as corrections ("The real reason X happened") outperform factual titles by up to 40% in this niche.',
+  'technology and AI':            '🤖 <strong>Tech tip:</strong> Recency signals matter — include the current year in your title and hook to show viewers the content is up-to-date.',
+  'business and entrepreneurship':'🏆 <strong>Business tip:</strong> Case study format ("How I went from X to Y") drives higher trust and longer watch time than advice-list format in this niche.',
+  'self-improvement':             '📈 <strong>Self-improvement tip:</strong> Shorter videos (7–10 min) with immediate actionable steps outperform long motivational essays for watch-through rate.',
+  'health and wellness':          '💪 <strong>Health tip:</strong> Lead with a relatable pain point in your hook ("If you\'re always tired despite sleeping 8 hours...") before delivering the solution.',
+  'relationships and psychology': '🧠 <strong>Psychology tip:</strong> Vulnerability and specificity build trust fast in this niche — say "I was in a toxic relationship" not "some people are in toxic relationships".',
+};
+
+function showNichePerfTip(niche) {
+  const el = document.getElementById('niche-perf-tip');
+  if (!el) return;
+  const tip = NICHE_PERF_TIPS[niche];
+  if (tip) {
+    el.innerHTML = tip;
+    el.classList.remove('hidden');
+  } else {
+    el.classList.add('hidden');
+  }
 }
 
 // === SURPRISE ME (random topic) ===

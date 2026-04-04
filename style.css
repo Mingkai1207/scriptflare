@@ -994,6 +994,21 @@ select {
   margin: 0 auto 36px;
 }
 
+.final-cta-quote {
+  font-style: italic;
+  color: rgba(255,255,255,0.55);
+  font-size: 0.9rem;
+  max-width: 580px;
+  margin: 0 auto 28px;
+  line-height: 1.7;
+  padding: 0 16px;
+}
+.final-cta-note {
+  margin-top: 16px;
+  font-size: 0.78rem;
+  color: rgba(255,255,255,0.35);
+}
+
 /* === FOOTER === */
 footer {
   background: var(--bg);
@@ -1319,6 +1334,17 @@ footer {
 .skeleton-line.w-40 { width: 40%; }
 .skeleton-header.w-40 { width: 40%; }
 .skeleton-spacer { height: 20px; }
+
+/* === NICHE PERFORMANCE TIP === */
+.niche-perf-tip {
+  padding: 10px 20px;
+  font-size: 0.79rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: rgba(124,92,252,0.03);
+  animation: fadeSlideIn 0.3s ease;
+}
+.niche-perf-tip strong { color: var(--primary-light); }
 
 /* === SCRIPT QUALITY REPORT === */
 .script-quality {
