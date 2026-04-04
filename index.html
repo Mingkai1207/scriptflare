@@ -15,6 +15,7 @@
   <meta name="twitter:title" content="ScriptFlare — AI Script Writer for Faceless YouTube" />
   <meta name="twitter:description" content="Turn any topic into a full YouTube script in 30 seconds. Hook-optimized, B-roll included, niche-ready." />
   <link rel="canonical" href="https://mingkai1207.github.io/scriptflare/" />
+  <meta name="theme-color" content="#06060f" />
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -242,6 +243,8 @@
                 <button type="button" class="niche-pill" onclick="pickNiche('motivation and mindset')">🔥 Motivation</button>
                 <button type="button" class="niche-pill" onclick="pickNiche('true crime and mysteries')">🔍 True Crime</button>
                 <button type="button" class="niche-pill" onclick="pickNiche('history and facts')">📚 History</button>
+                <button type="button" class="niche-pill" onclick="pickNiche('technology and AI')">🤖 Tech & AI</button>
+                <button type="button" class="niche-pill" onclick="pickNiche('business and entrepreneurship')">🏆 Business</button>
               </div>
               <select id="niche">
                 <option value="">Select your niche...</option>
@@ -275,7 +278,7 @@
               <label for="tone">Tone / Style</label>
               <select id="tone">
                 <option value="engaging and educational">📖 Engaging & Educational</option>
-                <option value="storytelling and narrative">📖 Storytelling & Narrative</option>
+                <option value="storytelling and narrative">🗣️ Storytelling & Narrative</option>
                 <option value="listicle and punchy">📋 Listicle (Top 5, Top 10...)</option>
                 <option value="documentary-style">🎥 Documentary Style</option>
                 <option value="conversational and casual">💬 Conversational & Casual</option>
@@ -396,6 +399,7 @@
       <div class="section-badge">Simple pricing</div>
       <h2 class="section-title">Start free. Upgrade when ready.</h2>
       <p class="section-sub">No contracts. No hidden fees. Cancel anytime. <strong style="color: var(--green)">✓ 3 free scripts — no credit card needed.</strong></p>
+      <div class="pricing-compare">💡 Freelance script writers charge <strong>$100–500 per script</strong>. ScriptFlare Pro = <strong>unlimited scripts for less than $0.65/day</strong>.</div>
       <div class="pricing-grid">
         <div class="pricing-card reveal">
           <div class="plan-name">Free</div>
@@ -505,6 +509,13 @@
           </div>
           <div class="faq-a">Every script is generated fresh — no two scripts are identical. You own the scripts you generate and can use them commercially on your YouTube channel, voiceover platforms, or anywhere else.</div>
         </div>
+        <div class="faq-item">
+          <div class="faq-q" onclick="toggleFaq(this)">
+            <span>Does it work with AI voiceover tools like ElevenLabs or Murf?</span>
+            <span class="faq-arrow">▼</span>
+          </div>
+          <div class="faq-a">Yes — ScriptFlare scripts are written to sound natural when spoken aloud, which makes them ideal for AI voiceover tools like ElevenLabs, Murf, or Play.ht. Just copy your script, paste it into your voiceover tool, and record. The B-roll cues are clearly marked so you always know exactly what footage to overlay.</div>
+        </div>
       </div>
     </div>
   </section>
@@ -535,6 +546,15 @@
       <p class="footer-copy">© 2026 ScriptFlare. All rights reserved.</p>
     </div>
   </footer>
+
+  <!-- STICKY MOBILE CTA -->
+  <div class="sticky-cta-bar" id="sticky-cta-bar">
+    <div class="sticky-cta-text">
+      <strong>ScriptFlare</strong>
+      <span>3 free scripts — no account needed</span>
+    </div>
+    <a href="#generator" class="btn btn-primary btn-sm sticky-cta-btn">Generate Free →</a>
+  </div>
 
   <script src="app.js"></script>
 </body>

@@ -42,7 +42,19 @@ document.addEventListener('DOMContentLoaded', () => {
   initLiveTicker();
   initStatCounters();
   initTopicPlaceholder();
+  initStickyCTA();
 });
+
+// === STICKY MOBILE CTA ===
+function initStickyCTA() {
+  const bar = document.getElementById('sticky-cta-bar');
+  const hero = document.getElementById('hero');
+  if (!bar || !hero) return;
+  window.addEventListener('scroll', () => {
+    const heroBottom = hero.getBoundingClientRect().bottom;
+    bar.classList.toggle('visible', heroBottom < 0);
+  }, { passive: true });
+}
 
 // === NAVBAR SCROLL ===
 function initNavbarScroll() {
@@ -66,7 +78,7 @@ function initTopicPlaceholder() {
     '10 dark psychology tricks used in advertising',
     'How Elon Musk thinks differently than everyone else',
     'The real reason you\'re always tired (it\'s not sleep)',
-    '7 businesses you can start with $0 in 2024',
+    '7 businesses you can start with $0 in 2026',
     'The hidden history of the CIA that nobody talks about',
     'Why most diets fail — and what actually works',
     '5 manipulation tactics narcissists use on you',
