@@ -1478,6 +1478,16 @@ function animateGenProgress(loading) {
   });
 }
 
+// === PREVIEW TABS ===
+function switchPreview(btn, panelId) {
+  const wrapper = btn.closest('.preview-wrapper');
+  wrapper.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+  wrapper.querySelectorAll('.preview-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  const panel = document.getElementById(panelId);
+  if (panel) panel.classList.add('active');
+}
+
 // === CSS ANIMATION (inject shake) ===
 const style = document.createElement('style');
 style.textContent = `
