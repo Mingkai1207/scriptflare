@@ -1280,6 +1280,16 @@ kbd {
   .generate-tip { display: none; }
 }
 
+/* === PAYWALL SAMPLE LINK === */
+.paywall-sample-link {
+  display: inline-block;
+  font-size: 0.83rem;
+  color: var(--text-faint);
+  margin: 8px 0 4px;
+  transition: color 0.2s;
+}
+.paywall-sample-link:hover { color: var(--primary-light); }
+
 /* === PAYWALL SOCIAL PROOF === */
 .paywall-social {
   font-size: 0.8rem;

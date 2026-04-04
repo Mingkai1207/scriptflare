@@ -43,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initLiveTicker();
   initStatCounters();
+  initLiveScriptCount();
   initTopicPlaceholder();
   initStickyCTA();
 });
@@ -117,6 +118,22 @@ function initTopicPlaceholder() {
   };
 
   setInterval(rotate, 3500);
+}
+
+// === LIVE SCRIPT COUNT (increments hero counter subtly in real-time) ===
+function initLiveScriptCount() {
+  const el = document.querySelector('.stat-num[data-count="47200"]');
+  if (!el) return;
+  let count = 47200;
+
+  const bump = () => {
+    count += 1;
+    el.textContent = count.toLocaleString() + '+';
+    setTimeout(bump, 42000 + Math.random() * 48000); // every 42–90s
+  };
+
+  // First bump after 20s (well after the count-up animation finishes)
+  setTimeout(bump, 20000);
 }
 
 // === STAT COUNTER ANIMATION ===
