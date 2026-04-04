@@ -91,6 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStickyCTA();
   initDemandStrip();
   renderTopicHistory();
+  initPricingCountdown();
   // Auto-open first FAQ item
   const firstFaq = document.querySelector('.faq-q');
   if (firstFaq) toggleFaq(firstFaq);
@@ -785,6 +786,7 @@ function displayScript(script, topic, length) {
   document.getElementById('voiceover-links')?.classList.remove('hidden');
   showNichePerfTip(niche);
   showQualityReport(script);
+  showTitleOptions(topic, niche);
   showTopicSuggestions(niche);
 
   // Success toast + upgrade nudge
@@ -991,6 +993,7 @@ function regenerateScript() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
+  document.getElementById('title-options')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('upgrade-nudge')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
@@ -1006,6 +1009,7 @@ function clearOutput() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
+  document.getElementById('title-options')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
@@ -1478,11 +1482,142 @@ function animateGenProgress(loading) {
   });
 }
 
+// === COPY PAYPAL EMAIL ===
+function copyPaypalEmail(btn) {
+  navigator.clipboard.writeText('liumingkai1207@gmail.com').then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.style.color = '#6ee7b7';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 2000);
+  }).catch(() => {});
+}
+
+// === PRICING COUNTDOWN TIMER ===
+function initPricingCountdown() {
+  const el = document.getElementById('pricing-countdown');
+  if (!el) return;
+  // Launch price "expires" 30 days from a fixed anchor date (Apr 4 2026)
+  const anchor = new Date('2026-04-04T00:00:00Z').getTime();
+  const expires = anchor + 30 * 24 * 60 * 60 * 1000;
+
+  const update = () => {
+    const now = Date.now();
+    const diff = expires - now;
+    if (diff <= 0) { el.textContent = ''; return; }
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hrs  = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    el.innerHTML = `⏳ Launch price ends in <strong>${days}d ${hrs}h ${mins}m</strong>`;
+  };
+
+  update();
+  setInterval(update, 60000);
+}
+
+// === YOUTUBE TITLE GENERATOR ===
+function generateTitleOptions(topic, niche) {
+  const raw = (topic || '').trim();
+  if (!raw) return [];
+  const cap = raw.charAt(0).toUpperCase() + raw.slice(1).replace(/[?.!]+$/, '');
+  const startsWithQ = /^(how|why|what|when|where|who|is|are|can|does|will|should)/i.test(raw);
+  const nums = { 'personal finance': '7', 'history and facts': '10', 'true crime and mysteries': '5', 'business and entrepreneurship': '7' }[niche] || '5';
+
+  if (startsWithQ) {
+    return [
+      `${cap} — The Answer Will Surprise You`,
+      `${nums} Reasons ${cap} (Most People Get This Wrong)`,
+      `${cap}: What Nobody Tells You`,
+      `The Shocking Truth: ${cap}`,
+      `${cap} And What You Should Do About It`,
+    ];
+  }
+
+  const nicheSpecific = {
+    'personal finance': [
+      `The Untold Truth About ${cap}`,
+      `${nums} Money Secrets Behind ${cap} (The 1% Knows This)`,
+      `Why ${cap} Is Destroying Your Wealth (And How to Stop It)`,
+      `${cap}: The Financial Blueprint Nobody Made You`,
+      `How ${cap} Changed My Net Worth Forever`,
+    ],
+    'motivation and mindset': [
+      `The Mindset Shift Behind ${cap} Nobody Talks About`,
+      `${nums} Lessons From ${cap} That Will Change Your Life`,
+      `Why Most People Fail at ${cap} (And How to Be Different)`,
+      `${cap}: What High Performers Actually Do`,
+      `The Real Reason ${cap} Will Transform Your Future`,
+    ],
+    'true crime and mysteries': [
+      `The Dark Truth Behind ${cap}`,
+      `${cap}: The Case That Haunted Investigators for Years`,
+      `What Really Happened: ${cap} (The Full Story)`,
+      `${cap} — The Evidence Nobody Wanted You to See`,
+      `Inside ${cap}: The Timeline That Changes Everything`,
+    ],
+    'history and facts': [
+      `The History of ${cap} Nobody Taught You in School`,
+      `${nums} Shocking Facts About ${cap} That Rewrite History`,
+      `What Really Happened: ${cap} (The Real Story)`,
+      `${cap}: The Historical Truth That Was Hidden`,
+      `Why ${cap} Changed the Course of Human History`,
+    ],
+    'technology and AI': [
+      `How ${cap} Will Change Everything (Sooner Than You Think)`,
+      `${nums} Reasons ${cap} Is Bigger Than Anyone Admits`,
+      `The Tech Breakthrough Behind ${cap} You Need to Understand`,
+      `${cap}: What Silicon Valley Doesn't Want You to Know`,
+      `Why ${cap} Will Affect Every Person on Earth`,
+    ],
+    'business and entrepreneurship': [
+      `The Business Strategy Behind ${cap} (Most Founders Miss This)`,
+      `${nums} Lessons Entrepreneurs Learn Too Late About ${cap}`,
+      `How ${cap} Built a $1M Business in 12 Months`,
+      `Why ${cap} Is the Opportunity of the Decade`,
+      `${cap}: The Exact Playbook Nobody Is Sharing`,
+    ],
+  };
+
+  return nicheSpecific[niche] || [
+    `The Untold Truth About ${cap}`,
+    `${nums} Facts About ${cap} That Will Change How You Think`,
+    `Why ${cap} Is Different Than You Think`,
+    `${cap}: The Complete Guide Nobody Made`,
+    `Everything You Know About ${cap} Is Wrong`,
+  ];
+}
+
+function showTitleOptions(topic, niche) {
+  const wrap = document.getElementById('title-options');
+  if (!wrap || !topic) return;
+  const titles = generateTitleOptions(topic, niche);
+  if (!titles.length) return;
+  wrap.innerHTML = `
+    <div class="title-options-header">
+      <span class="title-options-icon">📺</span>
+      <strong>YouTube Title Ideas</strong>
+      <span class="title-options-sub">Click any title to copy it</span>
+    </div>
+    <div class="title-options-list">
+      ${titles.map(t => `
+        <div class="title-option" onclick="copyTitle(this, '${t.replace(/'/g, "&#39;").replace(/"/g, '&quot;')}')">
+          <span class="title-option-text">${t}</span>
+          <span class="title-option-copy">Copy</span>
+        </div>`).join('')}
+    </div>`;
+  wrap.classList.remove('hidden');
+}
+
+function copyTitle(el, title) {
+  navigator.clipboard.writeText(title).then(() => {
+    const copy = el.querySelector('.title-option-copy');
+    if (copy) { copy.textContent = '✓ Copied'; setTimeout(() => { copy.textContent = 'Copy'; }, 1800); }
+  }).catch(() => {});
+}
+
 // === PREVIEW TABS ===
 function switchPreview(btn, panelId) {
-  const wrapper = btn.closest('.preview-wrapper');
-  wrapper.querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
-  wrapper.querySelectorAll('.preview-panel').forEach(p => p.classList.remove('active'));
+  btn.closest('.preview-tabs').querySelectorAll('.preview-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.preview-panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   const panel = document.getElementById(panelId);
   if (panel) panel.classList.add('active');

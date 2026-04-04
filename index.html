@@ -290,25 +290,71 @@
     <div class="container">
       <div class="section-badge">See what you get</div>
       <h2 class="section-title">Real output. No fluff.</h2>
-      <p class="section-sub">Here's a snippet from an actual ScriptFlare-generated finance script</p>
+      <p class="section-sub">Snippets from actual ScriptFlare-generated scripts — pick your niche</p>
       <div class="preview-wrapper reveal">
-        <div class="preview-meta">
-          <span class="preview-tag">💰 Personal Finance</span>
-          <span class="preview-tag">10 min · ~1,500 words</span>
-          <span class="preview-tag preview-tag-live">⚡ GPT-4o generated</span>
+        <div class="preview-tabs">
+          <button class="preview-tab active" onclick="switchPreview(this, 'prev-finance')">💰 Finance</button>
+          <button class="preview-tab" onclick="switchPreview(this, 'prev-truecrime')">🔍 True Crime</button>
+          <button class="preview-tab" onclick="switchPreview(this, 'prev-motivation')">🔥 Motivation</button>
         </div>
-        <div class="preview-content">
-          <div class="preview-section-header">[HOOK]</div>
-          <p>What if I told you that 80% of millionaires didn't inherit their wealth — they built it? And most of them credit one thing above everything else: the habits they built in their 20s. In the next 10 minutes, I'm going to break down the 5 money habits that quietly separate the wealthy from everyone else. Stick around — habit #3 completely changed how I think about income.</p>
-          <div class="preview-visual">[VISUAL: time-lapse of a city skyline transitioning from day to night, overlaid with financial charts rising]</div>
-          <div class="preview-section-header">[SECTION 1: The Wealth Gap Nobody Talks About]</div>
-          <p>Here's a stat that stopped me cold: according to the Federal Reserve, the top 1% holds more wealth than the entire middle class combined. But here's what the headlines miss — most of those people started exactly where you are...</p>
-          <div class="preview-fade">
-            <div class="preview-blur-overlay">
-              <a href="#generator" class="btn btn-primary btn-lg">Generate Your Own Script Free →</a>
-            </div>
+
+        <!-- Finance -->
+        <div class="preview-panel active" id="prev-finance">
+          <div class="preview-meta">
+            <span class="preview-tag">💰 Personal Finance</span>
+            <span class="preview-tag">10 min · ~1,500 words</span>
+            <span class="preview-tag preview-tag-live">⚡ GPT-4o generated</span>
+          </div>
+          <div class="preview-content">
+            <div class="preview-section-header">[HOOK]</div>
+            <p>What if I told you that 80% of millionaires didn't inherit their wealth — they built it? And most of them credit one thing above everything else: the habits they built in their 20s. In the next 10 minutes, I'm going to break down the 5 money habits that quietly separate the wealthy from everyone else. Stick around — habit #3 completely changed how I think about income.</p>
+            <div class="preview-visual">[VISUAL: time-lapse of a city skyline transitioning from day to night, overlaid with financial charts rising]</div>
+            <div class="preview-section-header">[SECTION 1: The Wealth Gap Nobody Talks About]</div>
+            <p>Here's a stat that stopped me cold: according to the Federal Reserve, the top 1% holds more wealth than the entire middle class combined. But here's what the headlines miss — most of those people started exactly where you are...</p>
+            <div class="preview-fade"><div class="preview-blur-overlay">
+              <a href="#generator" class="btn btn-primary btn-lg" onclick="jumpToGenerator('personal finance')">Generate a Finance Script Free →</a>
+            </div></div>
           </div>
         </div>
+
+        <!-- True Crime -->
+        <div class="preview-panel" id="prev-truecrime">
+          <div class="preview-meta">
+            <span class="preview-tag">🔍 True Crime</span>
+            <span class="preview-tag">12 min · ~1,800 words</span>
+            <span class="preview-tag preview-tag-live">⚡ GPT-4o generated</span>
+          </div>
+          <div class="preview-content">
+            <div class="preview-section-header">[HOOK]</div>
+            <p>On the night of March 12th, 2017, a woman vanished without a trace from a small town in rural Ohio. Her car was found three miles away — keys in the ignition, phone on the seat. The security footage showed something investigators couldn't explain for two years. Today I'm walking you through every detail of a case that still doesn't have all the answers.</p>
+            <div class="preview-visual">[VISUAL: slow pan across old crime scene photographs, detective's evidence board, dimly lit hallway]</div>
+            <div class="preview-section-header">[SECTION 1: The Night Everything Changed]</div>
+            <p>Most cold cases start with a missing person report that nobody takes seriously at first. This one was different from the moment the call came in. The 911 dispatcher later said it was the calmest missing persons report she'd ever received...</p>
+            <div class="preview-fade"><div class="preview-blur-overlay">
+              <a href="#generator" class="btn btn-primary btn-lg" onclick="jumpToGenerator('true crime and mysteries')">Generate a True Crime Script Free →</a>
+            </div></div>
+          </div>
+        </div>
+
+        <!-- Motivation -->
+        <div class="preview-panel" id="prev-motivation">
+          <div class="preview-meta">
+            <span class="preview-tag">🔥 Motivation & Mindset</span>
+            <span class="preview-tag">8 min · ~1,200 words</span>
+            <span class="preview-tag preview-tag-live">⚡ GPT-4o generated</span>
+          </div>
+          <div class="preview-content">
+            <div class="preview-section-header">[HOOK]</div>
+            <p>Most people are waiting for the right moment to start. The right moment to quit the job they hate. The right moment to launch the business. The right moment to get in shape. I'm about to tell you something uncomfortable: that moment is never coming. The people who actually change their lives don't wait for it — they understand something everyone else doesn't.</p>
+            <div class="preview-visual">[VISUAL: slow motion — person waking at dawn, lacing up running shoes, fog over an empty street]</div>
+            <div class="preview-section-header">[SECTION 1: The Waiting Trap]</div>
+            <p>There's a psychological principle called "temporal self-appraisal." It explains why your future self always seems more capable than your present self. And it's exactly why most people stay stuck...</p>
+            <div class="preview-fade"><div class="preview-blur-overlay">
+              <a href="#generator" class="btn btn-primary btn-lg" onclick="jumpToGenerator('motivation and mindset')">Generate a Motivation Script Free →</a>
+            </div></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -500,6 +546,9 @@
           </div>
         </div>
 
+        <!-- TITLE OPTIONS (shown after generating) -->
+        <div class="title-options hidden" id="title-options"></div>
+
         <!-- VOICEOVER QUICK LINKS -->
         <div class="voiceover-links hidden" id="voiceover-links">
           <span class="voiceover-label">Next step — paste into your voiceover tool:</span>
@@ -684,6 +733,7 @@
             Upgrade to Pro — $19/mo
           </a>
           <p class="plan-note">🔒 Secure payment via PayPal</p>
+          <div class="pricing-countdown" id="pricing-countdown"></div>
           <p class="plan-note" style="margin-top: 6px; color: var(--text-faint);">Not happy? Email us — we'll make it right.</p>
         </div>
       </div>
@@ -699,7 +749,7 @@
         </div>
         <div class="paypal-steps">
           <div class="paypal-step"><span class="step-num-small">1</span> Complete payment on PayPal</div>
-          <div class="paypal-step"><span class="step-num-small">2</span> Email <strong>liumingkai1207@gmail.com</strong> — subject: "ScriptFlare Pro" + your PayPal email</div>
+          <div class="paypal-step"><span class="step-num-small">2</span> Email <strong>liumingkai1207@gmail.com</strong><button class="copy-email-btn" onclick="copyPaypalEmail(this)" title="Copy email">Copy</button> — subject: "ScriptFlare Pro" + your PayPal email</div>
           <div class="paypal-step"><span class="step-num-small">3</span> ⏱ Receive your unlock code within <strong>1 hour</strong></div>
           <div class="paypal-step"><span class="step-num-small">4</span> Enter code in the generator above → unlimited scripts instantly</div>
         </div>
