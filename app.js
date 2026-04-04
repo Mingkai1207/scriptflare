@@ -375,13 +375,14 @@ function useSuggestion(btn, topic) {
 // === NICHE QUICK-SELECT ===
 function pickNiche(value) {
   const select = document.getElementById('niche');
-  if (select) {
-    select.value = value;
-    // Update active pill
-    document.querySelectorAll('.niche-pill').forEach(p => {
-      p.classList.toggle('active', p.getAttribute('onclick').includes(value));
-    });
-  }
+  if (select) select.value = value;
+  syncNichePill(value);
+}
+
+function syncNichePill(value) {
+  document.querySelectorAll('.niche-pill').forEach(p => {
+    p.classList.toggle('active', value && p.getAttribute('onclick').includes(`'${value}'`));
+  });
 }
 
 // === PAYPAL ===

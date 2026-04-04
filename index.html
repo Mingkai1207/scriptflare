@@ -287,7 +287,7 @@
                 <button type="button" class="niche-pill" onclick="pickNiche('technology and AI')">🤖 Tech & AI</button>
                 <button type="button" class="niche-pill" onclick="pickNiche('business and entrepreneurship')">🏆 Business</button>
               </div>
-              <select id="niche">
+              <select id="niche" onchange="syncNichePill(this.value)">
                 <option value="">Select your niche...</option>
                 <option value="personal finance">💰 Personal Finance</option>
                 <option value="motivation and mindset">🔥 Motivation & Mindset</option>
@@ -341,12 +341,6 @@
           </button>
         </div>
 
-        <!-- TOPIC SUGGESTIONS (shown after generating) -->
-        <div class="topic-suggestions hidden" id="topic-suggestions">
-          <p class="topic-sug-label">Try these next:</p>
-          <div class="topic-sug-chips" id="topic-sug-chips"></div>
-        </div>
-
         <!-- OUTPUT -->
         <div class="gen-output hidden" id="gen-output">
           <div class="output-header">
@@ -364,6 +358,12 @@
             </div>
           </div>
           <div class="script-content" id="script-content"></div>
+        </div>
+
+        <!-- TOPIC SUGGESTIONS (shown after generating, below output) -->
+        <div class="topic-suggestions hidden" id="topic-suggestions">
+          <p class="topic-sug-label">Try these next →</p>
+          <div class="topic-sug-chips" id="topic-sug-chips"></div>
         </div>
 
         <!-- PAYWALL -->
