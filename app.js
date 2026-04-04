@@ -38,6 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
   checkProStatus();
   initNavbarScroll();
   updateGenerateBtnState();
+  initScrollReveal();
+  initLiveTicker();
 });
 
 // === NAVBAR SCROLL ===
@@ -48,6 +50,52 @@ function initNavbarScroll() {
       ? 'rgba(6, 6, 15, 0.97)'
       : 'rgba(6, 6, 15, 0.85)';
   });
+}
+
+// === SCROLL REVEAL ===
+function initScrollReveal() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+}
+
+// === LIVE TICKER ===
+function initLiveTicker() {
+  const ticker = document.getElementById('live-ticker');
+  const text = document.getElementById('live-ticker-text');
+  if (!ticker || !text) return;
+
+  const messages = [
+    'Someone in Canada just generated a finance script',
+    'Sarah just generated a true crime script',
+    'A creator in the US just generated a motivation script',
+    'Marcus just generated a history channel script',
+    'Someone just generated a self-improvement script',
+    '3 scripts generated in the last 5 minutes',
+    'A creator just upgraded to Pro',
+    'Someone in Australia just generated a business script',
+  ];
+
+  let idx = Math.floor(Math.random() * messages.length);
+  text.textContent = messages[idx];
+
+  setInterval(() => {
+    idx = (idx + 1) % messages.length;
+    ticker.style.opacity = '0';
+    setTimeout(() => {
+      text.textContent = messages[idx];
+      ticker.style.opacity = '1';
+    }, 300);
+  }, 7000);
+
+  ticker.style.transition = 'opacity 0.3s ease';
 }
 
 // === USAGE TRACKING ===
@@ -72,11 +120,11 @@ function updateUsageBar() {
   const label = document.getElementById('usage-label');
   const count = document.getElementById('usage-count');
   const fill = document.getElementById('usage-fill');
+  const usageBar = document.getElementById('usage-bar');
 
   if (isProUser()) {
     if (label) label.innerHTML = '✅ Pro Account — <strong>Unlimited scripts</strong>';
     if (fill) fill.style.width = '100%';
-    const usageBar = document.getElementById('usage-bar');
     if (usageBar) {
       usageBar.style.background = 'rgba(16,185,129,0.07)';
       usageBar.style.borderBottom = '1px solid rgba(16,185,129,0.15)';
@@ -84,6 +132,16 @@ function updateUsageBar() {
   } else {
     if (count) count.textContent = remaining;
     if (fill) fill.style.width = ((used / CONFIG.freeLimit) * 100) + '%';
+    // Add urgency styling based on remaining count
+    if (usageBar) {
+      usageBar.classList.remove('urgent', 'critical');
+      if (remaining === 1) {
+        usageBar.classList.add('urgent');
+        if (label) label.innerHTML = '⚠️ Last free script remaining: <strong id="usage-count">1</strong>';
+      } else if (remaining === 0) {
+        usageBar.classList.add('critical');
+      }
+    }
   }
 }
 
@@ -202,7 +260,7 @@ Your scripts:
 - End with a specific, compelling CTA that drives likes, comments, and subscriptions
 - Are calibrated precisely to the target length
 
-Format EVERY script with these exact section headers:
+Format EVERY script with these exact section headers (plain text, no markdown bold or asterisks):
 [HOOK]
 [INTRO]
 [SECTION 1: title]
@@ -211,7 +269,8 @@ Format EVERY script with these exact section headers:
 (add more sections as needed for longer scripts)
 [CALL TO ACTION]
 
-Keep all [VISUAL: ...] cues on their own line, italicized by writing them as [VISUAL: description].`;
+CRITICAL: Write headers exactly as shown — [HOOK] not **[HOOK]**, [INTRO] not **[INTRO]**.
+Keep all [VISUAL: ...] cues on their own line.`;
 
   const userPrompt = `Create a complete ${length}-minute faceless YouTube script.
 
@@ -315,28 +374,31 @@ function formatScript(script) {
       continue;
     }
 
+    // Strip markdown bold wrappers the AI sometimes adds: **[HOOK]** → [HOOK]
+    const stripped = trimmed.replace(/^\*\*(.+)\*\*$/, '$1').trim();
+
     // Visual cues [VISUAL: ...] — check first to avoid false positives
-    if (/^\[VISUAL:/i.test(trimmed)) {
-      html += `<span class="visual-cue">${escapeHtml(trimmed)}</span><br>`;
+    if (/^\[VISUAL:/i.test(stripped)) {
+      html += `<span class="visual-cue">${escapeHtml(stripped)}</span><br>`;
       continue;
     }
 
     // Section headers: [HOOK], [INTRO], [SECTION 1: Title], [CALL TO ACTION], etc.
     // Matches any [...] that's the entire line (case-insensitive)
-    if (/^\[.{2,60}\]$/.test(trimmed)) {
-      html += `<span class="script-section-header">${escapeHtml(trimmed)}</span>`;
+    if (/^\[.{2,60}\]$/.test(stripped)) {
+      html += `<span class="script-section-header">${escapeHtml(stripped)}</span>`;
       continue;
     }
 
     // Lines that start with ** or ## (markdown-style headers AI might output)
-    if (/^(\*\*|##)\s/.test(trimmed)) {
-      const clean = trimmed.replace(/^(\*\*|##)\s*/, '').replace(/\*\*$/, '');
+    if (/^(\*\*|##)\s/.test(stripped)) {
+      const clean = stripped.replace(/^(\*\*|##)\s*/, '').replace(/\*\*$/, '');
       html += `<span class="script-section-header">${escapeHtml(clean)}</span>`;
       continue;
     }
 
     // Regular spoken line
-    html += `<span class="script-para">${escapeHtml(trimmed)}</span><br>`;
+    html += `<span class="script-para">${escapeHtml(stripped)}</span><br>`;
   }
 
   return html;
