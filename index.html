@@ -295,7 +295,7 @@
                 <button type="button" class="niche-pill" onclick="pickNiche('technology and AI')">🤖 Tech & AI</button>
                 <button type="button" class="niche-pill" onclick="pickNiche('business and entrepreneurship')">🏆 Business</button>
               </div>
-              <select id="niche" onchange="syncNichePill(this.value)">
+              <select id="niche" onchange="syncNichePill(this.value); showLengthHint(this.value)">
                 <option value="">Select your niche...</option>
                 <option value="personal finance">💰 Personal Finance</option>
                 <option value="motivation and mindset">🔥 Motivation & Mindset</option>
@@ -500,6 +500,10 @@
       <div class="section-badge">Simple pricing</div>
       <h2 class="section-title">Start free. Upgrade when ready.</h2>
       <p class="section-sub">No contracts. No hidden fees. Cancel anytime. <strong style="color: var(--green)">✓ 3 free scripts — no credit card needed.</strong></p>
+      <div class="pricing-demand-strip">
+        <span class="demand-dot"></span>
+        <span id="demand-text">47 creators upgraded to Pro this week</span>
+      </div>
       <div class="pricing-compare">💡 Freelance script writers charge <strong>$100–500 per script</strong>. ScriptFlare Pro at $19/month = <strong>$1.90/script</strong> if you post 10 videos/month, or <strong>$0.63/script</strong> at 30 videos/month.</div>
       <div class="pricing-grid">
         <div class="pricing-card reveal">

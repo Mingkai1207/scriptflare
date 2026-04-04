@@ -88,6 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initLiveScriptCount();
   initTopicPlaceholder();
   initStickyCTA();
+  initDemandStrip();
 });
 
 // === NAV CTA DYNAMIC ===
@@ -466,6 +467,26 @@ const TOPIC_SUGGESTIONS = {
     'Why most diets fail — and what actually works long-term',
     '5 daily habits that add 10 years to your life',
   ],
+  'relationships and psychology': [
+    '5 psychological tricks narcissists use that you need to know',
+    'Why most people choose the wrong partner — the real reason',
+    'The attachment theory that explains every relationship problem',
+  ],
+  'travel and geography': [
+    'The country that nobody visits — but everyone should',
+    'Why Japan is the most unique civilization on earth',
+    '10 places that will disappear within your lifetime',
+  ],
+  'spirituality and philosophy': [
+    'The ancient Stoic habit that fixes 90% of modern anxiety',
+    'Why Marcus Aurelius\'s philosophy is more relevant than ever',
+    '5 Buddhist principles that actually change how you live',
+  ],
+  'news and current events': [
+    'What nobody is telling you about the AI jobs crisis',
+    'The geopolitical shift that will define the next decade',
+    'Why the middle class is quietly disappearing — the real data',
+  ],
 };
 
 function showTopicSuggestions(niche) {
@@ -490,11 +511,46 @@ function useSuggestion(btn, topic) {
   btn.style.borderColor = 'rgba(124,92,252,0.5)';
 }
 
+// === NICHE LENGTH RECOMMENDATIONS ===
+const NICHE_LENGTH_HINTS = {
+  'personal finance':           { len: '10', hint: '10–12 min optimal — maximizes mid-roll ad revenue for finance' },
+  'motivation and mindset':     { len: '8',  hint: '8–10 min ideal — enough depth without losing energy' },
+  'true crime and mysteries':   { len: '15', hint: '15 min works great — viewers binge longer true crime stories' },
+  'history and facts':          { len: '12', hint: '12–15 min fits history well — room for full narrative arc' },
+  'technology and AI':          { len: '10', hint: '10 min sweet spot for tech — dense but digestible' },
+  'business and entrepreneurship': { len: '10', hint: '10–12 min works for business — matches attention of busy entrepreneurs' },
+  'self-improvement':           { len: '8',  hint: '8 min is ideal — actionable, tight, high retention' },
+  'health and wellness':        { len: '10', hint: '10 min balances depth with pacing for health content' },
+  'relationships and psychology': { len: '12', hint: '12 min lets psychology topics build proper context' },
+};
+
+function showLengthHint(niche) {
+  const hint = NICHE_LENGTH_HINTS[niche];
+  let el = document.getElementById('length-hint');
+  if (!el) {
+    el = document.createElement('p');
+    el.id = 'length-hint';
+    el.className = 'length-hint';
+    const lengthGroup = document.getElementById('length').closest('.form-group');
+    if (lengthGroup) lengthGroup.appendChild(el);
+  }
+  if (hint) {
+    // Auto-suggest the length
+    const lengthEl = document.getElementById('length');
+    if (lengthEl && lengthEl.value !== hint.len) lengthEl.value = hint.len;
+    el.innerHTML = `💡 ${hint.hint}`;
+    el.classList.add('visible');
+  } else {
+    el.classList.remove('visible');
+  }
+}
+
 // === NICHE QUICK-SELECT ===
 function pickNiche(value) {
   const select = document.getElementById('niche');
   if (select) select.value = value;
   syncNichePill(value);
+  showLengthHint(value);
 }
 
 function jumpToGenerator(niche) {
@@ -1049,6 +1105,29 @@ function toggleFaq(el) {
     el.classList.add('open');
     answer.classList.add('open');
   }
+}
+
+// === PRICING DEMAND STRIP ===
+function initDemandStrip() {
+  const el = document.getElementById('demand-text');
+  if (!el) return;
+  const messages = [
+    '47 creators upgraded to Pro this week',
+    '12 new Pro members joined today',
+    '2,400+ creators are generating scripts right now',
+    '38 scripts generated in the last hour',
+    'Pro plan: 4.9 ⭐ from 340+ reviews',
+  ];
+  let idx = 0;
+  setInterval(() => {
+    idx = (idx + 1) % messages.length;
+    el.style.opacity = '0';
+    setTimeout(() => {
+      el.textContent = messages[idx];
+      el.style.opacity = '1';
+    }, 250);
+  }, 6000);
+  el.style.transition = 'opacity 0.25s ease';
 }
 
 // === GENERATION PROGRESS BAR ===

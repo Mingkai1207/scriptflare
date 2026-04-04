@@ -1432,6 +1432,40 @@ footer {
   flex-shrink: 0;
 }
 
+/* === PRICING DEMAND STRIP === */
+.pricing-demand-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+.demand-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s ease infinite;
+  flex-shrink: 0;
+}
+
+/* === LENGTH HINT === */
+.length-hint {
+  font-size: 0.73rem;
+  color: var(--primary-light);
+  margin-top: 6px;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.25s ease, max-height 0.3s ease;
+}
+.length-hint.visible {
+  opacity: 1;
+  max-height: 40px;
+}
+
 /* === GENERATE TIP + KEYBOARD HINT === */
 .generate-tip {
   font-size: 0.75rem;
