@@ -1892,6 +1892,57 @@ function copyAsMarkdown() {
   }).catch(() => showToast('⚠️ Copy failed — try again', 'error'));
 }
 
+function exportSRT() {
+  if (!currentScript) return;
+  const WPM = 150;
+  const topic = document.getElementById('topic').value.trim() || 'youtube-script';
+
+  // Split script into spoken sentences (skip visual cues and section headers)
+  const sentences = [];
+  for (const line of currentScript.split('\n')) {
+    const t = line.trim();
+    if (!t) continue;
+    if (/^\[VISUAL:/i.test(t)) continue;
+    if (/^\[.{2,60}\]$/.test(t)) continue; // section header
+    // Split long lines into ≤12-word chunks for subtitle readability
+    const words = t.split(/\s+/).filter(Boolean);
+    const chunkSize = 10;
+    for (let i = 0; i < words.length; i += chunkSize) {
+      sentences.push(words.slice(i, i + chunkSize).join(' '));
+    }
+  }
+
+  const toSRTTime = (secs) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = Math.floor(secs % 60);
+    const ms = Math.round((secs % 1) * 1000);
+    return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')},${String(ms).padStart(3,'0')}`;
+  };
+
+  let srt = '';
+  let elapsed = 0;
+  sentences.forEach((text, i) => {
+    const wordCount = text.split(/\s+/).length;
+    const duration = (wordCount / WPM) * 60;
+    const start = elapsed;
+    elapsed += duration;
+    srt += `${i + 1}\n${toSRTTime(start)} --> ${toSRTTime(elapsed)}\n${text}\n\n`;
+  });
+
+  if (!srt.trim()) { showToast('⚠️ No spoken text found in script.', 'warning'); return; }
+
+  const filename = topic.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 50) + '-scriptflare.srt';
+  const blob = new Blob([srt], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('📄 SRT file downloaded — import into YouTube Studio as captions!', 'success');
+}
+
 function printScript() {
   if (!currentScript) return;
   const topic = document.getElementById('topic').value.trim() || 'YouTube Script';
