@@ -191,7 +191,9 @@ function unlockPro() {
       document.getElementById('paywall').classList.add('hidden');
       document.getElementById('pro-badge').classList.remove('hidden');
       document.getElementById('gen-form').classList.remove('hidden');
-      document.getElementById('generate-btn').disabled = false;
+      const btn = document.getElementById('generate-btn');
+      btn.disabled = false;
+      btn.style.background = '';
       document.getElementById('btn-text').textContent = '⚡ Generate Script';
       updateUsageBar();
     }, 1200);

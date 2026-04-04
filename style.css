@@ -340,10 +340,10 @@ section { padding: 96px 0; }
 #generator { background: var(--bg); }
 .app-wrapper {
   background: var(--bg2);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(124, 92, 252, 0.2);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-lg), 0 0 60px rgba(124, 92, 252, 0.08);
   max-width: 860px;
   margin: 0 auto;
 }
