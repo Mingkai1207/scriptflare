@@ -741,8 +741,71 @@ async function generateScript() {
   }, 1500);
 
   const wordCount = {
-    '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250
+    'short': 150, '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250
   }[length] || 1500;
+
+  // YouTube Shorts — completely different prompt and flow
+  if (length === 'short') {
+    const shortsSystemPrompt = `You are an expert YouTube Shorts scriptwriter. Shorts are vertical, 60-second videos that must hook viewers in the first 2 words. No sections, no headers — just a single punchy flow of spoken text.
+
+Rules for Shorts scripts:
+- First 2–3 words are the entire hook — make them a bold claim, shocking question, or surprising stat
+- Zero filler, zero throat-clearing — every sentence must earn its place
+- Speak directly to the viewer: "you", "your", "you've"
+- End with a crisp verbal CTA (subscribe, follow, drop a comment)
+- Include 2–3 [VISUAL: description] cues on their own lines for vertical footage
+- Total spoken text: 130–160 words`;
+
+    const shortsUserPrompt = `Write a YouTube Shorts script (60 seconds, ~150 words).
+
+Topic: "${topic}"
+Niche: ${niche}
+Tone: ${tone}${langNote}${customNote}
+
+Write ONLY the spoken script text with 2–3 [VISUAL: ...] cues. No section headers. No preamble. Start with the hook word:`;
+
+    try {
+      const response = await fetch(CONFIG.apiUrl, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${CONFIG.apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: CONFIG.model,
+          messages: [
+            { role: 'system', content: shortsSystemPrompt },
+            { role: 'user', content: shortsUserPrompt }
+          ],
+          max_tokens: 400,
+          temperature: 0.88,
+          stream: false,
+        }),
+      });
+      clearTimeout(skeletonTimer);
+      if (!response.ok) throw new Error(`API ${response.status}`);
+      const data = await response.json();
+      const script = data.choices?.[0]?.message?.content?.trim();
+      if (!script) throw new Error('Empty response');
+      incrementUsage();
+      autoSaveScript(script, topic, niche);
+      displayScript(script, topic, length);
+      showQualityReport(script);
+      showNichePerfTip(niche);
+      showTopicSuggestions(niche);
+      showTitleOptions(topic, niche);
+      showContentCalendar(niche);
+      showChannelNames(niche);
+      trackTopicHistory(topic);
+      showToast('⚡ Short script ready!', 'success');
+    } catch (err) {
+      showToast('Generation failed — try again', 'warning');
+      document.getElementById('gen-output').classList.add('hidden');
+      document.getElementById('gen-form').classList.remove('hidden');
+    } finally {
+      clearTimeout(skeletonTimer);
+      isGenerating = false;
+      setLoadingState(false);
+    }
+    return;
+  }
 
   const nicheGuidance = {
     'personal finance':            'Use specific numbers and dollar amounts — they signal authority. Speak directly to the viewer\'s financial anxiety ("If you\'re living paycheck to paycheck..."). Include at least one surprising statistic from a credible source in the hook.',
@@ -876,10 +939,13 @@ function displayScript(script, topic, length) {
   const brollCount = (script.match(/\[VISUAL:/gi) || []).length;
   const sectionCount = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length;
   const topicLabel = topic ? `"${topic.length > 46 ? topic.slice(0, 43) + '...' : topic}" · ` : '';
-  const targetWords = { '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250 }[length] || 1500;
+  const isShort = length === 'short';
+  const targetWords = { 'short': 150, '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250 }[length] || 1500;
   const onTarget = Math.abs(words - targetWords) <= 120;
   const targetBadge = onTarget ? ' · ✅ On target' : ` · ⚠️ ${words < targetWords ? 'shorter' : 'longer'} than target`;
-  if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues`;
+  if (statsSpan) statsSpan.textContent = isShort
+    ? `${topicLabel}⚡ YouTube Short · ~${words} words · ${brollCount} visual cues`
+    : `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues`;
 
   // Word count progress bar
   const wcWrap = document.getElementById('wc-bar-wrap');
@@ -1536,7 +1602,7 @@ function downloadScript() {
   ${sep}
   Topic:     ${topic}
   Niche:     ${nicheName || 'General'}
-  Length:    ${length} minutes (~${words} words)
+  Length:    ${length === 'short' ? 'YouTube Short (60s)' : length + ' minutes'} (~${words} words)
   Generated: ${date}
   ${sep}
 
