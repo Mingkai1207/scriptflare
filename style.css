@@ -1454,6 +1454,20 @@ footer {
 .skeleton-header.w-40 { width: 40%; }
 .skeleton-spacer { height: 20px; }
 
+/* === QUALITY IMPROVEMENT TIPS === */
+.quality-tips {
+  padding: 10px 20px;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  border-top: 1px solid var(--border);
+  background: rgba(251,191,36,0.03);
+  line-height: 1.6;
+}
+.quality-tips strong { color: var(--yellow); }
+.quality-tips em { color: var(--primary-light); font-style: normal; }
+.quality-tips span { display: inline; }
+.quality-tips span + span::before { content: ' · '; color: var(--text-faint); }
+
 /* === NICHE PERFORMANCE TIP === */
 .niche-perf-tip {
   padding: 10px 20px;

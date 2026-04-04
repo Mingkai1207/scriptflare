@@ -94,6 +94,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Auto-open first FAQ item
   const firstFaq = document.querySelector('.faq-q');
   if (firstFaq) toggleFaq(firstFaq);
+  // URL deep-link: ?generate=1 auto-scrolls to generator
+  if (new URLSearchParams(location.search).get('generate') === '1') {
+    setTimeout(() => {
+      document.getElementById('generator')?.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => document.getElementById('topic')?.focus(), 600);
+    }, 400);
+  }
 });
 
 // === NAV CTA DYNAMIC ===
@@ -983,6 +990,7 @@ function clearOutput() {
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
+  document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
@@ -1073,6 +1081,27 @@ function showQualityReport(script) {
     scoreEl.textContent = grade;
     scoreEl.title = `Script score: ${score}/100`;
     scoreEl.className = 'quality-score ' + (score >= 80 ? 'score-high' : score >= 60 ? 'score-mid' : 'score-low');
+  }
+
+  // Show actionable improvement tips for any failing items
+  const tips = [];
+  if (!hasHook) tips.push('Add a <strong>[HOOK]</strong> section header — it tells the AI to write a dedicated retention-optimized opening.');
+  if (brollCount < 4) tips.push(`Only ${brollCount} B-roll cue${brollCount !== 1 ? 's' : ''} found — try adding <em>[VISUAL: description]</em> lines every 3–4 paragraphs.`);
+  if (!hasOpenLoop) tips.push('No open loop detected — add "Stay with me because by the end of this video..." to boost watch time.');
+  if (!hasCTA) tips.push('Missing <strong>[CALL TO ACTION]</strong> — always end with a specific CTA (like/subscribe/comment) for better algorithm signals.');
+
+  let tipsEl = document.getElementById('quality-tips');
+  if (tips.length) {
+    if (!tipsEl) {
+      tipsEl = document.createElement('div');
+      tipsEl.id = 'quality-tips';
+      tipsEl.className = 'quality-tips';
+      qDiv.insertAdjacentElement('afterend', tipsEl);
+    }
+    tipsEl.innerHTML = '<strong>💡 Improvements:</strong> ' + tips.map(t => `<span>${t}</span>`).join(' · ');
+    tipsEl.classList.remove('hidden');
+  } else if (tipsEl) {
+    tipsEl.classList.add('hidden');
   }
 
   qDiv.classList.remove('hidden');
