@@ -315,19 +315,27 @@ function formatScript(script) {
       continue;
     }
 
-    // Section headers like [HOOK], [INTRO], [SECTION 1: title]
-    if (/^\[([A-Z][A-Z\s0-9:]+)\]$/.test(trimmed)) {
-      html += `<span class="script-section-header">${trimmed}</span>`;
-      continue;
-    }
-
-    // Visual cues [VISUAL: ...]
+    // Visual cues [VISUAL: ...] — check first to avoid false positives
     if (/^\[VISUAL:/i.test(trimmed)) {
       html += `<span class="visual-cue">${escapeHtml(trimmed)}</span><br>`;
       continue;
     }
 
-    // Regular paragraph
+    // Section headers: [HOOK], [INTRO], [SECTION 1: Title], [CALL TO ACTION], etc.
+    // Matches any [...] that's the entire line (case-insensitive)
+    if (/^\[.{2,60}\]$/.test(trimmed)) {
+      html += `<span class="script-section-header">${escapeHtml(trimmed)}</span>`;
+      continue;
+    }
+
+    // Lines that start with ** or ## (markdown-style headers AI might output)
+    if (/^(\*\*|##)\s/.test(trimmed)) {
+      const clean = trimmed.replace(/^(\*\*|##)\s*/, '').replace(/\*\*$/, '');
+      html += `<span class="script-section-header">${escapeHtml(clean)}</span>`;
+      continue;
+    }
+
+    // Regular spoken line
     html += `<span class="script-para">${escapeHtml(trimmed)}</span><br>`;
   }
 
@@ -366,7 +374,17 @@ function setLoadingState(loading) {
   const btnText = document.getElementById('btn-text');
   const btnLoading = document.getElementById('btn-loading');
 
-  btn.disabled = loading;
+  if (loading) {
+    btn.disabled = true;
+  } else {
+    // Re-enable only if user still has remaining scripts or is pro
+    const outOfScripts = getRemainingScripts() <= 0 && !isProUser();
+    btn.disabled = outOfScripts;
+    if (outOfScripts) {
+      btnText.textContent = '🔒 Upgrade to Pro to Continue';
+    }
+  }
+
   if (loading) {
     btnText.classList.add('hidden');
     btnLoading.classList.remove('hidden');

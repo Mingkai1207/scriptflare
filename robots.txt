@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mingkai1207.github.io/scriptflare/sitemap.xml
