@@ -496,6 +496,25 @@
             </div>
           </div>
 
+          <div class="form-row two-col">
+            <div class="form-group">
+              <label for="script-lang">Script Language</label>
+              <select id="script-lang">
+                <option value="English">🇺🇸 English</option>
+                <option value="Spanish">🇪🇸 Spanish</option>
+                <option value="Portuguese (Brazilian)">🇧🇷 Portuguese (Brazil)</option>
+                <option value="French">🇫🇷 French</option>
+                <option value="German">🇩🇪 German</option>
+                <option value="Hindi">🇮🇳 Hindi</option>
+                <option value="Indonesian">🇮🇩 Indonesian</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="custom-notes">Custom Instructions <span class="optional-label">(optional)</span></label>
+              <input type="text" id="custom-notes" placeholder="e.g. Include a sponsor mention for NordVPN" maxlength="200" />
+            </div>
+          </div>
+
           <p class="generate-tip">Press <kbd>⌘ / Ctrl + Enter</kbd> to generate · <kbd>⌘ / Ctrl + S</kbd> to download</p>
           <button class="btn btn-primary btn-xl" id="generate-btn" onclick="generateScript()">
             <span id="btn-text">⚡ Generate Script</span>
@@ -534,6 +553,7 @@
               <button class="btn btn-ghost btn-sm" id="broll-toggle" onclick="toggleBroll()">🎬 B-Roll</button>
               <button class="btn btn-ghost btn-sm" onclick="showDescriptionPanel()">📝 Description</button>
               <button class="btn btn-ghost btn-sm" onclick="exportToGoogleDocs()">📄 Google Docs</button>
+              <button class="btn btn-ghost btn-sm" onclick="openTeleprompter()">📺 Teleprompter</button>
               <button class="btn btn-ghost btn-sm" onclick="printScript()">🖨️ Print</button>
               <button class="btn btn-ghost btn-sm" onclick="clearOutput()">New Script</button>
             </div>
@@ -911,6 +931,23 @@
       <p class="footer-copy">© 2026 ScriptFlare. All rights reserved.</p>
     </div>
   </footer>
+
+  <!-- TELEPROMPTER MODAL -->
+  <div class="teleprompter hidden" id="teleprompter">
+    <div class="tp-controls">
+      <div class="tp-controls-left">
+        <span class="tp-logo">⚡ ScriptFlare</span>
+        <button class="tp-btn" onclick="tpSpeedDown()" title="Slower">🐢 Slower</button>
+        <button class="tp-btn" onclick="tpSpeedUp()" title="Faster">🐇 Faster</button>
+        <button class="tp-btn" id="tp-play-btn" onclick="tpTogglePlay()">▶ Play</button>
+        <button class="tp-btn" onclick="tpFontDown()" title="Smaller text">A−</button>
+        <button class="tp-btn" onclick="tpFontUp()" title="Larger text">A+</button>
+        <button class="tp-btn" id="tp-broll-btn" onclick="tpToggleBroll()">B-Roll: ON</button>
+      </div>
+      <button class="tp-close" onclick="closeTeleprompter()">✕ Close</button>
+    </div>
+    <div class="tp-script" id="tp-script"></div>
+  </div>
 
   <!-- EXIT INTENT MODAL -->
   <div class="exit-modal hidden" id="exit-modal" onclick="closeExitModal(event)">

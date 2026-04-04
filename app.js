@@ -626,6 +626,8 @@ async function generateScript() {
   const length = document.getElementById('length').value;
   const tone = document.getElementById('tone').value;
   const audience = document.getElementById('audience').value.trim() || 'general YouTube audience';
+  const scriptLang = document.getElementById('script-lang')?.value || 'English';
+  const customNotes = document.getElementById('custom-notes')?.value.trim() || '';
 
   // Validation
   if (!topic) {
@@ -695,6 +697,8 @@ CRITICAL FORMATTING RULES:
 - Do not use asterisks, hashes, or any markdown formatting in the spoken text`;
 
   const nicheNote = nicheGuidance[niche] ? `\nNiche writing guidance: ${nicheGuidance[niche]}` : '';
+  const langNote = scriptLang !== 'English' ? `\nLanguage: Write the ENTIRE script in ${scriptLang}. All section headers must also be in ${scriptLang}, but keep the bracket format: [HOOK], [INTRO], [SECTION 1: Title], [CALL TO ACTION].` : '';
+  const customNote = customNotes ? `\nAdditional creator instructions: ${customNotes}` : '';
 
   const userPrompt = `Create a complete ${length}-minute faceless YouTube script.
 
@@ -702,7 +706,7 @@ Topic: "${topic}"
 Niche: ${niche}
 Target audience: ${audience}
 Tone/Style: ${tone}
-Target word count: approximately ${wordCount} words${nicheNote}
+Target word count: approximately ${wordCount} words${nicheNote}${langNote}${customNote}
 
 Script requirements:
 - Hook must grip attention in the first 3 seconds — curiosity, bold claim, or a stat that stops scrolling
@@ -1804,6 +1808,114 @@ function exportToGoogleDocs() {
     showToast('Script copied! Paste it into your new Google Doc (Ctrl+V / ⌘+V)', 'success');
   }, 300);
 }
+
+// === TELEPROMPTER ===
+let _tpInterval = null;
+let _tpPlaying = false;
+let _tpSpeed = 1.2; // px per tick (50ms)
+let _tpFontSize = 32;
+let _tpShowBroll = true;
+
+function openTeleprompter() {
+  if (!currentScript) return;
+  const modal = document.getElementById('teleprompter');
+  const scriptDiv = document.getElementById('tp-script');
+  if (!modal || !scriptDiv) return;
+
+  // Build clean teleprompter HTML
+  scriptDiv.innerHTML = buildTeleprompterHTML(currentScript, _tpShowBroll);
+  scriptDiv.style.fontSize = _tpFontSize + 'px';
+  scriptDiv.scrollTop = 0;
+  modal.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+}
+
+function buildTeleprompterHTML(script, showBroll) {
+  const lines = script.split('\n');
+  let html = '';
+  for (const line of lines) {
+    const t = line.trim().replace(/^\*\*(.+)\*\*$/, '$1').trim();
+    if (!t) { html += '<div class="tp-spacer"></div>'; continue; }
+    if (/^\[VISUAL:/i.test(t)) {
+      if (showBroll) html += `<div class="tp-broll">🎬 ${escapeHtml(t.replace(/^\[VISUAL:\s*/i,'').replace(/\]$/,''))}</div>`;
+      continue;
+    }
+    if (/^\[.{2,60}\]$/.test(t)) {
+      html += `<div class="tp-header">${escapeHtml(t)}</div>`;
+      continue;
+    }
+    html += `<div class="tp-line">${escapeHtml(t)}</div>`;
+  }
+  return html;
+}
+
+function closeTeleprompter() {
+  tpStop();
+  document.getElementById('teleprompter')?.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function tpTogglePlay() {
+  _tpPlaying ? tpStop() : tpStart();
+}
+
+function tpStart() {
+  _tpPlaying = true;
+  const btn = document.getElementById('tp-play-btn');
+  if (btn) btn.textContent = '⏸ Pause';
+  const div = document.getElementById('tp-script');
+  _tpInterval = setInterval(() => {
+    if (div) div.scrollTop += _tpSpeed;
+  }, 50);
+}
+
+function tpStop() {
+  _tpPlaying = false;
+  clearInterval(_tpInterval);
+  const btn = document.getElementById('tp-play-btn');
+  if (btn) btn.textContent = '▶ Play';
+}
+
+function tpSpeedUp() {
+  _tpSpeed = Math.min(_tpSpeed + 0.3, 5);
+}
+
+function tpSpeedDown() {
+  _tpSpeed = Math.max(_tpSpeed - 0.3, 0.3);
+}
+
+function tpFontUp() {
+  _tpFontSize = Math.min(_tpFontSize + 4, 72);
+  const div = document.getElementById('tp-script');
+  if (div) div.style.fontSize = _tpFontSize + 'px';
+}
+
+function tpFontDown() {
+  _tpFontSize = Math.max(_tpFontSize - 4, 18);
+  const div = document.getElementById('tp-script');
+  if (div) div.style.fontSize = _tpFontSize + 'px';
+}
+
+function tpToggleBroll() {
+  _tpShowBroll = !_tpShowBroll;
+  const btn = document.getElementById('tp-broll-btn');
+  if (btn) btn.textContent = `B-Roll: ${_tpShowBroll ? 'ON' : 'OFF'}`;
+  const scriptDiv = document.getElementById('tp-script');
+  if (scriptDiv && currentScript) {
+    const pos = scriptDiv.scrollTop;
+    scriptDiv.innerHTML = buildTeleprompterHTML(currentScript, _tpShowBroll);
+    scriptDiv.scrollTop = pos;
+  }
+}
+
+// Close teleprompter on Escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeTeleprompter();
+  if (e.key === ' ' && !document.getElementById('teleprompter')?.classList.contains('hidden')) {
+    e.preventDefault();
+    tpTogglePlay();
+  }
+});
 
 // === REGENERATE HOOK ONLY ===
 async function regenerateHook() {
