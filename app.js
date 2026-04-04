@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollReveal();
   initLiveTicker();
   initStatCounters();
+  initTopicPlaceholder();
 });
 
 // === NAVBAR SCROLL ===
@@ -51,6 +52,34 @@ function initNavbarScroll() {
       ? 'rgba(6, 6, 15, 0.97)'
       : 'rgba(6, 6, 15, 0.85)';
   });
+}
+
+// === TOPIC PLACEHOLDER ROTATION ===
+function initTopicPlaceholder() {
+  const input = document.getElementById('topic');
+  if (!input) return;
+
+  const examples = [
+    '5 habits that made me a millionaire before 30',
+    'The truth about sleep that doctors won\'t tell you',
+    'Why the Roman Empire really collapsed',
+    '10 dark psychology tricks used in advertising',
+    'How Elon Musk thinks differently than everyone else',
+    'The real reason you\'re always tired (it\'s not sleep)',
+    '7 businesses you can start with $0 in 2024',
+    'The hidden history of the CIA that nobody talks about',
+    'Why most diets fail — and what actually works',
+    '5 manipulation tactics narcissists use on you',
+  ];
+
+  let i = 0;
+  const rotate = () => {
+    if (document.activeElement === input) return;
+    i = (i + 1) % examples.length;
+    input.setAttribute('placeholder', examples[i]);
+  };
+
+  setInterval(rotate, 3500);
 }
 
 // === STAT COUNTER ANIMATION ===
@@ -405,6 +434,16 @@ function displayScript(script, topic, length) {
   // Show output, scroll to it
   outputDiv.classList.remove('hidden');
   outputDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  // Success toast with upgrade nudge if on last remaining (0 left now)
+  const nowRemaining = getRemainingScripts();
+  if (!isProUser()) {
+    if (nowRemaining === 0) {
+      setTimeout(() => showToast('🎉 Script ready! That was your last free one — upgrade to keep creating.', 'warning'), 800);
+    } else {
+      setTimeout(() => showToast(`✅ Script ready! ${nowRemaining} free script${nowRemaining > 1 ? 's' : ''} remaining.`, 'success'), 800);
+    }
+  }
 }
 
 function formatScript(script) {
