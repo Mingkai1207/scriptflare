@@ -1238,6 +1238,7 @@ function regenerateScript() {
   document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('social-clips')?.classList.add('hidden');
+  document.getElementById('prod-outline')?.classList.add('hidden');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
@@ -1258,6 +1259,7 @@ function clearOutput() {
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('social-clips')?.classList.add('hidden');
+  document.getElementById('prod-outline')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -2445,6 +2447,103 @@ function copySocialClip(btn, text) {
     btn.textContent = '✓ Copied!';
     setTimeout(() => { btn.textContent = orig; }, 1800);
   });
+}
+
+// === PRODUCTION OUTLINE ===
+function showProductionOutline() {
+  if (!currentScript) return;
+  const panel = document.getElementById('prod-outline');
+  if (!panel) return;
+
+  // Toggle
+  if (!panel.classList.contains('hidden')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  const WPM = 150;
+  const topic = document.getElementById('topic').value.trim() || 'YouTube Script';
+  const niche = document.querySelector('#niche option:checked')?.textContent?.trim() || '';
+
+  // Parse sections
+  const lines = currentScript.split('\n');
+  const scenes = [];
+  let cur = null;
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) continue;
+    const isHeader = /^\[.{2,60}\]$/.test(t) && !/^\[VISUAL:/i.test(t);
+    if (isHeader) {
+      if (cur) scenes.push(cur);
+      const raw = t.slice(1, -1);
+      const label = raw.replace(/^SECTION \d+:\s*/i, '').replace(/^CALL TO ACTION$/i, 'Call to Action');
+      cur = { label, broll: [], words: 0, spoken: [] };
+    } else if (cur) {
+      if (/^\[VISUAL:/i.test(t)) {
+        cur.broll.push(t.replace(/^\[VISUAL:\s*/i, '').replace(/\]$/, '').trim());
+      } else {
+        cur.words += t.split(/\s+/).filter(Boolean).length;
+        cur.spoken.push(t);
+      }
+    }
+  }
+  if (cur) scenes.push(cur);
+
+  // Build timecodes
+  let elapsed = 0;
+  const rows = scenes.map((scene, i) => {
+    const secs = Math.round((scene.words / WPM) * 60);
+    const tc = (s) => `${String(Math.floor(s / 60)).padStart(2,'0')}:${String(s % 60).padStart(2,'0')}`;
+    const start = tc(elapsed);
+    elapsed += secs;
+    const end = tc(elapsed);
+    const brollHtml = scene.broll.map(b => `<li class="po-broll-item">🎬 ${escapeHtml(b)}</li>`).join('');
+    const previewText = scene.spoken[0] ? escapeHtml(scene.spoken[0].slice(0, 90)) + (scene.spoken[0].length > 90 ? '…' : '') : '';
+    return `<div class="po-scene">
+      <div class="po-scene-head">
+        <span class="po-num">Scene ${i + 1}</span>
+        <span class="po-label">${escapeHtml(scene.label)}</span>
+        <span class="po-tc">${start} – ${end}</span>
+        <span class="po-wc">${scene.words}w</span>
+      </div>
+      ${previewText ? `<p class="po-preview">"${previewText}"</p>` : ''}
+      ${brollHtml ? `<ul class="po-broll">${brollHtml}</ul>` : ''}
+    </div>`;
+  }).join('');
+
+  const totalSecs = elapsed;
+  const totalMins = (totalSecs / 60).toFixed(1);
+
+  panel.innerHTML = `<div class="po-header">
+    <div>
+      <strong>🎬 Production Outline</strong>
+      <span class="po-meta">${scenes.length} scenes · ~${totalMins} min at 150 WPM</span>
+    </div>
+    <button class="btn btn-outline btn-sm" onclick="copyProductionOutline()">📋 Copy Outline</button>
+  </div>
+  <div class="po-scenes">${rows || '<p class="po-empty">No sections detected — generate a structured script first.</p>'}</div>`;
+
+  panel.classList.remove('hidden');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyProductionOutline() {
+  const panel = document.getElementById('prod-outline');
+  if (!panel) return;
+  // Extract text content cleanly
+  const text = Array.from(panel.querySelectorAll('.po-scene')).map(scene => {
+    const head = scene.querySelector('.po-scene-head');
+    const num = head?.querySelector('.po-num')?.textContent || '';
+    const label = head?.querySelector('.po-label')?.textContent || '';
+    const tc = head?.querySelector('.po-tc')?.textContent || '';
+    const wc = head?.querySelector('.po-wc')?.textContent || '';
+    const preview = scene.querySelector('.po-preview')?.textContent || '';
+    const broll = Array.from(scene.querySelectorAll('.po-broll-item')).map(li => `  ${li.textContent}`).join('\n');
+    return `${num}: ${label} [${tc}] (${wc})\n${preview ? preview + '\n' : ''}${broll}`.trim();
+  }).join('\n\n');
+
+  navigator.clipboard.writeText(text).then(() => showToast('📋 Outline copied!', 'success'));
 }
 
 // === IMPROVE SCRIPT ===
