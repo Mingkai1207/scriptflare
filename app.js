@@ -150,8 +150,10 @@ function updateGenerateBtnState() {
   const btn = document.getElementById('generate-btn');
   if (!btn) return;
   if (remaining === 0 && !isProUser()) {
-    btn.disabled = true;
+    // Keep clickable but visually indicate upgrade needed — generateScript() handles the paywall
+    btn.disabled = false;
     document.getElementById('btn-text').textContent = '🔒 Upgrade to Pro to Continue';
+    btn.style.background = 'linear-gradient(135deg, #3d2a7a, #7a1f50)';
   }
 }
 
@@ -218,6 +220,13 @@ function scrollToPricing() {
 async function generateScript() {
   if (isGenerating) return;
 
+  // Check usage limit first — so clicking the locked button always opens the paywall
+  const remaining = getRemainingScripts();
+  if (remaining <= 0 && !isProUser()) {
+    showPaywall();
+    return;
+  }
+
   const topic = document.getElementById('topic').value.trim();
   const niche = document.getElementById('niche').value;
   const length = document.getElementById('length').value;
@@ -231,13 +240,6 @@ async function generateScript() {
   }
   if (!niche) {
     shakeField('niche');
-    return;
-  }
-
-  // Check usage limit
-  const remaining = getRemainingScripts();
-  if (remaining <= 0 && !isProUser()) {
-    showPaywall();
     return;
   }
 
@@ -439,11 +441,14 @@ function setLoadingState(loading) {
   if (loading) {
     btn.disabled = true;
   } else {
-    // Re-enable only if user still has remaining scripts or is pro
     const outOfScripts = getRemainingScripts() <= 0 && !isProUser();
-    btn.disabled = outOfScripts;
+    btn.disabled = false;
+    btn.style.background = '';
     if (outOfScripts) {
       btnText.textContent = '🔒 Upgrade to Pro to Continue';
+      btn.style.background = 'linear-gradient(135deg, #3d2a7a, #7a1f50)';
+    } else {
+      btnText.textContent = '⚡ Generate Script';
     }
   }
 
