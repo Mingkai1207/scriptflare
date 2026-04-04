@@ -915,6 +915,15 @@ function showToast(message, type = 'info') {
   });
 }
 
+// === SHARE ON X ===
+function shareOnX() {
+  const topic = document.getElementById('topic').value.trim() || 'my YouTube topic';
+  const shortTopic = topic.length > 60 ? topic.slice(0, 57) + '...' : topic;
+  const text = `Just generated a full YouTube script in 30 seconds with ScriptFlare ⚡\n\nTopic: "${shortTopic}"\n\nGet 3 free scripts →`;
+  const url = 'https://mingkai1207.github.io/scriptflare/';
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=560,height=400');
+}
+
 // === COPY & DOWNLOAD ===
 function copyScript() {
   if (!currentScript) return;
