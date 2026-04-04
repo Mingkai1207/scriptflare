@@ -758,9 +758,10 @@ function displayScript(script, topic, length) {
   }
   contentDiv.innerHTML = formatScript(script);
 
-  // Show output + performance tip + quality report + topic suggestions
+  // Show output + voiceover links + performance tip + quality report + topic suggestions
   outputDiv.classList.remove('hidden');
   outputDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  document.getElementById('voiceover-links')?.classList.remove('hidden');
   showNichePerfTip(niche);
   showQualityReport(script);
   showTopicSuggestions(niche);
@@ -844,10 +845,14 @@ function showPaywall() {
 function showError(message) {
   const outputDiv = document.getElementById('gen-output');
   const contentDiv = document.getElementById('script-content');
-  contentDiv.innerHTML = `<div style="color:#f87171;padding:20px;">
-    <strong>⚠️ Generation failed</strong><br>
-    ${escapeHtml(message)}<br><br>
-    <small>Please check your connection and try again. If the issue persists, contact support.</small>
+  contentDiv.innerHTML = `<div style="padding:24px 20px;text-align:center">
+    <div style="font-size:2rem;margin-bottom:12px">⚠️</div>
+    <strong style="color:#f87171;font-size:1rem">Generation failed</strong>
+    <p style="color:#888;font-size:0.85rem;margin:8px 0 20px">${escapeHtml(message)}</p>
+    <button onclick="generateScript()" style="background:rgba(124,92,252,0.15);border:1px solid rgba(124,92,252,0.3);color:#9d82fd;padding:10px 24px;border-radius:8px;font-size:0.88rem;cursor:pointer;font-family:inherit">
+      🔄 Try again
+    </button>
+    <p style="color:#555;font-size:0.75rem;margin-top:12px">If the issue persists, contact <a href="mailto:liumingkai1207@gmail.com" style="color:#7c5cfc">support</a></p>
   </div>`;
   outputDiv.classList.remove('hidden');
 }
@@ -949,6 +954,7 @@ function regenerateScript() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
+  document.getElementById('voiceover-links')?.classList.add('hidden');
   currentScript = '';
   generateScript();
 }
@@ -958,6 +964,8 @@ function clearOutput() {
   document.getElementById('gen-form').classList.remove('hidden');
   document.getElementById('topic-suggestions')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
+  document.getElementById('voiceover-links')?.classList.add('hidden');
+  document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   localStorage.removeItem('sf_autosave');
   currentScript = '';

@@ -1502,6 +1502,39 @@ footer {
   .upgrade-nudge { flex-direction: column; align-items: flex-start; gap: 6px; }
 }
 
+/* === VOICEOVER QUICK LINKS === */
+.voiceover-links {
+  padding: 12px 24px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  animation: fadeSlideIn 0.3s ease;
+}
+.voiceover-label {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.voiceover-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.voiceover-chip {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  text-decoration: none;
+  transition: all 0.18s;
+}
+.voiceover-chip:hover {
+  border-color: rgba(124,92,252,0.4);
+  color: var(--primary-light);
+  background: rgba(124,92,252,0.06);
+}
+
 /* === TOPIC HISTORY === */
 .topic-history {
   display: flex;
