@@ -3514,3 +3514,47 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   border-color: var(--primary);
   color: var(--primary-light);
 }
+
+/* === MOBILE RESPONSIVE: NEW COMPONENTS === */
+@media (max-width: 640px) {
+  /* Niche revenue card stacks */
+  .niche-revenue { flex-direction: column; gap: 8px; }
+  .nr-body { width: 100%; }
+
+  /* Social clips grid stacks */
+  .sc-grid { grid-template-columns: 1fr; }
+
+  /* Hook A/B cards stack */
+  .hab-cards { grid-template-columns: 1fr; }
+
+  /* Production outline scene head wraps */
+  .po-scene-head { gap: 6px; }
+  .po-label { width: 100%; order: -1; }
+
+  /* Voice profile modal full-width on small screens */
+  .vp-box { padding: 18px 16px; }
+
+  /* Shortcuts modal */
+  .shortcuts-box { padding: 18px 16px; }
+  .shortcut-row { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .shortcut-desc { text-align: left; }
+
+  /* Format templates wrap */
+  .format-templates { gap: 5px; }
+  .ft-chip { font-size: 0.72rem; padding: 3px 9px; }
+
+  /* Word count bar compact */
+  .wc-bar-track { max-width: 120px; }
+
+  /* Output actions overflow */
+  .output-actions { gap: 4px; }
+  .output-actions-more { gap: 4px; }
+
+  /* Section breakdown chips */
+  .section-breakdown { gap: 4px; }
+  .sec-chip { font-size: 0.72rem; padding: 2px 7px; }
+
+  /* Keywords */
+  .quality-keywords { gap: 4px; }
+  .kw-chip { font-size: 0.72rem; padding: 2px 7px; }
+}
