@@ -544,6 +544,15 @@ select {
   font-size: 0.8rem;
   font-weight: 600;
 }
+.output-niche-badge {
+  background: rgba(124,92,252,0.1);
+  border: 1px solid rgba(124,92,252,0.25);
+  color: var(--primary-light);
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
 .output-stats {
   font-size: 0.82rem;
   color: var(--text-muted);

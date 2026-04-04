@@ -572,15 +572,26 @@ function displayScript(script, topic, length) {
   const topicLabel = topic ? `"${topic.length > 46 ? topic.slice(0, 43) + '...' : topic}" · ` : '';
   if (statsSpan) statsSpan.textContent = `${topicLabel}~${words.toLocaleString()} words · ~${estimatedMins} min · ${sectionCount} sections · ${brollCount} B-roll cues`;
 
-  // Reset output badge and format the script
+  // Reset output badge and add niche label
   const badge = document.querySelector('.output-badge');
   if (badge) badge.textContent = '✅ Script Ready';
+  const niche = document.getElementById('niche')?.value || '';
+  const nicheOption = niche ? document.querySelector(`#niche option[value="${niche}"]`) : null;
+  const nicheLabel = nicheOption?.textContent?.replace(/\s+/g, ' ')?.trim() || '';
+  const existingNicheBadge = document.getElementById('output-niche');
+  if (existingNicheBadge) existingNicheBadge.remove();
+  if (nicheLabel && badge) {
+    const nb = document.createElement('span');
+    nb.id = 'output-niche';
+    nb.className = 'output-niche-badge';
+    nb.textContent = nicheLabel;
+    badge.insertAdjacentElement('afterend', nb);
+  }
   contentDiv.innerHTML = formatScript(script);
 
   // Show output + topic suggestions
   outputDiv.classList.remove('hidden');
   outputDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  const niche = document.getElementById('niche')?.value || '';
   showTopicSuggestions(niche);
 
   // Success toast with upgrade nudge if on last remaining (0 left now)
