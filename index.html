@@ -326,7 +326,10 @@
           <div class="form-row">
             <div class="form-group full">
               <label for="topic">Video Topic / Idea <span class="required">*</span></label>
-              <input type="text" id="topic" placeholder="e.g. 5 habits that made me a millionaire before 30" maxlength="200" oninput="updateTopicCounter(); detectNicheFromTopic()" />
+              <div class="topic-input-row">
+                <input type="text" id="topic" placeholder="e.g. 5 habits that made me a millionaire before 30" maxlength="200" oninput="updateTopicCounter(); detectNicheFromTopic()" />
+                <button type="button" class="btn-surprise" onclick="surpriseTopic()" title="Pick a random trending topic">🎲</button>
+              </div>
               <div class="form-hint-row">
                 <span class="form-hint">Be specific — better input = better script</span>
                 <span class="topic-counter" id="topic-counter">0 / 200</span>
@@ -400,6 +403,10 @@
               <span class="spinner"></span> <span id="loading-text">Analyzing your topic...</span>
             </span>
           </button>
+          <div class="loading-tip-wrap hidden" id="loading-tip-wrap">
+            <span class="loading-tip-icon">💡</span>
+            <span id="loading-tip-text"></span>
+          </div>
           <div class="gen-progress-wrap hidden" id="gen-progress-wrap">
             <div class="gen-progress-track">
               <div class="gen-progress-fill" id="gen-progress-fill"></div>
@@ -428,6 +435,11 @@
             </div>
           </div>
           <div class="script-content" id="script-content"></div>
+          <!-- Upgrade nudge (shown when 1 script left) -->
+          <div class="upgrade-nudge hidden" id="upgrade-nudge">
+            <span>⚡ That's your 2nd script — <strong>1 free script left</strong></span>
+            <a href="#pricing" class="upgrade-nudge-btn" onclick="scrollToPricing()">Upgrade for unlimited →</a>
+          </div>
           <!-- Script quality indicators -->
           <div class="script-quality hidden" id="script-quality">
             <div class="quality-score-wrap">

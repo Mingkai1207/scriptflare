@@ -761,14 +761,22 @@ function displayScript(script, topic, length) {
   showQualityReport(script);
   showTopicSuggestions(niche);
 
-  // Success toast with upgrade nudge if on last remaining (0 left now)
+  // Success toast + upgrade nudge
   const nowRemaining = getRemainingScripts();
+  const nudge = document.getElementById('upgrade-nudge');
   if (!isProUser()) {
     if (nowRemaining === 0) {
       setTimeout(() => showToast('🎉 Script ready! That was your last free one — upgrade to keep creating.', 'warning'), 800);
+      if (nudge) nudge.classList.add('hidden');
+    } else if (nowRemaining === 1) {
+      setTimeout(() => showToast('⚡ 1 free script remaining — make it count!', 'warning'), 800);
+      if (nudge) nudge.classList.remove('hidden');
     } else {
-      setTimeout(() => showToast(`✅ Script ready! ${nowRemaining} free script${nowRemaining > 1 ? 's' : ''} remaining.`, 'success'), 800);
+      setTimeout(() => showToast(`✅ Script ready! ${nowRemaining} free scripts remaining.`, 'success'), 800);
+      if (nudge) nudge.classList.add('hidden');
     }
+  } else {
+    if (nudge) nudge.classList.add('hidden');
   }
 }
 
@@ -867,9 +875,11 @@ function setLoadingState(loading) {
       if (loadingText) loadingText.textContent = LOADING_STEPS[step];
     }, 2200);
     animateGenProgress(true);
+    showLoadingTips(true);
   } else {
     clearInterval(_progressTimer);
     animateGenProgress(false);
+    showLoadingTips(false);
     const outOfScripts = getRemainingScripts() <= 0 && !isProUser();
     btn.disabled = false;
     btn.style.background = '';
@@ -1023,6 +1033,58 @@ function showQualityReport(script) {
   }
 
   qDiv.classList.remove('hidden');
+}
+
+// === SURPRISE ME (random topic) ===
+function surpriseTopic() {
+  const niche = document.getElementById('niche').value;
+  const pool = niche && TOPIC_SUGGESTIONS[niche]
+    ? TOPIC_SUGGESTIONS[niche]
+    : Object.values(TOPIC_SUGGESTIONS).flat();
+  const topic = pool[Math.floor(Math.random() * pool.length)];
+  const input = document.getElementById('topic');
+  input.value = topic;
+  updateTopicCounter();
+  detectNicheFromTopic();
+  input.focus();
+  // Spin animation on the button
+  const btn = document.querySelector('.btn-surprise');
+  if (btn) { btn.style.transform = 'rotate(360deg)'; setTimeout(() => { btn.style.transform = ''; }, 400); }
+  showToast('🎲 Random topic loaded — hit generate!', 'success');
+}
+
+// === LOADING TIPS ===
+const LOADING_TIPS = [
+  'Top faceless channels post 4–7 videos per week consistently',
+  'Videos 8–15 min capture the most mid-roll ad revenue',
+  'Your hook decides 50% of your watch time — make it count',
+  'Open loops ("I\'ll explain why later...") boost retention by up to 40%',
+  'B-roll that changes every 3–5 seconds keeps viewers from clicking away',
+  'Finance and self-improvement have some of the highest YouTube CPM rates',
+  'YouTube rewards consistency over one-off viral videos',
+  'The first 30 seconds decide: 3 minutes watched, or 10',
+  'Most 6-figure faceless channels outsource only their scripting and editing',
+  'AI voiceover tools like ElevenLabs work best with conversational scripts',
+];
+let _loadingTipTimer = null;
+
+function showLoadingTips(show) {
+  const wrap = document.getElementById('loading-tip-wrap');
+  const textEl = document.getElementById('loading-tip-text');
+  if (!wrap || !textEl) return;
+  clearInterval(_loadingTipTimer);
+  if (!show) { wrap.classList.add('hidden'); return; }
+
+  let idx = Math.floor(Math.random() * LOADING_TIPS.length);
+  textEl.textContent = LOADING_TIPS[idx];
+  wrap.classList.remove('hidden');
+  textEl.style.transition = 'opacity 0.2s';
+
+  _loadingTipTimer = setInterval(() => {
+    idx = (idx + 1) % LOADING_TIPS.length;
+    textEl.style.opacity = '0';
+    setTimeout(() => { textEl.textContent = LOADING_TIPS[idx]; textEl.style.opacity = '1'; }, 220);
+  }, 4500);
 }
 
 // === TOPIC HISTORY ===

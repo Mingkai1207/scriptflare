@@ -1407,6 +1407,75 @@ footer {
   text-align: right;
 }
 
+/* === TOPIC INPUT ROW (with surprise button) === */
+.topic-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+.topic-input-row input { flex: 1; }
+.btn-surprise {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text-muted);
+  font-size: 1.2rem;
+  padding: 0 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+.btn-surprise:hover {
+  background: rgba(124,92,252,0.1);
+  border-color: rgba(124,92,252,0.4);
+  transform: rotate(20deg) scale(1.1);
+}
+
+/* === LOADING TIPS === */
+.loading-tip-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: rgba(124,92,252,0.05);
+  border: 1px solid rgba(124,92,252,0.12);
+  border-radius: 8px;
+  animation: fadeSlideIn 0.3s ease;
+}
+.loading-tip-icon { font-size: 0.9rem; flex-shrink: 0; margin-top: 1px; }
+#loading-tip-text {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* === UPGRADE NUDGE (1 script left banner) === */
+.upgrade-nudge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(251,191,36,0.06);
+  border-bottom: 1px solid rgba(251,191,36,0.15);
+  font-size: 0.84rem;
+  color: var(--text-muted);
+  animation: fadeSlideIn 0.3s ease;
+}
+.upgrade-nudge-btn {
+  white-space: nowrap;
+  color: var(--yellow);
+  font-weight: 600;
+  font-size: 0.82rem;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.upgrade-nudge-btn:hover { opacity: 0.8; }
+@media (max-width: 560px) {
+  .upgrade-nudge { flex-direction: column; align-items: flex-start; gap: 6px; }
+}
+
 /* === TOPIC HISTORY === */
 .topic-history {
   display: flex;
