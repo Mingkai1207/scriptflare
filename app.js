@@ -906,10 +906,12 @@ function setLoadingState(loading) {
     }, 2200);
     animateGenProgress(true);
     showLoadingTips(true);
+    document.title = '✍️ Writing your script... | ScriptFlare';
   } else {
     clearInterval(_progressTimer);
     animateGenProgress(false);
     showLoadingTips(false);
+    document.title = 'ScriptFlare — AI Script Writer for Faceless YouTube Channels';
     const outOfScripts = getRemainingScripts() <= 0 && !isProUser();
     btn.disabled = false;
     btn.style.background = '';
@@ -1052,6 +1054,16 @@ function showQualityReport(script) {
   const hasCTA = /\[call to action\]/i.test(script) || /\[cta\]/i.test(script);
   const hasOpenLoop = ['stay tuned','coming up','find out','later in','keep watching','stick around','by the end'].some(p => lower.includes(p));
 
+  // Hook strength: extract hook section and analyze for power patterns
+  const hookMatch = script.match(/\[HOOK\]([\s\S]*?)(?=\[(?!VISUAL:))/i);
+  const hookText = hookMatch ? hookMatch[1].toLowerCase() : lower.slice(0, 400);
+  let hookStrength = 0;
+  if (/\d+%|\d+ out of \d+|\d+ in \d+/.test(hookText)) hookStrength++;           // specific stat/number
+  if (/what if|imagine|did you know|here's the thing/.test(hookText)) hookStrength++; // curiosity opener
+  if (/secret|nobody|truth|real reason|hidden|mistake/.test(hookText)) hookStrength++; // intrigue words
+  if (hookText.split('.').length >= 3) hookStrength++;                             // multi-sentence hook
+  if (/you|your/.test(hookText)) hookStrength++;                                   // second-person engagement
+
   const set = (id, ok, label) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1059,21 +1071,24 @@ function showQualityReport(script) {
     el.textContent = (ok ? '✅ ' : '⚠️ ') + label;
   };
 
-  set('q-hook', hasHook, 'Hook');
+  const hookBars = '▰'.repeat(hookStrength) + '▱'.repeat(5 - hookStrength);
+  set('q-hook', hasHook, `Hook  ${hookBars}`);
   set('q-broll', brollCount >= 4, `${brollCount} B-Roll Cues`);
   set('q-openloop', hasOpenLoop, 'Open Loop');
   set('q-cta', hasCTA, 'CTA');
 
   // Compute score
   let score = 0;
-  if (hasHook) score += 25;
-  if (brollCount >= 6) score += 25;
-  else if (brollCount >= 4) score += 20;
-  else if (brollCount >= 2) score += 12;
-  if (hasOpenLoop) score += 25;
-  if (hasCTA) score += 25;
+  if (hasHook) score += 22;
+  if (hookStrength >= 4) score += 8;
+  else if (hookStrength >= 2) score += 4;
+  if (brollCount >= 6) score += 22;
+  else if (brollCount >= 4) score += 18;
+  else if (brollCount >= 2) score += 10;
+  if (hasOpenLoop) score += 22;
+  if (hasCTA) score += 22;
   const sectionCount = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length;
-  if (sectionCount >= 4) score = Math.min(100, score + 5);
+  if (sectionCount >= 4) score = Math.min(100, score + 4);
 
   const scoreEl = document.getElementById('quality-score');
   if (scoreEl) {
