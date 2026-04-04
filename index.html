@@ -563,6 +563,7 @@
               <button class="btn btn-ghost btn-sm" onclick="exportToGoogleDocs()">📄 Google Docs</button>
               <button class="btn btn-ghost btn-sm" onclick="openTeleprompter()">📺 Teleprompter</button>
               <button class="btn btn-ghost btn-sm" onclick="printScript()">🖨️ Print</button>
+              <button class="btn btn-ghost btn-sm" onclick="showSocialClips()" id="social-clips-btn">📱 Repurpose</button>
               <button class="btn btn-ghost btn-sm" onclick="showHistoryPanel()">📜 History</button>
               <button class="btn btn-ghost btn-sm" onclick="clearOutput()">New Script</button>
             </div>
@@ -621,6 +622,9 @@
 
         <!-- SCRIPT HISTORY PANEL -->
         <div class="history-panel hidden" id="history-panel"></div>
+
+        <!-- SOCIAL MEDIA REPURPOSE PANEL -->
+        <div class="social-clips hidden" id="social-clips"></div>
 
         <!-- CONTENT CALENDAR (shown after generating) -->
         <div class="content-calendar hidden" id="content-calendar">

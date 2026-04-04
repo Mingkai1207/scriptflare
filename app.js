@@ -1135,6 +1135,7 @@ function regenerateScript() {
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('quality-tips')?.classList.add('hidden');
+  document.getElementById('social-clips')?.classList.add('hidden');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
@@ -1153,6 +1154,7 @@ function clearOutput() {
   document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
+  document.getElementById('social-clips')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -2139,6 +2141,113 @@ async function regenerateHook() {
   } finally {
     if (btn) { btn.textContent = '🎣 New Hook'; btn.disabled = false; }
   }
+}
+
+// === SOCIAL MEDIA REPURPOSER ===
+async function showSocialClips() {
+  if (!currentScript) return;
+
+  const panel = document.getElementById('social-clips');
+  const btn = document.getElementById('social-clips-btn');
+  if (!panel) return;
+
+  // Pro gate
+  if (!isProUser()) {
+    panel.innerHTML = `<div class="social-clips-gate">
+      <span class="sc-lock">🔒</span>
+      <strong>Pro Feature</strong>
+      <p>Repurpose your script into tweets, LinkedIn posts, and Instagram captions automatically.</p>
+      <a href="#pricing" class="btn btn-primary btn-sm" onclick="scrollToPricing()">Upgrade to Pro →</a>
+    </div>`;
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+  const scriptExcerpt = currentScript.slice(0, 1800);
+
+  panel.innerHTML = `<div class="sc-loading"><span class="spinner"></span> Repurposing your script…</div>`;
+  panel.classList.remove('hidden');
+  if (btn) { btn.textContent = '⏳ Repurposing…'; btn.disabled = true; }
+
+  const systemPrompt = `You are a social media strategist. Given a YouTube script, create:
+1. Three tweet-sized posts (each under 240 chars, punchy, no hashtags inline — add 2 relevant hashtags at end)
+2. One LinkedIn post (150-200 words, professional framing, ends with a question)
+3. One Instagram caption (100-130 words, conversational, 5 hashtags at end)
+
+Format your response EXACTLY like this (use these exact labels):
+TWEET 1: [tweet text]
+TWEET 2: [tweet text]
+TWEET 3: [tweet text]
+LINKEDIN: [linkedin post]
+INSTAGRAM: [instagram caption]`;
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: `Topic: "${topic}"\nNiche: ${niche}\n\nScript excerpt:\n${scriptExcerpt}\n\nGenerate the social media posts:` }
+        ],
+        max_tokens: 900,
+        temperature: 0.85,
+      }),
+    });
+    if (!response.ok) throw new Error('API error');
+    const data = await response.json();
+    const raw = data.choices?.[0]?.message?.content?.trim() || '';
+    renderSocialClips(panel, raw);
+  } catch {
+    panel.innerHTML = `<div class="sc-error">⚠️ Generation failed — try again.</div>`;
+  } finally {
+    if (btn) { btn.textContent = '📱 Repurpose'; btn.disabled = false; }
+  }
+}
+
+function renderSocialClips(panel, raw) {
+  const extract = (label) => {
+    const re = new RegExp(label + ':\\s*([\\s\\S]*?)(?=(?:TWEET \\d|LINKEDIN|INSTAGRAM):|$)', 'i');
+    return (raw.match(re)?.[1] || '').trim();
+  };
+  const tweets = [extract('TWEET 1'), extract('TWEET 2'), extract('TWEET 3')].filter(Boolean);
+  const linkedin = extract('LINKEDIN');
+  const instagram = extract('INSTAGRAM');
+
+  const chipHtml = (text, icon, label) => {
+    if (!text) return '';
+    const safe = text.replace(/`/g, "'").replace(/</g, '&lt;');
+    return `<div class="sc-card">
+      <div class="sc-card-header">
+        <span class="sc-platform">${icon} ${label}</span>
+        <button class="sc-copy" onclick="copySocialClip(this, \`${safe}\`)">Copy</button>
+      </div>
+      <p class="sc-text">${safe.replace(/\n/g, '<br>')}</p>
+    </div>`;
+  };
+
+  const tweetCards = tweets.map((t, i) => chipHtml(t, '𝕏', `Tweet ${i + 1}`)).join('');
+  panel.innerHTML = `<div class="sc-header">
+    <strong>📱 Social Media Repurpose</strong>
+    <span class="sc-sub">Click any post to copy</span>
+  </div>
+  <div class="sc-grid">
+    ${tweetCards}
+    ${chipHtml(linkedin, 'in', 'LinkedIn')}
+    ${chipHtml(instagram, '📸', 'Instagram')}
+  </div>`;
+}
+
+function copySocialClip(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    setTimeout(() => { btn.textContent = orig; }, 1800);
+  });
 }
 
 function extractHook(script) {
