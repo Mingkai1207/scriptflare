@@ -1303,7 +1303,7 @@ const FORMSPREE_URL = 'https://formspree.io/f/FORMSPREE_ID';
 const EMAIL_BONUS_SCRIPTS = 3;
 
 function showEmailCaptureModal() {
-  if (localStorage.getItem('sf_email_seen')) return;
+  if (isProUser() || localStorage.getItem('sf_email_seen')) return;
   const modal = document.getElementById('ec-modal');
   if (modal) modal.classList.remove('hidden');
 }
