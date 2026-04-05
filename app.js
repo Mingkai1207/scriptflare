@@ -3450,6 +3450,27 @@ function generateThumbnailLines(topic, niche) {
   return nicheThumb[niche] || ['THE TRUTH', 'WHAT THEY HIDE', 'THIS CHANGES EVERYTHING'];
 }
 
+function headlineScore(title) {
+  if (!title) return 0;
+  const t = title.toLowerCase();
+  let score = 0;
+  const powerWords = ['proven', 'secret', 'nobody', 'truth', 'mistake', 'real', 'hidden',
+    'shocking', 'exposed', 'never', 'always', 'worst', 'best', 'only', 'why', 'stop',
+    'warning', 'urgent', 'finally', 'lie', 'lied', 'lies', 'actually', 'really', 'exactly'];
+  const emotionWords = ['surprising', 'amazing', 'incredible', 'unbelievable', 'brutal',
+    'insane', 'devastating', 'heartbreaking', 'genius', 'dangerous', 'terrifying'];
+  let hasPower = powerWords.some(w => t.includes(w));
+  let hasEmotion = emotionWords.some(w => t.includes(w));
+  if (hasPower) score += 2;
+  if (hasEmotion) score += 1;
+  if (/\d/.test(title)) score += 1;
+  if (/\?$/.test(title.trim())) score += 1;
+  if (/^how to /i.test(title.trim())) score += 1;
+  const len = title.length;
+  if (len >= 40 && len <= 70) score += 1;
+  return Math.min(score, 6);
+}
+
 function showTitleOptions(topic, niche) {
   const wrap = document.getElementById('title-options');
   if (!wrap || !topic) return;
@@ -3461,8 +3482,12 @@ function showTitleOptions(topic, niche) {
     const len = t.length;
     const countClass = len <= 60 ? 'title-len-ok' : len <= 70 ? 'title-len-warn' : 'title-len-over';
     const safeT = t.replace(/'/g, "&#39;").replace(/"/g, '&quot;');
+    const hs = headlineScore(t);
+    const hsClass = hs >= 4 ? 'hs-high' : hs >= 2 ? 'hs-mid' : 'hs-low';
+    const hsLabel = hs >= 4 ? '🔥 Strong' : hs >= 2 ? '👍 Good' : '💡 OK';
     return `<div class="title-option" onclick="copyTitle(this, '${safeT}')">
       <span class="title-option-text">${t}</span>
+      <span class="title-hs ${hsClass}">${hsLabel}</span>
       <span class="title-char-count ${countClass}">${len}</span>
       <span class="title-option-copy">Copy</span>
     </div>`;
