@@ -1506,6 +1506,27 @@ function showQualityReport(script) {
   if (hookText.split('.').length >= 3) hookStrength++;                             // multi-sentence hook
   if (/you|your/.test(hookText)) hookStrength++;                                   // second-person engagement
 
+  // Hook formula detection
+  let hookFormula = null;
+  let hookFormulaIcon = '🎣';
+  if (/\d+%|\d+ out of \d+|\$[\d,]+|billion|million|statistic|survey/.test(hookText)) {
+    hookFormula = 'Stat Surprise'; hookFormulaIcon = '📊';
+  } else if (/^(what if|imagine|picture this|did you know|have you ever)/.test(hookText.trim())) {
+    hookFormula = 'Question Loop'; hookFormulaIcon = '❓';
+  } else if (/secret|nobody (knows|tells|talks)|they don't want you|what they (hide|won't|never)/.test(hookText)) {
+    hookFormula = 'Insider Reveal'; hookFormulaIcon = '🔑';
+  } else if (/i (was|am|spent|lost|made|quit|started)|when i |my |it was |the day /.test(hookText)) {
+    hookFormula = 'Story Opening'; hookFormulaIcon = '📖';
+  } else if (/^(stop|never|you're|if you're|most people|the reason you)/.test(hookText.trim())) {
+    hookFormula = 'Direct Address'; hookFormulaIcon = '🎯';
+  } else if (/here's what|the truth|real reason|actual|actually|turns out/.test(hookText)) {
+    hookFormula = 'Myth Buster'; hookFormulaIcon = '💥';
+  } else if (hookText.includes('?') && (hookText.split('?')[0].length < 80)) {
+    hookFormula = 'Curiosity Hook'; hookFormulaIcon = '🪝';
+  } else {
+    hookFormula = 'Bold Opener'; hookFormulaIcon = '⚡';
+  }
+
   const set = (id, ok, label) => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -1569,6 +1590,22 @@ function showQualityReport(script) {
         gaugeFill.style.strokeDasharray = `${filled} ${circumference - filled}`;
       });
     }
+  }
+
+  // Hook formula tag
+  if (hookFormula && hasHook) {
+    let hfEl = document.getElementById('hook-formula-tag');
+    if (!hfEl) {
+      hfEl = document.createElement('div');
+      hfEl.id = 'hook-formula-tag';
+      hfEl.className = 'hook-formula-tag';
+      const hookItem = document.getElementById('q-hook');
+      if (hookItem) hookItem.insertAdjacentElement('afterend', hfEl);
+    }
+    hfEl.textContent = `${hookFormulaIcon} ${hookFormula}`;
+    hfEl.classList.remove('hidden');
+  } else {
+    document.getElementById('hook-formula-tag')?.classList.add('hidden');
   }
 
   // Per-section word count breakdown
