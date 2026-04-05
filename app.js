@@ -1443,6 +1443,18 @@ function pickNiche(value) {
   showLengthHint(value);
   showNicheRevenue(value);
   autoFillAudience(value);
+  // Sync ROI calculator niche
+  const roiNiche = document.getElementById('roi-niche-select');
+  if (roiNiche && value) { roiNiche.value = value; updateROI(); }
+}
+
+function onNicheSelectChange(value) {
+  syncNichePill(value);
+  showLengthHint(value);
+  showNicheRevenue(value);
+  autoFillAudience(value);
+  const roiNiche = document.getElementById('roi-niche-select');
+  if (roiNiche && value) { roiNiche.value = value; updateROI(); }
 }
 
 function jumpToGenerator(niche) {
