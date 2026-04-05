@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initStickyCTA();
   initDemandStrip();
   renderTopicHistory();
+  showDailyTopic();
   initPricingCountdown();
   initExitIntent();
   initTheme();
@@ -939,6 +940,102 @@ function autoFillAudience(niche) {
   if (!audienceEl || audienceEl.value.trim()) return; // don't overwrite if user typed something
   const suggestion = NICHE_AUDIENCES[niche];
   if (suggestion) audienceEl.placeholder = suggestion;
+}
+
+// === TOPIC OF THE DAY ===
+const DAILY_TOPICS = [
+  { topic: 'The 4 investing mistakes killing your portfolio returns', niche: 'personal finance', tone: 'dramatic and intense' },
+  { topic: 'How I saved $50,000 on a $45,000 salary', niche: 'personal finance', tone: 'conversational and personal' },
+  { topic: 'Why discipline beats motivation every single time', niche: 'motivation and mindset', tone: 'bold and direct' },
+  { topic: 'The disappearance that investigators still can\'t explain', niche: 'true crime and mysteries', tone: 'storytelling and narrative' },
+  { topic: 'How AI will replace 40% of jobs by 2030', niche: 'technology and AI', tone: 'documentary-style' },
+  { topic: 'Why the Roman Empire really collapsed — the true story', niche: 'history and facts', tone: 'documentary-style' },
+  { topic: 'The $0 business model making people millionaires in 2025', niche: 'business and entrepreneurship', tone: 'bold and direct' },
+  { topic: 'The sleep science that doctors aren\'t telling you', niche: 'health and wellness', tone: 'engaging and educational' },
+  { topic: '5 psychological tricks narcissists use that you need to know', niche: 'relationships and psychology', tone: 'documentary-style' },
+  { topic: 'The country nobody visits but everyone should', niche: 'travel and geography', tone: 'storytelling and narrative' },
+  { topic: 'The ancient Stoic habit that fixes 90% of modern anxiety', niche: 'spirituality and philosophy', tone: 'conversational and personal' },
+  { topic: 'What nobody is telling you about the AI jobs crisis', niche: 'news and current events', tone: 'dramatic and intense' },
+  { topic: '7 habits successful people do before 8am', niche: 'self-improvement', tone: 'listicle and punchy' },
+  { topic: 'The hidden tax loopholes the wealthy use every year', niche: 'personal finance', tone: 'documentary-style' },
+  { topic: 'The morning routine that quietly changed my life', niche: 'motivation and mindset', tone: 'conversational and personal' },
+  { topic: 'Inside the most elaborate con in American history', niche: 'true crime and mysteries', tone: 'storytelling and narrative' },
+  { topic: 'The dark side of social media algorithms nobody talks about', niche: 'technology and AI', tone: 'documentary-style' },
+  { topic: '10 historical facts that are completely wrong', niche: 'history and facts', tone: 'listicle and punchy' },
+  { topic: 'From side hustle to $10K/month: the exact playbook', niche: 'business and entrepreneurship', tone: 'conversational and personal' },
+  { topic: 'Why most diets fail — and what actually works long-term', niche: 'health and wellness', tone: 'engaging and educational' },
+  { topic: 'Why most people choose the wrong partner — the real reason', niche: 'relationships and psychology', tone: 'documentary-style' },
+  { topic: 'Why Japan is the most unique civilization on earth', niche: 'travel and geography', tone: 'documentary-style' },
+  { topic: 'Why Marcus Aurelius\'s philosophy is more relevant than ever', niche: 'spirituality and philosophy', tone: 'engaging and educational' },
+  { topic: 'The geopolitical shift that will define the next decade', niche: 'news and current events', tone: 'dramatic and intense' },
+  { topic: 'The 1% rule that quietly transforms your life in 6 months', niche: 'self-improvement', tone: 'conversational and personal' },
+  { topic: 'How compound interest makes the rich richer and traps the poor', niche: 'personal finance', tone: 'documentary-style' },
+  { topic: '5 mindset shifts that separate top 1% from everyone else', niche: 'motivation and mindset', tone: 'listicle and punchy' },
+  { topic: 'The cold case that cracked open 30 years later', niche: 'true crime and mysteries', tone: 'storytelling and narrative' },
+  { topic: '5 technologies that will change everything in the next 5 years', niche: 'technology and AI', tone: 'engaging and educational' },
+  { topic: 'The ancient civilization that was more advanced than we thought', niche: 'history and facts', tone: 'documentary-style' },
+  { topic: 'Why 90% of businesses fail in year one — and how to avoid it', niche: 'business and entrepreneurship', tone: 'bold and direct' },
+  { topic: '5 daily habits that add 10 years to your life', niche: 'health and wellness', tone: 'listicle and punchy' },
+  { topic: 'The attachment theory that explains every relationship problem', niche: 'relationships and psychology', tone: 'engaging and educational' },
+  { topic: '10 places that will disappear within your lifetime', niche: 'travel and geography', tone: 'documentary-style' },
+  { topic: '5 Buddhist principles that actually change how you live', niche: 'spirituality and philosophy', tone: 'engaging and educational' },
+  { topic: 'Why the middle class is quietly disappearing — the real data', niche: 'news and current events', tone: 'dramatic and intense' },
+  { topic: 'Why reading books changed my income and how to start', niche: 'self-improvement', tone: 'conversational and personal' },
+  { topic: 'The real reason you\'re not building wealth — it\'s not income', niche: 'personal finance', tone: 'bold and direct' },
+  { topic: 'The brutal truth about why most people stay average', niche: 'motivation and mindset', tone: 'dramatic and intense' },
+  { topic: 'The serial killer who fooled everyone for 20 years', niche: 'true crime and mysteries', tone: 'storytelling and narrative' },
+  { topic: 'The AI model that scared the researchers who built it', niche: 'technology and AI', tone: 'dramatic and intense' },
+  { topic: 'The battle that changed the course of human history', niche: 'history and facts', tone: 'documentary-style' },
+  { topic: 'How to build a $100K/year business with no employees', niche: 'business and entrepreneurship', tone: 'bold and direct' },
+  { topic: 'The gut-brain connection that changes everything about health', niche: 'health and wellness', tone: 'engaging and educational' },
+  { topic: 'The science of why toxic relationships feel addictive', niche: 'relationships and psychology', tone: 'documentary-style' },
+  { topic: 'The hidden gem destination that costs less than staying home', niche: 'travel and geography', tone: 'conversational and personal' },
+  { topic: 'The philosophy that 10× productivity without burning out', niche: 'spirituality and philosophy', tone: 'engaging and educational' },
+  { topic: 'The quiet economic shift nobody is talking about', niche: 'news and current events', tone: 'documentary-style' },
+  { topic: 'How to build unshakeable confidence from scratch', niche: 'self-improvement', tone: 'conversational and personal' },
+  { topic: 'What banks don\'t want you to know about credit card rewards', niche: 'personal finance', tone: 'bold and direct' },
+  { topic: 'The identity shift that makes hard habits automatic', niche: 'motivation and mindset', tone: 'engaging and educational' },
+  { topic: 'The fraud that collapsed an entire industry overnight', niche: 'true crime and mysteries', tone: 'dramatic and intense' },
+  { topic: 'How quantum computing will break the internet — and fix it', niche: 'technology and AI', tone: 'documentary-style' },
+  { topic: 'The monarch who was erased from history on purpose', niche: 'history and facts', tone: 'storytelling and narrative' },
+  { topic: 'How to validate a business idea in 48 hours with $0', niche: 'business and entrepreneurship', tone: 'conversational and personal' },
+  { topic: 'Why you\'re exhausted all the time — the real explanation', niche: 'health and wellness', tone: 'documentary-style' },
+  { topic: 'The manipulation tactics that are used on you daily', niche: 'relationships and psychology', tone: 'bold and direct' },
+  { topic: 'The most dangerous city on earth — and why people still live there', niche: 'travel and geography', tone: 'documentary-style' },
+  { topic: 'The Zen concept that solves most modern problems', niche: 'spirituality and philosophy', tone: 'conversational and personal' },
+  { topic: 'The data that shows where the economy is actually headed', niche: 'news and current events', tone: 'engaging and educational' },
+  { topic: 'The system that turned my chaotic days into focused ones', niche: 'self-improvement', tone: 'conversational and personal' },
+];
+
+function getDailyTopic() {
+  const day = new Date().getDate() - 1; // 0-30
+  return DAILY_TOPICS[day % DAILY_TOPICS.length];
+}
+
+function showDailyTopic() {
+  const el = document.getElementById('daily-topic-banner');
+  if (!el) return;
+  const dt = getDailyTopic();
+  const nicheLabel = dt.niche.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  el.innerHTML = `<span class="dt-badge">⚡ Today's Topic</span><span class="dt-text">"${dt.topic}"</span><span class="dt-niche">${nicheLabel}</span><button class="dt-btn" onclick="applyDailyTopic()">Try it →</button>`;
+  el.classList.remove('hidden');
+}
+
+function applyDailyTopic() {
+  const dt = getDailyTopic();
+  const topicEl = document.getElementById('topic');
+  const nicheEl = document.getElementById('niche');
+  const toneEl = document.getElementById('tone');
+  if (topicEl) { topicEl.value = dt.topic; updateTopicCounter(); }
+  if (nicheEl) nicheEl.value = dt.niche;
+  if (toneEl) toneEl.value = dt.tone;
+  syncNichePill(dt.niche);
+  showLengthHint(dt.niche);
+  showNicheRevenue(dt.niche);
+  autoFillAudience(dt.niche);
+  document.getElementById('daily-topic-banner')?.classList.add('dt-applied');
+  showToast('⚡ Today\'s topic loaded — hit Generate to get your script!', 'success');
+  topicEl?.focus();
 }
 
 // === QUICK-START PRESETS ===

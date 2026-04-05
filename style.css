@@ -4393,3 +4393,66 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   opacity: 0.75;
   margin-left: 4px;
 }
+
+/* === DAILY TOPIC BANNER === */
+.daily-topic-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  padding: 10px 14px;
+  background: linear-gradient(135deg, rgba(124,92,252,0.12), rgba(6,182,212,0.08));
+  border: 1px solid rgba(124,92,252,0.28);
+  border-radius: 10px;
+  margin-bottom: 14px;
+  animation: slideDown 0.3s ease;
+  transition: opacity 0.3s;
+}
+.daily-topic-banner.dt-applied {
+  border-color: var(--green);
+  background: rgba(16,185,129,0.08);
+}
+.dt-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--primary);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.dt-text {
+  font-size: 13px;
+  color: var(--text);
+  flex: 1;
+  min-width: 180px;
+  font-style: italic;
+  line-height: 1.4;
+}
+.dt-niche {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.06);
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.dt-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, transform 0.1s;
+}
+.dt-btn:hover {
+  background: var(--primary-dark, #6340e8);
+  transform: translateY(-1px);
+}
+@media (max-width: 480px) {
+  .daily-topic-banner { gap: 6px 8px; padding: 8px 12px; }
+  .dt-text { font-size: 12px; min-width: 140px; }
+}
