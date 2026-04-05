@@ -3464,10 +3464,22 @@ async function improveScript() {
   const hasOpenLoop = ['stay tuned','coming up','find out','later in','keep watching','stick around','by the end'].some(p => lower.includes(p));
   const hasCTA = /\[call to action\]/i.test(currentScript) || /\[cta\]/i.test(currentScript);
 
+  // Retention hooks count
+  const retentionPhrases2 = [
+    "but here's where","here's where it gets","but wait","now here's the thing",
+    "stay with me","and that's not all","here's what most people","what nobody tells",
+    "the surprising part","but it gets better","but it gets worse","here's the kicker",
+    "but before that","and this is important","pay attention to this","you won't believe",
+    "the real reason","and this is where","but here's the twist","here's the thing",
+    "what's interesting is","and this is key","but here's the catch","spoiler alert"
+  ];
+  const retentionCount2 = retentionPhrases2.filter(p => lower.includes(p)).length;
+
   const improvements = [];
   if (!hasHook) improvements.push('Add a dedicated [HOOK] section that grabs attention in the first 3 seconds');
   if (brollCount < 4) improvements.push(`Increase B-roll cues — currently only ${brollCount}, aim for 6–8 spread throughout`);
   if (!hasOpenLoop) improvements.push('Add an open loop early in the script (hint at a revelation to pay off later)');
+  if (retentionCount2 < 2) improvements.push(`Add at least ${2 - retentionCount2} more mid-video retention hooks (e.g. "But here's where it gets interesting...", "Stay with me because...", "Here's what most people miss...")`);
   if (!hasCTA) improvements.push('Add a [CALL TO ACTION] section at the end asking viewers to subscribe/comment');
 
   if (!improvements.length) {
