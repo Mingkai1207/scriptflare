@@ -1065,7 +1065,9 @@ function displayScript(script, topic, length) {
     const pct = Math.min(100, Math.round((words / targetWords) * 100));
     wcFill.style.width = pct + '%';
     wcFill.className = 'wc-bar-fill' + (onTarget ? ' wc-ok' : words < targetWords ? ' wc-short' : ' wc-over');
-    wcLabel.textContent = `${words.toLocaleString()} / ${targetWords.toLocaleString()} words (${pct}%)`;
+    const estMins = Math.round(words / 150);
+    const durStr = estMins < 1 ? '<1 min video' : `~${estMins} min video`;
+    wcLabel.textContent = `${words.toLocaleString()} / ${targetWords.toLocaleString()} words (${pct}%) · ${durStr}`;
     wcWrap.classList.remove('hidden');
   }
 
@@ -1339,6 +1341,7 @@ function regenerateScript() {
   document.getElementById('hook-ab')?.classList.add('hidden');
   document.getElementById('blog-post-panel')?.classList.add('hidden');
   document.getElementById('chapter-ts')?.classList.add('hidden');
+  document.getElementById('studio-pack')?.classList.add('hidden');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
@@ -1363,6 +1366,7 @@ function clearOutput() {
   document.getElementById('hook-ab')?.classList.add('hidden');
   document.getElementById('blog-post-panel')?.classList.add('hidden');
   document.getElementById('chapter-ts')?.classList.add('hidden');
+  document.getElementById('studio-pack')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -2041,6 +2045,122 @@ function copyChapterTimestamps() {
   if (!pre) return;
   navigator.clipboard.writeText(pre.textContent.trim())
     .then(() => showToast('✅ Chapter timestamps copied — paste into YouTube description!', 'success'))
+    .catch(() => showToast('⚠️ Copy failed', 'error'));
+}
+
+// === YOUTUBE STUDIO PACK ===
+const NICHE_TAGS = {
+  'personal finance': ['personal finance','money tips','financial freedom','how to save money','budgeting','investing for beginners','make money','passive income','financial advice','money management'],
+  'investing': ['investing','stock market','how to invest','index funds','ETF investing','dividend stocks','wealth building','investment tips','financial independence','retirement planning'],
+  'business': ['business tips','entrepreneurship','how to start a business','online business','side hustle','make money online','business strategy','startup tips','small business','solopreneur'],
+  'motivation': ['motivation','success mindset','self improvement','personal development','mindset tips','how to be successful','daily motivation','inspirational','discipline','habits'],
+  'health': ['health tips','fitness motivation','healthy lifestyle','weight loss','nutrition tips','workout routine','mental health','wellness','healthy habits','self care'],
+  'technology': ['technology','tech tips','AI tools','future technology','tech news','gadgets','artificial intelligence','tech explained','digital tools','tech for beginners'],
+  'history': ['history facts','world history','historical events','history documentary','interesting history','history explained','ancient history','modern history','history stories','did you know'],
+  'science': ['science facts','science explained','interesting science','how things work','physics','biology','chemistry','scientific discoveries','science for beginners','mind blowing facts'],
+  'true crime': ['true crime','crime stories','criminal cases','mystery solved','unsolved crimes','true crime documentary','crime explained','criminal minds','cold cases','crime investigation'],
+  'psychology': ['psychology facts','human behavior','psychology explained','mind tricks','social psychology','why people do things','psychology of success','behavior science','mental tricks','psychology tips'],
+  'relationships and psychology': ['relationship advice','psychology of relationships','dating tips','communication skills','human behavior','emotional intelligence','social skills','relationship psychology','love psychology','attachment styles'],
+  'productivity': ['productivity tips','how to be productive','time management','morning routine','study tips','focus techniques','deep work','productivity hacks','work smarter','daily habits'],
+};
+
+function showStudioPack() {
+  const panel = document.getElementById('studio-pack');
+  if (!panel || !currentScript) return;
+
+  // Toggle off if already open
+  if (!panel.classList.contains('hidden')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  if (!isProUser()) {
+    panel.innerHTML = `
+      <div class="sp-gate">
+        <div class="sp-gate-icon">📦</div>
+        <strong>YouTube Studio Pack — Pro Feature</strong>
+        <p>Get title + full description + hashtags + tags + chapters — everything you need to publish, in one click.</p>
+        <button class="btn btn-primary btn-sm" onclick="scrollToPricing()">Unlock with Pro →</button>
+      </div>
+    `;
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  const topic = document.getElementById('topic').value.trim() || 'this video';
+  const niche = document.getElementById('niche')?.value || '';
+  const nicheName = document.querySelector('#niche option:checked')?.textContent?.trim() || niche;
+  const titleEl = document.querySelector('.title-option-text');
+  const bestTitle = titleEl ? titleEl.textContent.trim() : topic;
+
+  // Build description
+  const hookLine = `In this video, we're diving into ${topic.toLowerCase()} — and what we found might change how you see it.`;
+  const bodyLine = `Whether you're new to ${nicheName} or looking to level up, this breakdown gives you the full picture.`;
+  const ctaLine = `If you found this useful, hit subscribe for weekly videos on ${nicheName}. Drop your questions in the comments below.`;
+  const description = `${hookLine}\n\n${bodyLine}\n\n${ctaLine}`;
+
+  // Chapter timestamps (reuse logic if available)
+  const chapterPre = document.getElementById('chapter-ts-pre');
+  const chaptersText = chapterPre ? chapterPre.textContent.trim() : '';
+
+  // Tags
+  const tags = (NICHE_TAGS[niche] || NICHE_TAGS['motivation'] || []).slice(0, 8);
+  const hashTags = tags.slice(0, 5).map(t => '#' + t.replace(/\s+/g, '')).join(' ');
+
+  const fullPack = [
+    `TITLE:\n${bestTitle}`,
+    `DESCRIPTION:\n${description}${chaptersText ? '\n\n' + chaptersText : ''}`,
+    `HASHTAGS:\n${hashTags}`,
+    `TAGS:\n${tags.join(', ')}`,
+  ].join('\n\n---\n\n');
+
+  panel.innerHTML = `
+    <div class="sp-header">
+      <span class="sp-title">📦 YouTube Studio Pack</span>
+      <span class="sp-sub">Copy each section into YouTube Studio, or grab everything at once</span>
+    </div>
+    <div class="sp-sections">
+      <div class="sp-section">
+        <div class="sp-section-head"><span class="sp-section-label">🏷️ Title</span><button class="btn btn-ghost btn-xs sp-copy-btn" onclick="copySpSection(this)">Copy</button></div>
+        <div class="sp-section-body">${escapeHtml(bestTitle)}</div>
+      </div>
+      <div class="sp-section">
+        <div class="sp-section-head"><span class="sp-section-label">📝 Description</span><button class="btn btn-ghost btn-xs sp-copy-btn" onclick="copySpSection(this)">Copy</button></div>
+        <div class="sp-section-body">${escapeHtml(description)}${chaptersText ? '\n\n' + escapeHtml(chaptersText) : ''}</div>
+      </div>
+      <div class="sp-section">
+        <div class="sp-section-head"><span class="sp-section-label"># Hashtags</span><button class="btn btn-ghost btn-xs sp-copy-btn" onclick="copySpSection(this)">Copy</button></div>
+        <div class="sp-section-body">${escapeHtml(hashTags)}</div>
+      </div>
+      <div class="sp-section">
+        <div class="sp-section-head"><span class="sp-section-label">🏷️ Tags</span><button class="btn btn-ghost btn-xs sp-copy-btn" onclick="copySpSection(this)">Copy</button></div>
+        <div class="sp-section-body">${escapeHtml(tags.join(', '))}</div>
+      </div>
+    </div>
+    <div class="sp-footer">
+      <span class="sp-tip">💡 Paste description + chapters into YouTube Studio's Description field</span>
+      <button class="btn btn-primary btn-sm" onclick="copyEntireStudioPack()">📋 Copy Everything</button>
+    </div>
+  `;
+  panel._packText = fullPack;
+  panel.classList.remove('hidden');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copySpSection(btn) {
+  const body = btn.closest('.sp-section')?.querySelector('.sp-section-body');
+  if (!body) return;
+  navigator.clipboard.writeText(body.textContent.trim())
+    .then(() => { btn.textContent = 'Copied!'; setTimeout(() => { btn.textContent = 'Copy'; }, 1500); })
+    .catch(() => showToast('⚠️ Copy failed', 'error'));
+}
+
+function copyEntireStudioPack() {
+  const panel = document.getElementById('studio-pack');
+  if (!panel || !panel._packText) return;
+  navigator.clipboard.writeText(panel._packText)
+    .then(() => showToast('✅ Studio Pack copied — paste into YouTube Studio!', 'success'))
     .catch(() => showToast('⚠️ Copy failed', 'error'));
 }
 
