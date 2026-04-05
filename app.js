@@ -2436,6 +2436,7 @@ function clearOutput() {
   document.getElementById('translate-panel')?.classList.add('hidden');
   document.getElementById('thumbnail-panel')?.classList.add('hidden');
   document.getElementById('readability-score')?.classList.add('hidden');
+  document.getElementById('improve-preview')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -4701,26 +4702,13 @@ function copyBlogPost() {
 }
 
 // === IMPROVE SCRIPT ===
-async function improveScript() {
-  if (!currentScript || isGenerating) return;
-
-  const btn = document.getElementById('improve-btn');
-
-  if (!isProUser()) {
-    showToast('🔒 Script improvement is a Pro feature — upgrade to unlock.', 'warning');
-    setTimeout(() => scrollToPricing(), 600);
-    return;
-  }
-
-  // Diagnose quality gaps
-  const lower = currentScript.toLowerCase();
-  const hasHook = /\[hook\]/i.test(currentScript);
-  const brollCount = (currentScript.match(/\[VISUAL:/gi) || []).length;
+function diagnoseScriptFixes(script) {
+  const lower = script.toLowerCase();
+  const hasHook = /\[hook\]/i.test(script);
+  const brollCount = (script.match(/\[VISUAL:/gi) || []).length;
   const hasOpenLoop = ['stay tuned','coming up','find out','later in','keep watching','stick around','by the end'].some(p => lower.includes(p));
-  const hasCTA = /\[call to action\]/i.test(currentScript) || /\[cta\]/i.test(currentScript);
-
-  // Retention hooks count
-  const retentionPhrases2 = [
+  const hasCTA = /\[call to action\]/i.test(script) || /\[cta\]/i.test(script);
+  const retentionPhrases = [
     "but here's where","here's where it gets","but wait","now here's the thing",
     "stay with me","and that's not all","here's what most people","what nobody tells",
     "the surprising part","but it gets better","but it gets worse","here's the kicker",
@@ -4728,14 +4716,63 @@ async function improveScript() {
     "the real reason","and this is where","but here's the twist","here's the thing",
     "what's interesting is","and this is key","but here's the catch","spoiler alert"
   ];
-  const retentionCount2 = retentionPhrases2.filter(p => lower.includes(p)).length;
+  const retentionCount = retentionPhrases.filter(p => lower.includes(p)).length;
+  const fixes = [];
+  if (!hasHook) fixes.push({ icon: '🎣', label: 'Rewrite opening with a dedicated retention hook' });
+  if (brollCount < 4) fixes.push({ icon: '🎬', label: `Add ${Math.max(2, 6 - brollCount)} more B-roll visual cues (${brollCount} found, aim for 6+)` });
+  if (!hasOpenLoop) fixes.push({ icon: '🔄', label: 'Plant an open loop before the 2-minute mark to lock in watch time' });
+  if (retentionCount < 2) fixes.push({ icon: '🧲', label: `Inject ${2 - retentionCount} mid-video re-engagement line${retentionCount < 1 ? 's' : ''} to cut drop-off` });
+  if (!hasCTA) fixes.push({ icon: '📣', label: 'Add a subscribe/comment call to action at the end' });
+  return fixes;
+}
 
-  const improvements = [];
-  if (!hasHook) improvements.push('Add a dedicated [HOOK] section that grabs attention in the first 3 seconds');
-  if (brollCount < 4) improvements.push(`Increase B-roll cues — currently only ${brollCount}, aim for 6–8 spread throughout`);
-  if (!hasOpenLoop) improvements.push('Add an open loop early in the script (hint at a revelation to pay off later)');
-  if (retentionCount2 < 2) improvements.push(`Add at least ${2 - retentionCount2} more mid-video retention hooks (e.g. "But here's where it gets interesting...", "Stay with me because...", "Here's what most people miss...")`);
-  if (!hasCTA) improvements.push('Add a [CALL TO ACTION] section at the end asking viewers to subscribe/comment');
+function showImprovePreview(fixes) {
+  const el = document.getElementById('improve-preview');
+  if (!el) return;
+  const fixRows = fixes.map(f =>
+    `<div class="ip-fix-row"><span class="ip-fix-icon">${f.icon}</span><span class="ip-fix-text">${f.label}</span></div>`
+  ).join('');
+  el.innerHTML =
+    `<div class="ip-header">` +
+      `<span class="ip-lock">🔒</span>` +
+      `<span>ScriptFlare Pro would apply <strong>${fixes.length} fix${fixes.length !== 1 ? 'es' : ''}</strong> to this script:</span>` +
+      `<button class="ip-close" onclick="document.getElementById('improve-preview').classList.add('hidden')" title="Dismiss">✕</button>` +
+    `</div>` +
+    `<div class="ip-fixes">${fixRows}</div>` +
+    `<button class="btn btn-primary btn-sm ip-cta" onclick="scrollToPricing(); setTimeout(showPayPal, 400)">` +
+      `✨ Auto-Fix All ${fixes.length} — Upgrade to Pro →` +
+    `</button>` +
+    `<div class="ip-sub">$19/month · 30-day guarantee · Cancel anytime</div>`;
+  el.classList.remove('hidden');
+  el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function improveScript() {
+  if (!currentScript || isGenerating) return;
+
+  const btn = document.getElementById('improve-btn');
+
+  if (!isProUser()) {
+    const fixes = diagnoseScriptFixes(currentScript);
+    if (!fixes.length) {
+      showToast('✅ Your script already scores well — nothing to fix!', 'success');
+      return;
+    }
+    showImprovePreview(fixes);
+    return;
+  }
+
+  // Pro: Diagnose quality gaps for API prompt
+  const fixes2 = diagnoseScriptFixes(currentScript);
+  const improvements = fixes2.map(f => {
+    // Expand to verbose API instructions
+    if (f.icon === '🎣') return 'Add a dedicated [HOOK] section that grabs attention in the first 3 seconds';
+    if (f.icon === '🎬') return `Increase B-roll cues — currently only ${(currentScript.match(/\[VISUAL:/gi)||[]).length}, aim for 6–8 spread throughout`;
+    if (f.icon === '🔄') return 'Add an open loop early in the script (hint at a revelation to pay off later)';
+    if (f.icon === '🧲') return 'Add at least 2 more mid-video retention hooks (e.g. "But here\'s where it gets interesting...", "Stay with me because...", "Here\'s what most people miss...")';
+    if (f.icon === '📣') return 'Add a [CALL TO ACTION] section at the end asking viewers to subscribe/comment';
+    return f.label;
+  });
 
   if (!improvements.length) {
     showToast('✅ Script already scores well — nothing major to improve!', 'success');
