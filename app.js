@@ -2203,6 +2203,24 @@ function regenerateScript() {
   generateScript();
 }
 
+function tryNewAngle() {
+  // Pick a random format template different from any currently applied note in custom-notes
+  const templates = Object.keys(FORMAT_TEMPLATES);
+  const currentTone = document.getElementById('tone')?.value || '';
+  // Avoid repeating the current tone/template
+  const candidates = templates.filter(k => FORMAT_TEMPLATES[k].tone !== currentTone);
+  const key = candidates[Math.floor(Math.random() * candidates.length)] || templates[0];
+  const tmpl = FORMAT_TEMPLATES[key];
+  if (tmpl) {
+    if (tmpl.tone) document.getElementById('tone').value = tmpl.tone;
+    const notesEl = document.getElementById('custom-notes');
+    if (notesEl) notesEl.value = tmpl.notes;
+    showToast(`🎭 New angle: ${tmpl.label} — regenerating...`, 'success');
+    document.querySelectorAll('.ft-chip').forEach(c => c.classList.toggle('ft-active', c.getAttribute('onclick').includes(`'${key}'`)));
+  }
+  regenerateScript();
+}
+
 function clearOutput() {
   document.getElementById('gen-output').classList.add('hidden');
   document.getElementById('gen-form').classList.remove('hidden');
