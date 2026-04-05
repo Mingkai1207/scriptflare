@@ -1655,6 +1655,7 @@ function clearOutput() {
   document.getElementById('blog-post-panel')?.classList.add('hidden');
   document.getElementById('chapter-ts')?.classList.add('hidden');
   document.getElementById('studio-pack')?.classList.add('hidden');
+  document.getElementById('translate-panel')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -2562,6 +2563,118 @@ function copyEntireStudioPack() {
   navigator.clipboard.writeText(panel._packText)
     .then(() => showToast('✅ Studio Pack copied — paste into YouTube Studio!', 'success'))
     .catch(() => showToast('⚠️ Copy failed', 'error'));
+}
+
+// === SCRIPT TRANSLATE (Pro) ===
+const TRANSLATE_LANGUAGES = [
+  'Spanish', 'Portuguese', 'French', 'German', 'Italian', 'Dutch',
+  'Japanese', 'Korean', 'Chinese (Simplified)', 'Hindi', 'Arabic',
+  'Russian', 'Polish', 'Turkish', 'Indonesian', 'Vietnamese',
+];
+
+function showTranslatePanel() {
+  const panel = document.getElementById('translate-panel');
+  if (!panel || !currentScript) return;
+
+  // Toggle off
+  if (!panel.classList.contains('hidden') && panel.querySelector('.tp-langs')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  if (!isProUser()) {
+    panel.innerHTML = `<div class="tp-gate"><div class="tp-gate-icon">🌍</div><strong>Script Translate — Pro Feature</strong><p>Translate your entire script into 16+ languages while preserving the YouTube format — reach international audiences with the same content.</p><button class="btn btn-primary btn-sm" onclick="scrollToPricing()">Unlock with Pro →</button></div>`;
+    panel.classList.remove('hidden');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    return;
+  }
+
+  panel.innerHTML = `
+    <div class="tp-header">
+      <span class="tp-title">🌍 Translate Script</span>
+      <span class="tp-sub">Preserves all section headers, B-roll cues, and YouTube format</span>
+    </div>
+    <div class="tp-langs">
+      ${TRANSLATE_LANGUAGES.map(lang => `<button class="tp-lang-btn" onclick="translateScript('${lang}')">${lang}</button>`).join('')}
+    </div>
+    <div class="tp-result hidden" id="tp-result">
+      <div class="tp-result-header">
+        <span id="tp-result-lang"></span>
+        <button class="btn btn-outline btn-sm" onclick="copyTranslation()">📋 Copy</button>
+        <button class="btn btn-ghost btn-sm" onclick="useTranslation()">✅ Use as Script</button>
+      </div>
+      <pre class="tp-result-pre" id="tp-result-pre"></pre>
+    </div>
+  `;
+  panel.classList.remove('hidden');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+async function translateScript(language) {
+  if (!currentScript || isGenerating) return;
+  const panel = document.getElementById('translate-panel');
+  const resultArea = document.getElementById('tp-result');
+  const resultPre = document.getElementById('tp-result-pre');
+  const resultLang = document.getElementById('tp-result-lang');
+  if (!resultArea || !resultPre) return;
+
+  // Show loading
+  document.querySelectorAll('.tp-lang-btn').forEach(b => { b.disabled = true; });
+  const clickedBtn = [...document.querySelectorAll('.tp-lang-btn')].find(b => b.textContent === language);
+  if (clickedBtn) { clickedBtn.textContent = '⏳ Translating…'; }
+  resultArea.classList.add('hidden');
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          { role: 'system', content: `You translate YouTube scripts into ${language}. Preserve ALL formatting exactly: keep [HOOK], [INTRO], [SECTION N: title], [CALL TO ACTION] headers unchanged in English brackets. Translate [VISUAL: ...] descriptions but keep the [VISUAL: ] label. Translate all spoken content naturally — not word-for-word, but meaning-for-meaning in a conversational tone native to ${language}.` },
+          { role: 'user', content: `Translate this YouTube script to ${language}:\n\n${currentScript}` },
+        ],
+        max_tokens: 4500,
+        temperature: 0.3,
+      }),
+    });
+    const data = await response.json();
+    const translation = data.choices?.[0]?.message?.content?.trim();
+    if (!translation) throw new Error('Empty translation');
+
+    if (resultLang) resultLang.textContent = `${language} Translation`;
+    if (resultPre) resultPre.textContent = translation;
+    resultPre._translationText = translation;
+    resultArea.classList.remove('hidden');
+    resultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    showToast(`✅ Translated to ${language}!`, 'success');
+  } catch (err) {
+    showToast('⚠️ Translation failed — try again', 'error');
+  } finally {
+    document.querySelectorAll('.tp-lang-btn').forEach(b => { b.disabled = false; });
+    if (clickedBtn) clickedBtn.textContent = language;
+  }
+}
+
+function copyTranslation() {
+  const pre = document.getElementById('tp-result-pre');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre._translationText || pre.textContent.trim())
+    .then(() => showToast('✅ Translation copied!', 'success'))
+    .catch(() => showToast('⚠️ Copy failed', 'error'));
+}
+
+function useTranslation() {
+  const pre = document.getElementById('tp-result-pre');
+  if (!pre) return;
+  const text = pre._translationText || pre.textContent.trim();
+  if (!text) return;
+  currentScript = text;
+  const scriptContent = document.getElementById('script-content');
+  if (scriptContent) scriptContent.innerHTML = formatScript(text);
+  showQualityReport(text);
+  showToast('✅ Translated script is now active!', 'success');
+  document.getElementById('translate-panel')?.classList.add('hidden');
 }
 
 function printScript() {
