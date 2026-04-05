@@ -1225,6 +1225,7 @@ async function generateScript() {
 
   // Start generation
   isGenerating = true;
+  const _genStart = Date.now();
   setLoadingState(true);
 
   // Show skeleton after 1.5s to give user preview of what's coming
@@ -1396,8 +1397,9 @@ Write the complete, production-ready script now:`;
     incrementUsage();
     saveTopicHistory(topic);
     autoSaveScript(script, topic, document.getElementById('niche').value);
+    const _genSecs = Math.round((Date.now() - _genStart) / 1000);
 
-    displayScript(script, topic, length);
+    displayScript(script, topic, length, _genSecs);
 
     // Check if this was the last free use
     if (!isProUser() && getRemainingScripts() === 0) {
@@ -1423,7 +1425,7 @@ Write the complete, production-ready script now:`;
   }
 }
 
-function displayScript(script, topic, length) {
+function displayScript(script, topic, length, genSecs) {
   const outputDiv = document.getElementById('gen-output');
   const contentDiv = document.getElementById('script-content');
   const statsSpan = document.getElementById('output-stats');
@@ -1460,7 +1462,8 @@ function displayScript(script, topic, length) {
   const badge = document.querySelector('.output-badge');
   const totalGenerated = parseInt(localStorage.getItem('sf_total') || '1', 10);
   const streak = getStreak();
-  if (badge) badge.textContent = streak >= 2 ? `✅ Script #${totalGenerated} · 🔥 ${streak}-day streak` : `✅ Script #${totalGenerated} Ready`;
+  const timeStr = genSecs ? ` · ⚡ ${genSecs}s` : '';
+  if (badge) badge.textContent = streak >= 2 ? `✅ Script #${totalGenerated} · 🔥 ${streak}-day streak${timeStr}` : `✅ Script #${totalGenerated} Ready${timeStr}`;
   const niche = document.getElementById('niche')?.value || '';
   const nicheOption = niche ? document.querySelector(`#niche option[value="${niche}"]`) : null;
   const nicheLabel = nicheOption?.textContent?.replace(/\s+/g, ' ')?.trim() || '';
@@ -1506,6 +1509,17 @@ function displayScript(script, topic, length) {
     }
   } else {
     if (nudge) nudge.classList.add('hidden');
+  }
+
+  // Cost savings mini-nudge on first 2 scripts (value anchoring)
+  const totalUsed = parseInt(localStorage.getItem('sf_total') || '1', 10);
+  if (totalUsed <= 2 && genSecs) {
+    const savingsEl = document.getElementById('cost-savings-nudge');
+    if (savingsEl) {
+      savingsEl.textContent = `💰 A freelance scriptwriter charges $150–300 for this. You got it in ${genSecs} seconds.`;
+      savingsEl.classList.remove('hidden');
+      setTimeout(() => savingsEl.classList.add('hidden'), 9000);
+    }
   }
 }
 

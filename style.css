@@ -4414,6 +4414,18 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   margin-left: 4px;
 }
 
+/* === COST SAVINGS NUDGE === */
+.cost-savings-nudge {
+  font-size: 12px;
+  color: var(--green, #10b981);
+  padding: 7px 12px;
+  background: rgba(16,185,129,0.08);
+  border: 1px solid rgba(16,185,129,0.2);
+  border-radius: 8px;
+  margin-bottom: 10px;
+  animation: slideDown 0.3s ease;
+}
+
 /* === DAILY TOPIC BANNER === */
 .daily-topic-banner {
   display: flex;
