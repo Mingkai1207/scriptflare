@@ -182,6 +182,22 @@ document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => document.getElementById('topic')?.focus(), 600);
     }, 400);
   }
+  // Gift link: ?gift=1 grants 3 free bonus scripts to the visitor
+  const params = new URLSearchParams(location.search);
+  if (params.get('gift') === '1' && !localStorage.getItem('sf_gift_claimed')) {
+    localStorage.setItem('sf_gift_claimed', '1');
+    const bonus = parseInt(localStorage.getItem('sf_bonus_scripts') || '0', 10);
+    localStorage.setItem('sf_bonus_scripts', String(bonus + 3));
+    updateUsageBar();
+    updateGenerateBtnState();
+    setTimeout(() => {
+      showToast('🎁 You received 3 free bonus scripts! Start creating →', 'success');
+      document.getElementById('generator')?.scrollIntoView({ behavior: 'smooth' });
+    }, 800);
+    // Clean URL
+    const cleanUrl = location.pathname + location.search.replace(/[?&]gift=1/, '').replace(/^\?&/, '?').replace(/^[?&]$/, '');
+    history.replaceState(null, '', cleanUrl || location.pathname);
+  }
 });
 
 // === NAV CTA DYNAMIC ===
@@ -2053,6 +2069,14 @@ function copyHook() {
     document.body.removeChild(ta);
     showToast('✅ Hook copied!', 'success');
   });
+}
+
+// === GIFT LINK ===
+function copyGiftLink() {
+  const giftUrl = 'https://mingkai1207.github.io/scriptflare/?gift=1';
+  navigator.clipboard.writeText(giftUrl)
+    .then(() => showToast('🎁 Gift link copied! Share it — they get 3 free bonus scripts.', 'success'))
+    .catch(() => showToast('Gift URL: ' + giftUrl, 'info'));
 }
 
 // === SHARE ON X ===
