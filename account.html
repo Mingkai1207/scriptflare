@@ -205,11 +205,24 @@
     <div class="account-section">
       <div class="section-title"><span class="section-icon">📄</span> Generated Scripts</div>
       <div id="scriptsContainer">
-        <div class="empty-state">Loading scripts…</div>
+        <div class="empty-state" style="color:var(--text-muted);">⏳ Loading scripts…</div>
       </div>
     </div>
 
   </div><!-- /account-layout -->
+
+  <!-- Script viewer modal -->
+  <div id="scriptModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1000; overflow-y:auto; padding:20px;">
+    <div style="max-width:760px; margin:40px auto; background:var(--surface); border-radius:14px; padding:32px; position:relative;">
+      <button onclick="closeScriptModal()" style="position:absolute; top:16px; right:16px; background:none; border:none; color:var(--text-muted); font-size:1.4rem; cursor:pointer;">✕</button>
+      <h3 id="modalTopic" style="color:var(--brand); margin-bottom:20px; padding-right:32px;"></h3>
+      <div id="modalContent" style="white-space:pre-wrap; font-size:0.92rem; line-height:1.7; color:var(--text);"></div>
+      <div style="margin-top:20px; display:flex; gap:12px;">
+        <button onclick="copyModalScript()" style="background:var(--brand); color:#fff; border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:0.9rem;">📋 Copy Script</button>
+        <button onclick="closeScriptModal()" style="background:var(--surface2); color:var(--text); border:none; padding:10px 20px; border-radius:8px; cursor:pointer; font-size:0.9rem;">Close</button>
+      </div>
+    </div>
+  </div>
 
   <div class="toast-msg" id="toastMsg"></div>
 
@@ -289,14 +302,19 @@
       }
     }
 
+    // Script cache for modal viewer
+    const _scriptCache = {};
+
     async function loadScripts() {
       const container = document.getElementById('scriptsContainer');
       try {
         const { scripts } = await apiCall('/api/autopilot/scripts?limit=20');
         if (!scripts || scripts.length === 0) {
-          container.innerHTML = '<div class="empty-state">No scripts yet. Generate your first script on the <a href="index.html" style="color:var(--brand)">main page</a> or run Autopilot.</div>';
+          container.innerHTML = '<div class="empty-state">No scripts yet — generate your first on the <a href="index.html" style="color:var(--brand)">main page</a> or run Autopilot. Scripts you generate while logged in are saved here automatically.</div>';
           return;
         }
+        // Cache scripts for modal
+        scripts.forEach(s => { _scriptCache[s.id] = s; });
         container.innerHTML = `
           <table class="scripts-table">
             <thead>
@@ -306,16 +324,18 @@
                 <th>Source</th>
                 <th>Delivered</th>
                 <th>Date</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
               ${scripts.map(s => `
                 <tr>
-                  <td class="script-topic">${s.topic}</td>
-                  <td style="color:var(--text-muted);font-size:0.82rem;">${s.niche}</td>
+                  <td class="script-topic">${escapeHtml(s.topic)}</td>
+                  <td style="color:var(--text-muted);font-size:0.82rem;">${escapeHtml(s.niche)}</td>
                   <td><span class="source-badge ${s.source}">${s.source}</span></td>
                   <td><span class="deliver-badge ${s.delivered_to || 'pending'}">${s.delivered_to || '—'}</span></td>
                   <td style="color:var(--text-muted);font-size:0.82rem;">${new Date(s.created_at).toLocaleDateString()}</td>
+                  <td><button onclick="viewScript('${s.id}')" style="background:var(--surface2);border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:0.8rem;color:var(--brand);">View →</button></td>
                 </tr>
               `).join('')}
             </tbody>
@@ -324,6 +344,34 @@
         container.innerHTML = '<div class="empty-state">Could not load scripts.</div>';
       }
     }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function viewScript(id) {
+      const s = _scriptCache[id];
+      if (!s) return;
+      document.getElementById('modalTopic').textContent = s.topic;
+      document.getElementById('modalContent').textContent = s.script_content;
+      document.getElementById('scriptModal').style.display = 'block';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeScriptModal() {
+      document.getElementById('scriptModal').style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    function copyModalScript() {
+      const content = document.getElementById('modalContent').textContent;
+      navigator.clipboard.writeText(content).then(() => showToast('📋 Copied to clipboard!', 'success'));
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('scriptModal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('scriptModal')) closeScriptModal();
+    });
 
     async function loadAutopilotConfig() {
       if (currentTier !== 'autopilot') return;
@@ -483,28 +531,63 @@
       const btn = document.getElementById('runNowBtn');
       btn.disabled = true;
       btn.textContent = '⏳ Running…';
-      showToast('🤖 Autopilot started — this may take 1-2 minutes…', 'info');
+      showToast('🤖 Autopilot started — generating scripts, this takes 1-2 min…', 'info');
+
+      // 3-minute timeout guard
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 180000);
 
       try {
-        const result = await apiCall('/api/autopilot/run', 'POST');
+        const res = await fetch(`${API}/api/autopilot/run`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` },
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        const result = await res.json();
         if (result.success) {
-          showToast(`✅ Done! ${result.scriptsCreated} script${result.scriptsCreated !== 1 ? 's' : ''} generated`, 'success');
+          const n = result.scriptsCreated;
+          showToast(`✅ Done! ${n} script${n !== 1 ? 's' : ''} generated${result.deliveredTo ? ' & sent to Notion' : ''}`, 'success');
           await loadScripts();
         } else {
           showToast('❌ ' + (result.error || 'Autopilot run failed'), 'error');
         }
       } catch (err) {
-        showToast('❌ ' + err.message, 'error');
+        clearTimeout(timeout);
+        if (err.name === 'AbortError') {
+          showToast('⏱ Autopilot is still running — check your scripts in a minute', 'info');
+        } else {
+          showToast('❌ ' + err.message, 'error');
+        }
       }
 
       btn.disabled = false;
       btn.textContent = '▶ Run Now';
     }
 
+    // Poll for tier upgrade after PayPal payment return
+    async function pollForTierUpgrade(maxAttempts = 10) {
+      for (let i = 0; i < maxAttempts; i++) {
+        await new Promise(r => setTimeout(r, 3000)); // wait 3s between polls
+        try {
+          const { user } = await apiCall('/auth/me');
+          if (user && user.tier !== 'free') {
+            setTierUI(user.tier);
+            localStorage.setItem('sf_pro', '1');
+            showToast(`🚀 You're now on ${user.tier.charAt(0).toUpperCase() + user.tier.slice(1)}!`, 'success');
+            return; // done
+          }
+        } catch {}
+      }
+      showToast('Tier still updating — refresh the page in a moment.', 'info');
+    }
+
     // Check for payment callback
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') === 'success') {
-      showToast('🎉 Payment successful! Your tier will update shortly.', 'success');
+      showToast('🎉 Payment received! Activating your plan…', 'success');
+      // Poll for tier update (PayPal webhook may take a few seconds)
+      setTimeout(() => pollForTierUpgrade(), 2000);
     }
     if (params.get('welcome') === '1') {
       document.getElementById('welcomeBanner').style.display = 'block';
