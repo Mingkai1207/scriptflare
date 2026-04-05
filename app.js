@@ -626,8 +626,11 @@ async function syncUserTierFromServer() {
       const isPro = user.tier !== 'free';
       localStorage.setItem(CONFIG.proKey, isPro ? 'true' : '');
       localStorage.setItem('sf_user', JSON.stringify(user));
-      // Re-run pro UI check after server sync
-      if (isPro) checkProStatus();
+      // Refresh all UI that depends on tier after server confirms it
+      updateUsageBar();
+      updateGenerateBtnState();
+      updateNavCTA();
+      checkProStatus();
     }
   } catch {
     // Network issue — fall back to localStorage value silently
