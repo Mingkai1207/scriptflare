@@ -1368,20 +1368,55 @@ function initReturningUserNudge() {
   localStorage.setItem('sf_last_visit', String(now));
   // Only show if returning after ≥2 hours
   if (now - lastVisit < 7200000) return;
+
+  // Restore last niche automatically — reduces cold-start on return
+  let lastNiche = '';
+  let lastTopic = '';
+  try {
+    const saved = JSON.parse(localStorage.getItem('sf_autosave') || '{}');
+    lastNiche = saved.niche || '';
+    lastTopic = saved.topic || '';
+  } catch (_) {}
+  if (lastNiche) {
+    const nicheEl = document.getElementById('niche');
+    if (nicheEl && !nicheEl.value) {
+      pickNiche(lastNiche);
+    }
+  }
+
   const remaining = getRemainingScripts();
-  if (remaining <= 0) return; // Paywalled users see paywall, not this
-  const niche = localStorage.getItem('sf_voice_profile')
-    ? JSON.parse(localStorage.getItem('sf_voice_profile') || '{}').channelName
-    : '';
-  const greeting = niche ? `Welcome back${niche ? `, ${niche}` : ''}!` : 'Welcome back!';
+
+  // Paywalled returning users — show a special nudge
+  if (remaining <= 0) {
+    const shortTopic = lastTopic ? `"${lastTopic.slice(0, 40)}${lastTopic.length > 40 ? '…' : ''}"` : '';
+    const msg = shortTopic
+      ? `Welcome back! Ready to write your next video after ${shortTopic}? Upgrade to Pro — unlimited scripts.`
+      : 'Welcome back! Upgrade to Pro for unlimited scripts — 2,400+ creators are already posting weekly.';
+    const banner = document.createElement('div');
+    banner.id = 'returning-nudge';
+    banner.className = 'returning-nudge rn-upgrade';
+    banner.innerHTML = `<span>${msg}</span><a href="#pricing" onclick="scrollToPricing(); document.getElementById('returning-nudge').remove()">Upgrade → $19/mo</a><button onclick="document.getElementById('returning-nudge').remove()">✕</button>`;
+    document.body.insertBefore(banner, document.body.firstChild);
+    setTimeout(() => banner.classList.add('rn-visible'), 50);
+    setTimeout(() => { banner.classList.remove('rn-visible'); setTimeout(() => banner.remove(), 300); }, 12000);
+    return;
+  }
+
+  const topicHint = lastTopic ? ` Last: "${lastTopic.slice(0, 36)}${lastTopic.length > 36 ? '…' : ''}"` : '';
   const msg = remaining === 1
-    ? `${greeting} You have <strong>1 free script left</strong> — use it wisely, or upgrade for unlimited.`
-    : `${greeting} You have <strong>${remaining} free script${remaining !== 1 ? 's' : ''}</strong> left on your free plan.`;
+    ? `Welcome back! <strong>1 free script left</strong>.${topicHint}`
+    : `Welcome back! <strong>${remaining} free scripts</strong> remaining.${topicHint}`;
+
+  const ctaHref = remaining <= 1 ? '#pricing' : '#generator';
+  const ctaText = remaining <= 1 ? 'Upgrade →' : 'Generate →';
+  const ctaOnclick = remaining <= 1
+    ? `scrollToPricing(); document.getElementById('returning-nudge').remove()`
+    : `document.getElementById('generator').scrollIntoView({behavior:'smooth'}); document.getElementById('returning-nudge').remove()`;
 
   const banner = document.createElement('div');
   banner.id = 'returning-nudge';
   banner.className = 'returning-nudge';
-  banner.innerHTML = `<span>${msg}</span><a href="#pricing" onclick="scrollToPricing(); document.getElementById('returning-nudge').remove()">Upgrade →</a><button onclick="document.getElementById('returning-nudge').remove()">✕</button>`;
+  banner.innerHTML = `<span>${msg}</span><a href="${ctaHref}" onclick="${ctaOnclick}">${ctaText}</a><button onclick="document.getElementById('returning-nudge').remove()">✕</button>`;
   document.body.insertBefore(banner, document.body.firstChild);
   setTimeout(() => banner.classList.add('rn-visible'), 50);
   setTimeout(() => { banner.classList.remove('rn-visible'); setTimeout(() => banner.remove(), 300); }, 10000);

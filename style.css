@@ -4997,6 +4997,16 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   .returning-nudge { padding: 8px 14px; font-size: 12px; }
   .returning-nudge button { position: static; }
 }
+/* Upgrade-themed variant for paywalled returning users */
+.returning-nudge.rn-upgrade {
+  background: linear-gradient(135deg, rgba(124,92,252,0.18), rgba(236,72,153,0.12));
+  border-bottom-color: rgba(124,92,252,0.3);
+}
+.returning-nudge.rn-upgrade span { color: var(--text); }
+.returning-nudge.rn-upgrade a {
+  background: var(--primary);
+  font-weight: 700;
+}
 
 /* === PRO PREVIEW DRAWER === */
 .pro-preview-drawer {
