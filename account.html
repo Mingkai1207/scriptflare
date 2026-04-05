@@ -237,7 +237,25 @@
 
     function getToken() { return localStorage.getItem('sf_token'); }
 
-    async function apiCall(path, method = 'GET', body = null) {
+    // Try to refresh the access token. Returns true on success.
+    async function tryRefreshToken() {
+      const rt = localStorage.getItem('sf_refresh_token');
+      if (!rt) return false;
+      try {
+        const res = await fetch(`${API}/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: rt }),
+        });
+        if (!res.ok) return false;
+        const d = await res.json();
+        localStorage.setItem('sf_token', d.token);
+        if (d.refresh_token) localStorage.setItem('sf_refresh_token', d.refresh_token);
+        return true;
+      } catch { return false; }
+    }
+
+    async function apiCall(path, method = 'GET', body = null, _retrying = false) {
       const opts = {
         method,
         headers: {
@@ -247,6 +265,12 @@
       };
       if (body) opts.body = JSON.stringify(body);
       const res = await fetch(`${API}${path}`, opts);
+      if (res.status === 401 && !_retrying) {
+        const refreshed = await tryRefreshToken();
+        if (refreshed) return apiCall(path, method, body, true);
+        signOut(); // refresh failed — force re-login
+        return;
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Request failed');
       return data;
@@ -261,6 +285,7 @@
 
     function signOut() {
       localStorage.removeItem('sf_token');
+      localStorage.removeItem('sf_refresh_token');
       localStorage.removeItem('sf_user');
       localStorage.removeItem('sf_pro');
       window.location.href = 'login.html';

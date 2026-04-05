@@ -66,6 +66,7 @@
         if (!res.ok) throw new Error(data.error || 'Login failed');
 
         localStorage.setItem('sf_token', data.token);
+        if (data.refresh_token) localStorage.setItem('sf_refresh_token', data.refresh_token);
         localStorage.setItem('sf_user', JSON.stringify(data.user));
         localStorage.setItem('sf_pro', data.user.tier !== 'free' ? '1' : '');
 
