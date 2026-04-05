@@ -11,8 +11,8 @@
     <div class="auth-logo">
       <a href="index.html">Script<span>Flare</span> 🔥</a>
     </div>
-    <h1 class="auth-title">Start creating</h1>
-    <p class="auth-subtitle">Get 3 free scripts — no credit card required</p>
+    <h1 class="auth-title" id="authTitle">Start creating</h1>
+    <p class="auth-subtitle" id="authSubtitle">Get 3 free scripts — no credit card required</p>
 
     <div class="auth-error" id="authError"></div>
 
@@ -39,10 +39,20 @@
 
   <script>
     const API = 'https://scriptflare-backend-production.up.railway.app';
+    const _plan = new URLSearchParams(window.location.search).get('plan');
 
     // Redirect if already logged in
     if (localStorage.getItem('sf_token')) {
-      window.location.href = 'account.html';
+      window.location.href = _plan ? `account.html?upgrade=${_plan}` : 'account.html';
+    }
+
+    // Show plan-specific messaging
+    if (_plan === 'pro') {
+      document.getElementById('authTitle').textContent = 'Create account to upgrade';
+      document.getElementById('authSubtitle').textContent = 'Sign up free, then upgrade to Pro ($19/mo) in one click';
+    } else if (_plan === 'autopilot') {
+      document.getElementById('authTitle').textContent = 'Create account for Autopilot';
+      document.getElementById('authSubtitle').textContent = 'Sign up free, then activate Autopilot ($49/mo) — scripts on autopilot daily';
     }
 
     document.getElementById('signupForm').addEventListener('submit', async (e) => {
@@ -79,7 +89,9 @@
         localStorage.setItem('sf_user', JSON.stringify(data.user));
         localStorage.setItem('sf_pro', '');
 
-        window.location.href = 'account.html?welcome=1';
+        // If came from upgrade flow, send to account with upgrade hint
+        const dest = _plan ? `account.html?welcome=1&upgrade=${_plan}` : 'account.html?welcome=1';
+        window.location.href = dest;
       } catch (err) {
         errEl.textContent = err.message;
         errEl.classList.add('visible');

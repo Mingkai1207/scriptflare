@@ -975,12 +975,33 @@
             <li>✅ Script history + priority generation</li>
             <li>✅ Cancel anytime</li>
           </ul>
-          <a href="#pay" id="paypal-btn-pro" class="btn btn-primary btn-block" onclick="showPayPal()">
+          <a href="#pay" id="paypal-btn-pro" class="btn btn-primary btn-block" onclick="showPayPal('pro')">
             Upgrade to Pro — $19/mo
           </a>
           <p class="plan-note">🔒 Secure payment via PayPal</p>
           <div class="pricing-countdown" id="pricing-countdown"></div>
           <p class="plan-note" style="margin-top: 6px; color: var(--text-faint);">Not happy? Email us — we'll make it right.</p>
+        </div>
+
+        <div class="pricing-card reveal reveal-delay-3" style="border-color: rgba(168,85,247,0.4); background: linear-gradient(135deg, rgba(168,85,247,0.05) 0%, var(--surface) 100%);">
+          <div class="plan-name" style="color:#a855f7;">Autopilot</div>
+          <div class="plan-price-row">
+            <span class="plan-price" style="color:#a855f7;">$49</span>
+          </div>
+          <div class="plan-period">per month</div>
+          <ul class="plan-features">
+            <li>✅ <strong>Everything in Pro</strong></li>
+            <li>✅ 🤖 Auto-discover trending topics</li>
+            <li>✅ 📺 YouTube channel analysis</li>
+            <li>✅ 📅 Scheduled script generation</li>
+            <li>✅ 📝 Auto-deliver to Notion</li>
+            <li>✅ 3 scripts/day on your schedule</li>
+            <li>✅ Never think about what to post</li>
+          </ul>
+          <a href="signup.html?plan=autopilot" class="btn btn-block" style="background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;">
+            Get Autopilot — $49/mo
+          </a>
+          <p class="plan-note" style="color:rgba(168,85,247,0.7);">🤖 Fully hands-free content engine</p>
         </div>
       </div>
 
@@ -1036,27 +1057,26 @@
           <div class="roi-verdict" id="roi-verdict">
             At <strong id="roi-v-videos">4</strong> videos/month, Pro costs only <strong id="roi-v-cost">$4.75</strong>/script — vs $150–300 for a freelancer.
           </div>
-          <a href="#pricing" class="btn btn-primary roi-cta-btn" onclick="showPayPal()">Get Pro for $19/mo — Start earning →</a>
+          <a href="#pricing" class="btn btn-primary roi-cta-btn" onclick="showPayPal('pro')">Get Pro for $19/mo — Start earning →</a>
           <div class="roi-disclaimer">Estimates use avg CPM for your niche × conservative 1,200 views/video at month 6. Actual results vary. CPM data: Social Blade / Influencer Marketing Hub 2024.</div>
         </div>
       </div>
 
-      <!-- PayPal Payment Box (shown on click) -->
+      <!-- Upgrade CTA box (shown as fallback) -->
       <div class="paypal-box hidden" id="paypal-box">
-        <h3>Complete Your Pro Upgrade</h3>
-        <p>Subscribe for $19/month via PayPal — secure, cancel anytime.</p>
-        <div id="paypal-button-container" class="paypal-btn-wrap">
-          <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_xclick-subscriptions&business=liumingkai1207%40gmail.com&lc=US&item_name=ScriptFlare%20Pro&item_number=SFPRO&no_note=1&no_shipping=1&currency_code=USD&a3=19.00&p3=1&t3=M&src=1&sra=1&bn=PP-SubscriptionsBF" target="_blank" rel="noopener noreferrer" class="btn btn-paypal btn-lg">
-            💳 Pay $19/month via PayPal
+        <h3>Create a Free Account to Upgrade</h3>
+        <p>Sign up for free, then upgrade to Pro or Autopilot in one click. Your tier activates instantly after PayPal payment.</p>
+        <div id="paypal-button-container" class="paypal-btn-wrap" style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center;">
+          <a href="signup.html?plan=pro" class="btn btn-primary btn-lg">
+            🚀 Create Account &amp; Upgrade — $19/mo
           </a>
         </div>
         <div class="paypal-steps">
-          <div class="paypal-step"><span class="step-num-small">1</span> Complete payment on PayPal</div>
-          <div class="paypal-step"><span class="step-num-small">2</span> Email <strong>liumingkai1207@gmail.com</strong><button class="copy-email-btn" onclick="copyPaypalEmail(this)" title="Copy email">Copy</button> — subject: "ScriptFlare Pro" + your PayPal email</div>
-          <div class="paypal-step"><span class="step-num-small">3</span> ⏱ Receive your unlock code within <strong>1 hour</strong></div>
-          <div class="paypal-step"><span class="step-num-small">4</span> Enter code in the generator above → unlimited scripts instantly</div>
+          <div class="paypal-step"><span class="step-num-small">1</span> Create your free ScriptFlare account</div>
+          <div class="paypal-step"><span class="step-num-small">2</span> Go to Account → click "Upgrade to Pro"</div>
+          <div class="paypal-step"><span class="step-num-small">3</span> Complete PayPal payment — tier activates automatically</div>
         </div>
-        <p class="paypal-guarantee">🔒 Not satisfied? Email us within 30 days and we'll refund you, no questions asked.</p>
+        <p class="paypal-guarantee">🔒 Not satisfied? Email us within 30 days — full refund, no questions asked.</p>
       </div>
     </div>
   </section>

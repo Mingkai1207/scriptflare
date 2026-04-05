@@ -1677,11 +1677,39 @@ function syncNichePill(value) {
 }
 
 // === PAYPAL ===
-function showPayPal() {
-  const box = document.getElementById('paypal-box');
-  if (box) {
-    box.classList.remove('hidden');
-    box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+async function showPayPal(tier = 'pro') {
+  const token = localStorage.getItem('sf_token');
+
+  // Not logged in — send to signup with plan hint
+  if (!token) {
+    window.location.href = `signup.html?plan=${tier}`;
+    return;
+  }
+
+  // Logged in — use the subscription API
+  try {
+    const btn = document.getElementById('paypal-btn-pro');
+    if (btn) { btn.textContent = '⏳ Opening PayPal…'; btn.style.pointerEvents = 'none'; }
+
+    const res = await fetch('https://scriptflare-backend-production.up.railway.app/billing/create-subscription', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ tier }),
+    });
+    const data = await res.json();
+
+    if (btn) { btn.textContent = 'Upgrade to Pro — $19/mo'; btn.style.pointerEvents = ''; }
+
+    if (data.approval_url) {
+      window.open(data.approval_url, '_blank');
+      showToast('💳 PayPal opened — complete payment to activate Pro', 'success');
+    } else {
+      throw new Error(data.error || 'Could not create subscription');
+    }
+  } catch (err) {
+    // Fallback to old PayPal box
+    const box = document.getElementById('paypal-box');
+    if (box) { box.classList.remove('hidden'); box.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
   }
 }
 

@@ -582,15 +582,20 @@
       showToast('Tier still updating — refresh the page in a moment.', 'info');
     }
 
-    // Check for payment callback
+    // Check for payment callback and upgrade hints
     const params = new URLSearchParams(window.location.search);
     if (params.get('payment') === 'success') {
       showToast('🎉 Payment received! Activating your plan…', 'success');
-      // Poll for tier update (PayPal webhook may take a few seconds)
       setTimeout(() => pollForTierUpgrade(), 2000);
     }
     if (params.get('welcome') === '1') {
       document.getElementById('welcomeBanner').style.display = 'block';
+    }
+    // Auto-trigger upgrade after signup redirect (e.g. signup.html?plan=pro)
+    const upgradePlan = params.get('upgrade');
+    if (upgradePlan && (upgradePlan === 'pro' || upgradePlan === 'autopilot')) {
+      // Wait for user data to load, then open PayPal
+      setTimeout(() => subscribe(upgradePlan), 1200);
     }
 
     // Init
