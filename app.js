@@ -1338,6 +1338,7 @@ function regenerateScript() {
   document.getElementById('prod-outline')?.classList.add('hidden');
   document.getElementById('hook-ab')?.classList.add('hidden');
   document.getElementById('blog-post-panel')?.classList.add('hidden');
+  document.getElementById('chapter-ts')?.classList.add('hidden');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
@@ -1361,6 +1362,7 @@ function clearOutput() {
   document.getElementById('prod-outline')?.classList.add('hidden');
   document.getElementById('hook-ab')?.classList.add('hidden');
   document.getElementById('blog-post-panel')?.classList.add('hidden');
+  document.getElementById('chapter-ts')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -1965,6 +1967,81 @@ function exportSRT() {
   a.click();
   URL.revokeObjectURL(url);
   showToast('📄 SRT file downloaded — import into YouTube Studio as captions!', 'success');
+}
+
+function showChapterTimestamps() {
+  const panel = document.getElementById('chapter-ts');
+  if (!panel || !currentScript) return;
+
+  // Toggle off if already open
+  if (!panel.classList.contains('hidden')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  const WPM = 150;
+  const lines = currentScript.split('\n');
+  const chapters = [];
+  let wordsSoFar = 0;
+
+  for (const line of lines) {
+    const t = line.trim();
+    if (!t) continue;
+    // Detect section headers: [HOOK], [INTRO], **HOOK**, ## Hook, etc.
+    const headerMatch = t.match(/^\[([A-Z][A-Z\s\/&:]{1,40})\]$/) ||
+                        t.match(/^\*\*([A-Z][A-Za-z\s\/&:]{1,40})\*\*$/) ||
+                        t.match(/^#+\s+(.{2,50})$/);
+    if (headerMatch) {
+      const label = (headerMatch[1] || headerMatch[0]).replace(/^#+\s*/, '').trim();
+      const totalSecs = Math.round((wordsSoFar / WPM) * 60);
+      const m = Math.floor(totalSecs / 60);
+      const s = totalSecs % 60;
+      const ts = `${m}:${String(s).padStart(2, '0')}`;
+      chapters.push({ ts, label });
+    } else {
+      if (!/^\[VISUAL:/i.test(t)) {
+        wordsSoFar += t.split(/\s+/).filter(Boolean).length;
+      }
+    }
+  }
+
+  if (chapters.length === 0) {
+    showToast('⚠️ No section headers found in script for chapters.', 'warning');
+    return;
+  }
+
+  // Force first chapter to 0:00 if not already
+  if (chapters[0] && chapters[0].ts !== '0:00') {
+    chapters.unshift({ ts: '0:00', label: chapters[0].label });
+    chapters.splice(1, 1);
+  }
+  if (chapters.length > 0) chapters[0].ts = '0:00';
+
+  const chapterText = chapters.map(c => `${c.ts} ${c.label}`).join('\n');
+
+  panel.innerHTML = `
+    <div class="chapter-ts-header">
+      <span class="chapter-ts-title">🕐 YouTube Chapter Timestamps</span>
+      <span class="chapter-ts-sub">Paste into your video description — YouTube auto-links them</span>
+    </div>
+    <div class="chapter-ts-body">
+      <pre class="chapter-ts-pre" id="chapter-ts-pre">${escapeHtml(chapterText)}</pre>
+    </div>
+    <div class="chapter-ts-footer">
+      <span class="chapter-ts-tip">💡 YouTube requires at least 3 chapters, starting with 0:00</span>
+      <button class="btn btn-primary btn-sm" onclick="copyChapterTimestamps()">📋 Copy All</button>
+    </div>
+  `;
+  panel.classList.remove('hidden');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyChapterTimestamps() {
+  const pre = document.getElementById('chapter-ts-pre');
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.textContent.trim())
+    .then(() => showToast('✅ Chapter timestamps copied — paste into YouTube description!', 'success'))
+    .catch(() => showToast('⚠️ Copy failed', 'error'));
 }
 
 function printScript() {
