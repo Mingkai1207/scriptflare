@@ -1549,6 +1549,16 @@ async function generateScript() {
     'short': 150, '5': 750, '8': 1200, '10': 1500, '12': 1800, '15': 2250
   }[length] || 1500;
 
+  // Shared prompt modifiers (needed by both Shorts and long-form)
+  const langNote = scriptLang !== 'English'
+    ? `\nLanguage: Write the ENTIRE script in ${scriptLang}. All section headers must also be in ${scriptLang}, but keep the bracket format: [HOOK], [INTRO], [SECTION 1: Title], [CALL TO ACTION].`
+    : '';
+  const customNote = customNotes ? `\nAdditional creator instructions: ${customNotes}` : '';
+  const voiceNote = getVoiceProfileNote();
+  const hookNote = (_hookType !== 'auto' && HOOK_TYPE_INSTRUCTIONS[_hookType])
+    ? `\nHook style required for [HOOK] section: ${HOOK_TYPE_INSTRUCTIONS[_hookType]}`
+    : '';
+
   // YouTube Shorts — completely different prompt and flow
   if (length === 'short') {
     const shortsSystemPrompt = `You are an expert YouTube Shorts scriptwriter. Shorts are vertical, 60-second videos that must hook viewers in the first 2 words. No sections, no headers — just a single punchy flow of spoken text.
@@ -1652,12 +1662,6 @@ CRITICAL FORMATTING RULES:
 - Do not use asterisks, hashes, or any markdown formatting in the spoken text`;
 
   const nicheNote = nicheGuidance[niche] ? `\nNiche writing guidance: ${nicheGuidance[niche]}` : '';
-  const langNote = scriptLang !== 'English' ? `\nLanguage: Write the ENTIRE script in ${scriptLang}. All section headers must also be in ${scriptLang}, but keep the bracket format: [HOOK], [INTRO], [SECTION 1: Title], [CALL TO ACTION].` : '';
-  const customNote = customNotes ? `\nAdditional creator instructions: ${customNotes}` : '';
-  const voiceNote = getVoiceProfileNote();
-  const hookNote = (_hookType !== 'auto' && HOOK_TYPE_INSTRUCTIONS[_hookType])
-    ? `\nHook style required for [HOOK] section: ${HOOK_TYPE_INSTRUCTIONS[_hookType]}`
-    : '';
 
   const userPrompt = `Create a complete ${length}-minute faceless YouTube script.
 
