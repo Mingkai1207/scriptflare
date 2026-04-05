@@ -560,12 +560,27 @@ function renderCreatorStats() {
 function updateGenerateBtnState() {
   const remaining = getRemainingScripts();
   const btn = document.getElementById('generate-btn');
-  if (!btn) return;
-  if (remaining === 0 && !isProUser()) {
-    // Keep clickable but visually indicate upgrade needed — generateScript() handles the paywall
+  const btnText = document.getElementById('btn-text');
+  if (!btn || !btnText) return;
+  if (isProUser()) {
+    btnText.textContent = '⚡ Generate Script';
+    btn.style.background = '';
+    return;
+  }
+  if (remaining === 0) {
+    // Paywalled — keep clickable so generateScript() shows paywall
     btn.disabled = false;
-    document.getElementById('btn-text').textContent = '🔒 Upgrade to Pro to Continue';
+    btnText.textContent = '🔒 Upgrade to Pro to Continue';
     btn.style.background = 'linear-gradient(135deg, #3d2a7a, #7a1f50)';
+  } else if (remaining === 1) {
+    btnText.textContent = '⚡ Generate Script — 1 free left';
+    btn.style.background = '';
+  } else if (remaining === 2) {
+    btnText.textContent = `⚡ Generate Script — ${remaining} free left`;
+    btn.style.background = '';
+  } else {
+    btnText.textContent = '⚡ Generate Script';
+    btn.style.background = '';
   }
 }
 
@@ -2109,6 +2124,30 @@ function showPaywall() {
           ? `Pro unlocks unlimited ${nicheLabel} scripts — plus AI tools, translate, bulk ideas, and more.`
           : "You're one script away from becoming a consistent creator. Pro unlocks everything:");
     }
+  }
+
+  // Inject niche-specific hook preview to create desire
+  const PAYWALL_HOOKS = {
+    'personal finance':            'What if I told you that 83% of millionaires weren\'t born rich — they built their wealth by following one counterintuitive money rule that most people never discover? And in the next 10 minutes, I\'m going to break it down for you.',
+    'motivation and mindset':      'Three years ago, I was stuck in the exact same place you are right now. I had the ideas, I had the drive — but something kept pulling me back. Then I found the one mindset shift that changed everything. And it wasn\'t discipline. It wasn\'t motivation. It was something far simpler.',
+    'true crime and mysteries':    'On March 14th, 2019, a woman walked into a coffee shop and ordered her usual. She smiled at the barista, paid in cash, and walked out. No one ever saw her again. What police found 72 hours later shocked investigators who had seen everything.',
+    'history and facts':           'In the 14th century, one-third of the entire European population died in less than five years. But historians have been wrong about the real cause for seven centuries — and the true story is far stranger than anything in your textbooks.',
+    'technology and AI':           'In 2024, a leading AI research team published a paper that was quietly pulled from the internet within 48 hours. Three researchers resigned the same week. The reason why tells you everything you need to know about where AI is actually headed — and it\'s not what anyone is saying publicly.',
+    'business and entrepreneurship': 'A 24-year-old built a $2.3 million business in 18 months — no investors, no team, no physical product. He didn\'t have a special skill, a famous name, or a trust fund. He had one systematic approach that most people walk right past every day.',
+    'self-improvement':            'The people who actually build habits that stick — they\'re not using willpower. They\'re not using discipline. They discovered a completely different mechanism that most self-help books never mention — and once you understand it, every habit you\'ve ever tried to build will suddenly make sense.',
+    'health and wellness':         'Your doctor won\'t tell you this. The supplement industry doesn\'t want you to know it. But researchers at three major universities have now confirmed: the single biggest driver of how long you live has nothing to do with diet, exercise, or genetics.',
+    'relationships and psychology': 'Most people choose their romantic partners for the wrong reasons — not because they\'re bad judges of character, but because of a psychological pattern set in early childhood that almost nobody examines. And once you see it, you\'ll never look at your relationship choices the same way again.',
+    'travel and geography':        'There\'s a country the size of Texas that most people can\'t locate on a map — yet it contains more ancient ruins, more diverse ecosystems, and more living languages than anywhere else on Earth. And there\'s a specific reason your geography class never taught you about it.',
+    'spirituality and philosophy':  'Every major philosophy — from Stoicism to Buddhism to Taoism — points to the same core insight about human suffering. They just use different words for it. And the moment you understand what they\'re all saying, everything about how you respond to your problems changes.',
+    'news and current events':     'The story you\'ve been told about what\'s happening right now is missing three crucial pieces of context. Not because journalists are lying — but because 72-hour news cycles physically cannot explain what this event actually means. Here\'s the full picture.',
+  };
+  const hookPreviewEl = document.getElementById('paywall-hook-preview');
+  const hookTextEl = document.getElementById('paywall-hook-text');
+  if (hookPreviewEl && hookTextEl && niche && PAYWALL_HOOKS[niche]) {
+    hookTextEl.textContent = PAYWALL_HOOKS[niche];
+    hookPreviewEl.classList.remove('hidden');
+  } else if (hookPreviewEl) {
+    hookPreviewEl.classList.add('hidden');
   }
 
   document.getElementById('gen-form').classList.add('hidden');
