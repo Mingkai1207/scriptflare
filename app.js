@@ -659,61 +659,121 @@ const TOPIC_SUGGESTIONS = {
     'How I saved $50,000 on a $45,000 salary',
     'The 4 investing mistakes killing your portfolio returns',
     'Why most people will never be rich — and how to be different',
+    'The hidden tax loopholes the wealthy use legally every year',
+    'What banks don\'t want you to know about credit card rewards',
+    'How compound interest traps the poor and builds wealth for the rich',
+    'The real reason you\'re not building wealth — it\'s not your income',
+    'Index funds vs. picking stocks: the data that settles the debate',
   ],
   'motivation and mindset': [
     'Why discipline beats motivation every single time',
     'The morning routine that quietly changed my life',
     '5 mindset shifts that separate top 1% from everyone else',
+    'The brutal truth about why most people stay average their entire lives',
+    'The identity shift that makes hard habits automatic',
+    'What successful people actually do differently — backed by research',
+    'Stop trying to be consistent — do this instead',
+    'The comfort zone myth that\'s keeping you stuck',
   ],
   'true crime and mysteries': [
     'The unsolved disappearance that baffled investigators for decades',
     'Inside the most elaborate con in American history',
     'The cold case that cracked open 30 years later',
+    'The serial killer who fooled everyone for 20 years',
+    'The fraud that collapsed an entire industry overnight',
+    'The heist so perfect it left investigators with no evidence',
+    'The mysterious death that authorities ruled an accident — but wasn\'t',
+    'The cult that started as a self-help group',
   ],
   'history and facts': [
     'The ancient civilization that was more advanced than we thought',
     'Why the Roman Empire really collapsed — the true story',
     '10 historical "facts" that are completely wrong',
+    'The battle that changed the course of human history forever',
+    'The monarch who was erased from history on purpose',
+    'The forgotten empire that conquered more land than Alexander the Great',
+    'The invention that accidentally changed everything we know about medicine',
+    'What life was actually like in ancient Egypt — not what they teach in school',
   ],
   'technology and AI': [
     'How AI will replace 40% of jobs by 2030',
     'The dark side of social media algorithms nobody talks about',
     '5 technologies that will change everything in the next 5 years',
+    'The AI model that scared the researchers who built it',
+    'How quantum computing will break the internet — and then fix it',
+    'Why your smartphone knows you better than your therapist',
+    'The tech company that quietly owns more data than any government',
+    'How deepfakes are already changing elections — and we\'re not ready',
   ],
   'business and entrepreneurship': [
     'The $0 business model making people millionaires in 2026',
     'Why 90% of businesses fail in year one — and how to avoid it',
     'From side hustle to $10K/month: the exact playbook',
+    'How to build a $100K/year business with no employees',
+    'How to validate a business idea in 48 hours with $0',
+    'The pricing mistake that kills profitable businesses before they start',
+    'What Amazon teaches about building products people actually want',
+    'The unfair advantage most first-generation entrepreneurs never discover',
   ],
   'self-improvement': [
     'The 1% rule that quietly transforms your life in 6 months',
     '7 habits successful people do before 8am',
     'Why reading books changed my income and how to start',
+    'How to build unshakeable confidence from scratch',
+    'The system that turned my chaotic days into focused ones',
+    'Why your environment determines your success more than willpower',
+    'The journaling method that 10× your self-awareness in 30 days',
+    'How to stop overthinking and actually make better decisions',
   ],
   'health and wellness': [
     'The sleep science that doctors aren\'t telling you',
     'Why most diets fail — and what actually works long-term',
     '5 daily habits that add 10 years to your life',
+    'Why you\'re exhausted all the time — the real explanation',
+    'The gut-brain connection that changes everything about mental health',
+    'What happens to your body when you quit sugar for 30 days',
+    'The exercise myth that keeps people fat and injured',
+    'How to reverse aging at the cellular level — the research is in',
   ],
   'relationships and psychology': [
     '5 psychological tricks narcissists use that you need to know',
     'Why most people choose the wrong partner — the real reason',
     'The attachment theory that explains every relationship problem',
+    'The science of why toxic relationships feel addictive',
+    'The manipulation tactics used on you every single day',
+    'Why your childhood is still running your adult relationships',
+    'The body language tells that reveal what people really think of you',
+    'How to spot a liar — what the research actually says',
   ],
   'travel and geography': [
     'The country that nobody visits — but everyone should',
     'Why Japan is the most unique civilization on earth',
     '10 places that will disappear within your lifetime',
+    'The hidden gem destination that costs less than staying home',
+    'The most dangerous city on earth — and why people still live there',
+    'The country that has never been invaded in 700 years — why?',
+    'The road trip that crosses 6 countries and costs under $1,000',
+    'Why this tiny island produces the happiest people on earth',
   ],
   'spirituality and philosophy': [
     'The ancient Stoic habit that fixes 90% of modern anxiety',
     'Why Marcus Aurelius\'s philosophy is more relevant than ever',
     '5 Buddhist principles that actually change how you live',
+    'The Zen concept that solves most modern problems instantly',
+    'The philosophy that 10× productivity without burning out',
+    'What Nietzsche got right about suffering and why it matters',
+    'The ancient practice that neuroscience just proved correct',
+    'Why free will might be an illusion — and why that\'s liberating',
   ],
   'news and current events': [
     'What nobody is telling you about the AI jobs crisis',
     'The geopolitical shift that will define the next decade',
     'Why the middle class is quietly disappearing — the real data',
+    'The quiet economic shift nobody in mainstream media is covering',
+    'The data that shows where the economy is actually headed',
+    'Why water will be the oil of the 21st century',
+    'The country quietly becoming the next global superpower',
+    'What the mainstream media consistently gets wrong about this issue',
   ],
 };
 
@@ -1805,6 +1865,58 @@ function showToast(message, type = 'info') {
   });
 }
 
+// === QUALITY QUICK-FIX ACTIONS ===
+function _applyQualityFix(updatedScript, toast) {
+  if (!updatedScript) return;
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+  currentScript = updatedScript;
+  autoSaveScript(updatedScript, topic, niche);
+  const scriptDiv = document.getElementById('script-content');
+  if (scriptDiv) scriptDiv.innerHTML = formatScript(updatedScript);
+  showQualityReport(updatedScript);
+  updateWordCount(updatedScript);
+  showToast(toast, 'success');
+}
+
+function quickFixOpenLoop() {
+  if (!currentScript) return;
+  const openLoopLine = '\n\nStay with me — by the end of this video, you\'ll have the complete picture on this, and it might change how you see everything.\n';
+  // Insert after [HOOK] block if present, else after first 2 paragraphs
+  let updated;
+  if (/\[HOOK\]/i.test(currentScript)) {
+    updated = currentScript.replace(/(\[HOOK\][\s\S]*?)(\n\s*\[(?!VISUAL:))/i, (m, hook, next) => hook + openLoopLine + next);
+  } else {
+    const parts = currentScript.split('\n\n');
+    parts.splice(Math.min(2, parts.length), 0, openLoopLine.trim());
+    updated = parts.join('\n\n');
+  }
+  _applyQualityFix(updated, '✅ Open loop added — this keeps viewers hooked early.');
+}
+
+function quickFixRetention() {
+  if (!currentScript) return;
+  const phrases = [
+    '\n\nBut here\'s where it gets interesting — stay with me.\n',
+    '\n\nAnd this is the part most people completely miss.\n',
+  ];
+  const lines = currentScript.split('\n');
+  const total = lines.length;
+  // Insert at ~40% and ~70%
+  const pos1 = Math.floor(total * 0.4);
+  const pos2 = Math.floor(total * 0.7);
+  lines.splice(pos2, 0, phrases[1].trim());
+  lines.splice(pos1, 0, phrases[0].trim());
+  _applyQualityFix(lines.join('\n'), '✅ 2 retention hooks added to reduce mid-video drop-off.');
+}
+
+function quickFixCTA() {
+  if (!currentScript) return;
+  const cta = '\n\n[CALL TO ACTION]\n\nIf this video gave you value, hit the like button — it helps more people find this content. Subscribe if you want more videos like this every week. And drop a comment below: what was your biggest takeaway? I read every single one. See you in the next video.\n';
+  const updated = currentScript.trimEnd() + cta;
+  _applyQualityFix(updated, '✅ CTA section added — always end with a specific ask for better algorithm signals.');
+}
+
 // === SCRIPT QUALITY REPORT ===
 function showQualityReport(script) {
   const qDiv = document.getElementById('script-quality');
@@ -1858,19 +1970,25 @@ function showQualityReport(script) {
     hookFormula = 'Bold Opener'; hookFormulaIcon = '⚡';
   }
 
-  const set = (id, ok, label) => {
+  const set = (id, ok, label, fixFn) => {
     const el = document.getElementById(id);
     if (!el) return;
     el.className = 'quality-item ' + (ok ? 'q-ok' : 'q-miss');
-    el.textContent = (ok ? '✅ ' : '⚠️ ') + label;
+    if (!ok && fixFn) {
+      const fnName = `_qfix_${id}`;
+      window[fnName] = fixFn;
+      el.innerHTML = `<span>${'⚠️ ' + label}</span><button class="q-fix-btn" onclick="window['${fnName}']()" title="Quick fix">Fix</button>`;
+    } else {
+      el.textContent = (ok ? '✅ ' : '⚠️ ') + label;
+    }
   };
 
   const hookBars = '▰'.repeat(hookStrength) + '▱'.repeat(5 - hookStrength);
   set('q-hook', hasHook, `Hook  ${hookBars}`);
   set('q-broll', brollCount >= 4, `${brollCount} B-Roll Cues`);
-  set('q-openloop', hasOpenLoop, 'Open Loop');
-  set('q-retention', retentionCount >= 2, `${retentionCount} Retention Hook${retentionCount !== 1 ? 's' : ''}`);
-  set('q-cta', hasCTA, 'CTA');
+  set('q-openloop', hasOpenLoop, 'Open Loop', quickFixOpenLoop);
+  set('q-retention', retentionCount >= 2, `${retentionCount} Retention Hook${retentionCount !== 1 ? 's' : ''}`, quickFixRetention);
+  set('q-cta', hasCTA, 'CTA', quickFixCTA);
 
   // Compute score
   let score = 0;
