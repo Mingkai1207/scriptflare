@@ -63,12 +63,16 @@
       <!-- Pro tier -->
       <div id="proPlan" style="display:none;">
         <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">You're on <strong style="color:var(--pro)">Pro</strong>. Want hands-free script delivery?</p>
-        <button class="btn-upgrade autopilot" style="width:auto; padding:10px 20px;" onclick="subscribe('autopilot')">Upgrade to Autopilot ($49/mo) →</button>
+        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+          <button class="btn-upgrade autopilot" style="width:auto; padding:10px 20px;" onclick="subscribe('autopilot')">Upgrade to Autopilot ($49/mo) →</button>
+          <a href="https://www.paypal.com/myaccount/autopay/" target="_blank" rel="noopener" style="font-size:0.82rem; color:var(--text-muted); text-decoration:underline;">Manage / cancel billing on PayPal ↗</a>
+        </div>
       </div>
 
       <!-- Autopilot tier -->
       <div id="autopilotPlan" style="display:none;">
-        <p style="color:var(--text-muted); font-size:0.9rem;">You're on <strong style="color:var(--autopilot)">Autopilot</strong> — the full ScriptFlare experience. 🚀</p>
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">You're on <strong style="color:var(--autopilot)">Autopilot</strong> — the full ScriptFlare experience. 🚀</p>
+        <a href="https://www.paypal.com/myaccount/autopay/" target="_blank" rel="noopener" style="font-size:0.82rem; color:var(--text-muted); text-decoration:underline;">Manage / cancel billing on PayPal ↗</a>
       </div>
     </div>
 
