@@ -1521,6 +1521,41 @@ function displayScript(script, topic, length, genSecs) {
       setTimeout(() => savingsEl.classList.add('hidden'), 9000);
     }
   }
+
+  // Pro preview drawer — show once after first generation for free users
+  if (!isProUser() && totalUsed === 1 && !localStorage.getItem('sf_pro_preview_seen')) {
+    localStorage.setItem('sf_pro_preview_seen', '1');
+    setTimeout(() => showProPreviewDrawer(), 3500);
+  }
+}
+
+function showProPreviewDrawer() {
+  const existing = document.getElementById('pro-preview-drawer');
+  if (existing) return;
+
+  const drawer = document.createElement('div');
+  drawer.id = 'pro-preview-drawer';
+  drawer.className = 'pro-preview-drawer';
+  drawer.innerHTML = `
+    <div class="ppd-inner">
+      <span class="ppd-icon">🔒</span>
+      <div class="ppd-content">
+        <strong>Unlock more with Pro</strong>
+        <div class="ppd-chips">
+          <span class="ppd-chip">✨ AI Improvement</span>
+          <span class="ppd-chip">🎯 Hook A/B Tester</span>
+          <span class="ppd-chip">🌍 Translate × 16</span>
+          <span class="ppd-chip">🖼️ Thumbnail Generator</span>
+          <span class="ppd-chip">💡 Bulk Ideas</span>
+        </div>
+      </div>
+      <a href="#pricing" class="ppd-cta" onclick="scrollToPricing(); document.getElementById('pro-preview-drawer').remove()">See Pro →</a>
+      <button class="ppd-close" onclick="document.getElementById('pro-preview-drawer').remove()" title="Dismiss">✕</button>
+    </div>
+  `;
+  document.getElementById('gen-output')?.insertAdjacentElement('afterend', drawer);
+  setTimeout(() => drawer.classList.add('ppd-visible'), 50);
+  setTimeout(() => { drawer.classList.remove('ppd-visible'); setTimeout(() => drawer.remove(), 400); }, 12000);
 }
 
 function formatScript(script) {
