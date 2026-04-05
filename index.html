@@ -441,12 +441,17 @@
         <div class="usage-bar" id="usage-bar">
           <div class="usage-info">
             <span id="usage-label">Free scripts remaining: <strong id="usage-count">3</strong></span>
-            <a href="#pricing" class="usage-tip">Upgrade to Pro for unlimited scripts →</a>
+            <div class="usage-bar-right">
+              <button class="btn-stats-toggle" id="stats-toggle-btn" onclick="toggleCreatorStats()" title="Your creator stats" style="display:none">📊</button>
+              <a href="#pricing" class="usage-tip">Upgrade to Pro for unlimited scripts →</a>
+            </div>
           </div>
           <div class="usage-track">
             <div class="usage-fill" id="usage-fill"></div>
           </div>
         </div>
+        <!-- CREATOR STATS PANEL -->
+        <div class="creator-stats hidden" id="creator-stats"></div>
 
         <!-- FORM -->
         <div class="gen-form" id="gen-form">

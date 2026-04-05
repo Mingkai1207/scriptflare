@@ -479,6 +479,62 @@ function updateUsageBar() {
       }
     }
   }
+  // Show stats button if user has generated at least one script
+  const statsBtn = document.getElementById('stats-toggle-btn');
+  if (statsBtn && getUsage() >= 1) statsBtn.style.display = 'inline-flex';
+}
+
+// === CREATOR STATS DASHBOARD ===
+function toggleCreatorStats() {
+  const panel = document.getElementById('creator-stats');
+  if (!panel) return;
+  if (!panel.classList.contains('hidden')) {
+    panel.classList.add('hidden');
+    return;
+  }
+  renderCreatorStats();
+  panel.classList.remove('hidden');
+}
+
+function renderCreatorStats() {
+  const panel = document.getElementById('creator-stats');
+  if (!panel) return;
+  const totalGenerated = parseInt(localStorage.getItem('sf_total') || '0', 10);
+  const streak = getStreak();
+  const streakRecord = Math.max(streak, parseInt(localStorage.getItem('sf_streak_record') || streak, 10));
+  const history = (() => { try { return JSON.parse(localStorage.getItem('sf_history') || '[]'); } catch { return []; } })();
+  const totalWords = history.reduce((sum, e) => sum + (e.script?.split(/\s+/).filter(Boolean).length || 0), 0);
+  const estHours = Math.round(totalWords / 150 / 60 * 10) / 10;
+  const nicheCounts = {};
+  history.forEach(e => { if (e.niche) nicheCounts[e.niche] = (nicheCounts[e.niche] || 0) + 1; });
+  const topNiche = Object.entries(nicheCounts).sort((a, b) => b[1] - a[1])[0];
+  const topNicheLabel = topNiche ? topNiche[0] : 'None yet';
+
+  panel.innerHTML = `
+    <div class="cs-header">
+      <span class="cs-title">📊 Your Creator Stats</span>
+      <button class="cs-close" onclick="document.getElementById('creator-stats').classList.add('hidden')">✕</button>
+    </div>
+    <div class="cs-grid">
+      <div class="cs-stat">
+        <span class="cs-num">${totalGenerated}</span>
+        <span class="cs-label">Total scripts</span>
+      </div>
+      <div class="cs-stat">
+        <span class="cs-num">${streak > 0 ? `🔥 ${streak}` : '0'}</span>
+        <span class="cs-label">Day streak</span>
+      </div>
+      <div class="cs-stat">
+        <span class="cs-num">${streakRecord}</span>
+        <span class="cs-label">Best streak</span>
+      </div>
+      <div class="cs-stat">
+        <span class="cs-num">${estHours > 0 ? estHours + 'h' : '—'}</span>
+        <span class="cs-label">Video content made</span>
+      </div>
+    </div>
+    <div class="cs-niche">Top niche: <strong>${topNicheLabel}</strong>${topNiche ? ` · ${topNiche[1]} script${topNiche[1] > 1 ? 's' : ''}` : ''}</div>
+  `;
 }
 
 function updateGenerateBtnState() {

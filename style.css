@@ -455,6 +455,71 @@ section { padding: 96px 0; }
   transition: width 0.4s ease;
   width: 0%;
 }
+.usage-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.btn-stats-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.btn-stats-toggle:hover { background: var(--bg2); color: var(--text); }
+
+/* Creator Stats Dashboard */
+.creator-stats {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  animation: fadeSlideIn 0.2s ease;
+}
+.cs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.cs-title { font-weight: 700; font-size: 0.85rem; color: var(--text); }
+.cs-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.cs-close:hover { background: rgba(255,255,255,0.06); }
+.cs-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.cs-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 8px;
+  background: var(--bg3, var(--bg));
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-align: center;
+}
+.cs-num { font-size: 1.2rem; font-weight: 800; color: var(--text); }
+.cs-label { font-size: 0.68rem; color: var(--text-muted); }
+.cs-niche { font-size: 0.78rem; color: var(--text-muted); }
+@media (max-width: 480px) {
+  .cs-grid { grid-template-columns: repeat(2, 1fr); }
+}
 
 /* Niche quick-select pills */
 .niche-pills {
