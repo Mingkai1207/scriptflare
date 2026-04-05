@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDemandStrip();
   renderTopicHistory();
   showDailyTopic();
+  initCreatorChallenge();
   initReturningUserNudge();
   initPricingCountdown();
   initExitIntent();
@@ -1073,6 +1074,125 @@ function getDailyTopic() {
   return DAILY_TOPICS[day % DAILY_TOPICS.length];
 }
 
+// === 7-DAY CREATOR CHALLENGE ===
+const CHALLENGE_DAYS = [
+  { day: 1, icon: '🎬', task: 'Generate your first niche script', hint: 'Pick a niche, enter a topic, hit Generate', check: () => getUsage() >= 1 },
+  { day: 2, icon: '⚡', task: 'Generate a YouTube Shorts version', hint: 'Set Video Length to "YouTube Short (60s)" and generate', check: () => !!localStorage.getItem('sf_shorts_done') },
+  { day: 3, icon: '🎯', task: 'Use the Hook A/B Tester', hint: 'Generate a script, then click "⋯ More → 🎯 Test Hooks"', check: () => !!localStorage.getItem('sf_hookab_done') },
+  { day: 4, icon: '📦', task: 'Export your YouTube Studio Pack', hint: 'Generate a script, click "⋯ More → 📦 Studio Pack"', check: () => !!localStorage.getItem('sf_studio_done') },
+  { day: 5, icon: '📱', task: 'Repurpose a script for social media', hint: 'Click "⋯ More → 📱 Repurpose" in the output panel', check: () => !!localStorage.getItem('sf_social_done') },
+  { day: 6, icon: '🔥', task: 'Generate your 3rd script on a new topic', hint: 'Explore a different niche or try today\'s topic', check: () => getUsage() >= 3 },
+  { day: 7, icon: '🏆', task: 'Share your script score on X', hint: 'Click "⋯ More → 📊 Share Score" to share your quality score', check: () => !!localStorage.getItem('sf_shared_score') },
+];
+
+function initCreatorChallenge() {
+  // Don't show for Pro users or if challenge was never started and user has < 1 script
+  const started = localStorage.getItem('sf_challenge_started');
+  if (!started && getUsage() < 1) return;
+  if (!started) {
+    localStorage.setItem('sf_challenge_started', String(Date.now()));
+  }
+  renderChallengeWidget();
+}
+
+function renderChallengeWidget() {
+  const existing = document.getElementById('creator-challenge');
+  if (existing) existing.remove();
+
+  // Find current day (first incomplete day)
+  let currentDayIdx = CHALLENGE_DAYS.findIndex(d => !d.check());
+  if (currentDayIdx === -1) {
+    // All done
+    renderChallengeComplete();
+    return;
+  }
+
+  const completed = currentDayIdx;
+  const current = CHALLENGE_DAYS[currentDayIdx];
+
+  const widget = document.createElement('div');
+  widget.id = 'creator-challenge';
+  widget.className = 'creator-challenge' + (localStorage.getItem('sf_challenge_minimized') ? ' cc-mini' : '');
+
+  const dots = CHALLENGE_DAYS.map((d, i) =>
+    `<span class="cc-dot ${i < completed ? 'cc-done' : i === currentDayIdx ? 'cc-active' : ''}"></span>`
+  ).join('');
+
+  widget.innerHTML = `
+    <div class="cc-header">
+      <span class="cc-title">7-Day Creator Challenge</span>
+      <div class="cc-header-btns">
+        <button class="cc-toggle" onclick="toggleChallenge()" title="Minimize">_</button>
+        <button class="cc-close" onclick="dismissChallenge()" title="Dismiss">✕</button>
+      </div>
+    </div>
+    <div class="cc-body">
+      <div class="cc-progress">${dots}</div>
+      <div class="cc-day-badge">Day ${current.day} / 7</div>
+      <div class="cc-task-icon">${current.icon}</div>
+      <div class="cc-task">${current.task}</div>
+      <div class="cc-hint">${current.hint}</div>
+      <button class="cc-check-btn" onclick="checkChallengeDay(${currentDayIdx})">✓ Mark complete</button>
+    </div>
+  `;
+  document.body.appendChild(widget);
+}
+
+function toggleChallenge() {
+  const w = document.getElementById('creator-challenge');
+  if (!w) return;
+  const mini = w.classList.toggle('cc-mini');
+  if (mini) localStorage.setItem('sf_challenge_minimized', '1');
+  else localStorage.removeItem('sf_challenge_minimized');
+}
+
+function dismissChallenge() {
+  document.getElementById('creator-challenge')?.remove();
+  localStorage.setItem('sf_challenge_dismissed', '1');
+}
+
+function checkChallengeDay(idx) {
+  const day = CHALLENGE_DAYS[idx];
+  if (!day) return;
+  // Force-mark as done using override flags
+  const overrideKeys = ['', 'sf_shorts_done', 'sf_hookab_done', 'sf_studio_done', 'sf_social_done', '', 'sf_shared_score'];
+  const key = overrideKeys[idx];
+  if (key) localStorage.setItem(key, '1');
+
+  if (day.check()) {
+    showToast(`🏆 Day ${day.day} complete! ${idx + 1 < CHALLENGE_DAYS.length ? 'On to Day ' + (idx + 2) + '…' : 'Challenge complete! 🎉'}`, 'success');
+    renderChallengeWidget();
+  } else {
+    showToast(`⚠️ Complete the task first: ${day.hint}`, 'warning');
+  }
+}
+
+function renderChallengeComplete() {
+  const widget = document.createElement('div');
+  widget.id = 'creator-challenge';
+  widget.className = 'creator-challenge cc-complete';
+  widget.innerHTML = `
+    <div class="cc-header">
+      <span class="cc-title">7-Day Challenge</span>
+      <button class="cc-close" onclick="dismissChallenge()">✕</button>
+    </div>
+    <div class="cc-body">
+      <div class="cc-complete-icon">🏆</div>
+      <strong class="cc-complete-text">Challenge Complete!</strong>
+      <p class="cc-complete-sub">You've mastered all 7 creator skills. Time to go viral.</p>
+      <button class="cc-share-btn" onclick="shareScore(); dismissChallenge()">📊 Share your achievement →</button>
+    </div>
+  `;
+  document.body.appendChild(widget);
+}
+
+// Auto-check challenge progress when scripts are generated
+function advanceChallengeIfReady() {
+  if (!localStorage.getItem('sf_challenge_started')) return;
+  if (localStorage.getItem('sf_challenge_dismissed')) return;
+  setTimeout(() => renderChallengeWidget(), 800);
+}
+
 // === RETURNING USER NUDGE ===
 function initReturningUserNudge() {
   if (isProUser()) return;
@@ -1428,6 +1548,8 @@ Write the complete, production-ready script now:`;
     saveTopicHistory(topic);
     autoSaveScript(script, topic, document.getElementById('niche').value);
     const _genSecs = Math.round((Date.now() - _genStart) / 1000);
+    if (length === 'short') { localStorage.setItem('sf_shorts_done', '1'); }
+    advanceChallengeIfReady();
 
     displayScript(script, topic, length, _genSecs);
 
@@ -2571,6 +2693,8 @@ function shareOnX() {
 // === SHARE SCORE ===
 function shareScore() {
   if (!currentScript) return;
+  localStorage.setItem('sf_shared_score', '1');
+  advanceChallengeIfReady();
   const topic = document.getElementById('topic').value.trim() || 'my video';
   const niche = document.getElementById('niche').value || 'YouTube';
   const scoreEl = document.getElementById('quality-score');
@@ -2913,6 +3037,9 @@ function showStudioPack() {
     panel.classList.add('hidden');
     return;
   }
+
+  localStorage.setItem('sf_studio_done', '1');
+  advanceChallengeIfReady();
 
   if (!isProUser()) {
     panel.innerHTML = `
@@ -3708,6 +3835,9 @@ async function showSocialClips() {
   const btn = document.getElementById('social-clips-btn');
   if (!panel) return;
 
+  localStorage.setItem('sf_social_done', '1');
+  advanceChallengeIfReady();
+
   // Pro gate
   if (!isProUser()) {
     panel.innerHTML = `<div class="social-clips-gate">
@@ -3910,6 +4040,9 @@ async function showHookAB() {
   const panel = document.getElementById('hook-ab');
   const btn = document.getElementById('hook-ab-btn');
   if (!panel) return;
+
+  localStorage.setItem('sf_hookab_done', '1');
+  advanceChallengeIfReady();
 
   if (!isProUser()) {
     showToast('🔒 Hook A/B testing is a Pro feature — upgrade to unlock.', 'warning');
