@@ -449,7 +449,9 @@ function getRemainingScripts() {
 
 function updateUsageBar() {
   const remaining = getRemainingScripts();
-  const used = CONFIG.freeLimit - Math.min(remaining, CONFIG.freeLimit);
+  const bonus = parseInt(localStorage.getItem('sf_bonus_scripts') || '0', 10);
+  const total = CONFIG.freeLimit + bonus;
+  const used = Math.min(getUsage(), total);
 
   const label = document.getElementById('usage-label');
   const count = document.getElementById('usage-count');
@@ -465,7 +467,7 @@ function updateUsageBar() {
     }
   } else {
     if (count) count.textContent = remaining;
-    if (fill) fill.style.width = ((used / CONFIG.freeLimit) * 100) + '%';
+    if (fill) fill.style.width = (total > 0 ? (used / total) * 100 : 0) + '%';
     // Add urgency styling based on remaining count
     if (usageBar) {
       usageBar.classList.remove('urgent', 'critical');
