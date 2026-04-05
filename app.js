@@ -598,6 +598,7 @@ function unlockPro() {
     localStorage.setItem(CONFIG.proKey, 'true');
     msg.textContent = '🎉 Pro unlocked! You now have unlimited scripts.';
     msg.classList.add('success');
+    launchConfetti();
 
     setTimeout(() => {
       document.getElementById('paywall').classList.add('hidden');
@@ -608,6 +609,7 @@ function unlockPro() {
       btn.style.background = '';
       document.getElementById('btn-text').textContent = '⚡ Generate Script';
       updateUsageBar();
+      showToast('🚀 Welcome to Pro! Unlimited scripts — all features unlocked.', 'success');
     }, 1200);
   } else {
     msg.textContent = '❌ Invalid code. Check your email or contact support.';
@@ -2680,6 +2682,7 @@ function surpriseTopic() {
   input.value = topic;
   updateTopicCounter();
   detectNicheFromTopic();
+  updateViralScore();
   input.focus();
   // Spin animation on the button
   const btn = document.querySelector('.btn-surprise');
