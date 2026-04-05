@@ -1442,6 +1442,8 @@ function clearOutput() {
   document.getElementById('script-quality')?.classList.add('hidden');
   document.getElementById('quality-tips')?.classList.add('hidden');
   document.getElementById('quality-keywords')?.classList.add('hidden');
+  document.getElementById('watch-time-pred')?.classList.add('hidden');
+  document.getElementById('hook-formula-tag')?.classList.add('hidden');
   document.getElementById('voiceover-links')?.classList.add('hidden');
   document.getElementById('niche-perf-tip')?.classList.add('hidden');
   document.getElementById('social-clips')?.classList.add('hidden');
@@ -1714,6 +1716,29 @@ function showQualityReport(script) {
   } else if (tipsEl) {
     tipsEl.classList.add('hidden');
   }
+
+  // Watch Time Predictor
+  const words = script.split(/\s+/).filter(Boolean).length;
+  const mins = words / 150;
+  let wt = 68; // baseline
+  if (hasHook && hookStrength >= 3) wt += 6; else if (hasHook) wt += 3; else wt -= 8;
+  if (hasOpenLoop) wt += 5;
+  if (retentionCount >= 3) wt += 5; else if (retentionCount >= 1) wt += 2; else wt -= 4;
+  if (mins >= 7 && mins <= 12) wt += 3; else if (mins > 14) wt -= 8; else if (mins < 4) wt -= 5;
+  if (brollCount >= 6) wt += 4; else if (brollCount < 3) wt -= 4;
+  if (!hasCTA) wt -= 3;
+  wt = Math.max(30, Math.min(92, Math.round(wt)));
+  const wtClass = wt >= 70 ? 'wt-high' : wt >= 55 ? 'wt-mid' : 'wt-low';
+  const wtLabel = wt >= 70 ? 'Strong' : wt >= 55 ? 'Average' : 'Needs work';
+  let wtEl = document.getElementById('watch-time-pred');
+  if (!wtEl) {
+    wtEl = document.createElement('div');
+    wtEl.id = 'watch-time-pred';
+    wtEl.className = 'watch-time-pred';
+    qDiv.insertAdjacentElement('afterend', wtEl);
+  }
+  wtEl.innerHTML = `<span class="wtp-label">Predicted Retention</span><span class="wtp-bar-wrap"><span class="wtp-bar ${wtClass}" style="width:${wt}%"></span></span><span class="wtp-pct ${wtClass}">${wt}% <span class="wtp-grade">${wtLabel}</span></span>`;
+  wtEl.classList.remove('hidden');
 
   qDiv.classList.remove('hidden');
 }

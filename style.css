@@ -1693,6 +1693,55 @@ footer {
   letter-spacing: 0.01em;
 }
 
+/* Watch Time Predictor */
+.watch-time-pred {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 14px;
+  background: rgba(0,0,0,0.15);
+  border-radius: 8px;
+  margin: 6px 0;
+  flex-wrap: wrap;
+}
+.wtp-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 130px;
+}
+.wtp-bar-wrap {
+  flex: 1;
+  min-width: 80px;
+  height: 6px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 100px;
+  overflow: hidden;
+}
+.wtp-bar {
+  height: 100%;
+  border-radius: 100px;
+  transition: width 0.9s ease;
+}
+.wtp-bar.wt-high { background: linear-gradient(90deg, #059669, #6ee7b7); }
+.wtp-bar.wt-mid  { background: linear-gradient(90deg, #d97706, #fcd34d); }
+.wtp-bar.wt-low  { background: linear-gradient(90deg, #dc2626, #f87171); }
+.wtp-pct {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.wtp-pct.wt-high { color: #6ee7b7; }
+.wtp-pct.wt-mid  { color: #fcd34d; }
+.wtp-pct.wt-low  { color: #f87171; }
+.wtp-grade {
+  font-weight: 400;
+  font-size: 0.74rem;
+  opacity: 0.8;
+  margin-left: 4px;
+}
+
 /* Script score badge */
 .quality-score-wrap {
   display: flex;
