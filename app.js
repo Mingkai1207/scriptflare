@@ -170,6 +170,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initDemandStrip();
   renderTopicHistory();
   showDailyTopic();
+  initReturningUserNudge();
   initPricingCountdown();
   initExitIntent();
   initTheme();
@@ -1070,6 +1071,35 @@ const DAILY_TOPICS = [
 function getDailyTopic() {
   const day = new Date().getDate() - 1; // 0-30
   return DAILY_TOPICS[day % DAILY_TOPICS.length];
+}
+
+// === RETURNING USER NUDGE ===
+function initReturningUserNudge() {
+  if (isProUser()) return;
+  const used = getUsage();
+  if (used < 1) return; // First-time visitor
+  const lastVisit = parseInt(localStorage.getItem('sf_last_visit') || '0', 10);
+  const now = Date.now();
+  localStorage.setItem('sf_last_visit', String(now));
+  // Only show if returning after ≥2 hours
+  if (now - lastVisit < 7200000) return;
+  const remaining = getRemainingScripts();
+  if (remaining <= 0) return; // Paywalled users see paywall, not this
+  const niche = localStorage.getItem('sf_voice_profile')
+    ? JSON.parse(localStorage.getItem('sf_voice_profile') || '{}').channelName
+    : '';
+  const greeting = niche ? `Welcome back${niche ? `, ${niche}` : ''}!` : 'Welcome back!';
+  const msg = remaining === 1
+    ? `${greeting} You have <strong>1 free script left</strong> — use it wisely, or upgrade for unlimited.`
+    : `${greeting} You have <strong>${remaining} free script${remaining !== 1 ? 's' : ''}</strong> left on your free plan.`;
+
+  const banner = document.createElement('div');
+  banner.id = 'returning-nudge';
+  banner.className = 'returning-nudge';
+  banner.innerHTML = `<span>${msg}</span><a href="#pricing" onclick="scrollToPricing(); document.getElementById('returning-nudge').remove()">Upgrade →</a><button onclick="document.getElementById('returning-nudge').remove()">✕</button>`;
+  document.body.insertBefore(banner, document.body.firstChild);
+  setTimeout(() => banner.classList.add('rn-visible'), 50);
+  setTimeout(() => { banner.classList.remove('rn-visible'); setTimeout(() => banner.remove(), 300); }, 10000);
 }
 
 function showDailyTopic() {

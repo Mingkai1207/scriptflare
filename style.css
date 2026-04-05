@@ -4414,6 +4414,53 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   margin-left: 4px;
 }
 
+/* === RETURNING USER NUDGE (top bar) === */
+.returning-nudge {
+  position: fixed;
+  top: -60px;
+  left: 0;
+  right: 0;
+  z-index: 1200;
+  background: linear-gradient(90deg, #1a1040, #0d1428);
+  border-bottom: 1px solid rgba(124,92,252,0.3);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  font-size: 13px;
+  transition: top 0.35s cubic-bezier(0.22,1,0.36,1);
+}
+.returning-nudge.rn-visible { top: 0; }
+.returning-nudge span { color: var(--text-muted); }
+.returning-nudge strong { color: var(--text); }
+.returning-nudge a {
+  background: var(--primary);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.15s;
+}
+.returning-nudge a:hover { background: var(--primary-dark, #6340e8); }
+.returning-nudge button {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 2px 6px;
+  position: absolute;
+  right: 16px;
+}
+@media (max-width: 480px) {
+  .returning-nudge { padding: 8px 14px; font-size: 12px; }
+  .returning-nudge button { position: static; }
+}
+
 /* === PRO PREVIEW DRAWER === */
 .pro-preview-drawer {
   position: fixed;
