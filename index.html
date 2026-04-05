@@ -820,7 +820,7 @@
               <span class="price-cancel">Cancel anytime · 30-day guarantee</span>
             </div>
             <div class="paywall-social">Joined by 2,400+ creators already on Pro</div>
-            <a href="#pay" class="btn btn-primary btn-lg" onclick="scrollToPricing(); setTimeout(showPayPal, 400)">
+            <a href="#pay" class="btn btn-primary btn-lg" onclick="scrollToPricing(); setTimeout(() => showPayPal('pro'), 400)">
               💳 Upgrade to Pro — $19/month
             </a>
             <a href="#script-preview" class="paywall-sample-link" onclick="document.getElementById('script-preview').scrollIntoView({behavior:'smooth'})">
@@ -998,7 +998,7 @@
             <li>✅ 3 scripts/day on your schedule</li>
             <li>✅ Never think about what to post</li>
           </ul>
-          <a href="signup.html?plan=autopilot" class="btn btn-block" style="background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;">
+          <a href="#pay" id="paypal-btn-autopilot" class="btn btn-block" style="background:linear-gradient(135deg,#a855f7,#7c3aed);color:#fff;border:none;" onclick="showPayPal('autopilot')">
             Get Autopilot — $49/mo
           </a>
           <p class="plan-note" style="color:rgba(168,85,247,0.7);">🤖 Fully hands-free content engine</p>
@@ -1348,7 +1348,7 @@
           <span class="footer-col-title">Pricing</span>
           <a href="#pricing">Free Plan</a>
           <a href="#pricing">Pro — $19/mo</a>
-          <a href="#pricing" onclick="showPayPal()">Upgrade Now</a>
+          <a href="#pricing" onclick="showPayPal('pro')">Upgrade Now</a>
         </div>
         <div class="footer-col">
           <span class="footer-col-title">Resources</span>
