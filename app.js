@@ -2274,6 +2274,97 @@ function shareOnX() {
   window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=560,height=400');
 }
 
+// === SHARE SCORE ===
+function shareScore() {
+  if (!currentScript) return;
+  const topic = document.getElementById('topic').value.trim() || 'my video';
+  const niche = document.getElementById('niche').value || 'YouTube';
+  const scoreEl = document.getElementById('quality-score');
+  const score = scoreEl ? scoreEl.textContent.trim() : '';
+  const wtEl = document.getElementById('watch-time-pred');
+  let wtPct = '';
+  if (wtEl) {
+    const pctEl = wtEl.querySelector('.wtp-pct');
+    if (pctEl) wtPct = pctEl.textContent.replace(/\D/g, '').slice(0, 2);
+  }
+  const niceNiche = niche.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+  const scoreText = score && score !== '—' ? `scored ${score}` : 'scored well';
+  const wtText = wtPct ? ` with ${wtPct}% predicted retention` : '';
+  const shortTopic = topic.length > 45 ? topic.slice(0, 42) + '…' : topic;
+  const text = `My ${niceNiche} YouTube script ${scoreText}${wtText} on @ScriptFlare ⚡\n\nTopic: "${shortTopic}"\n\nGenerate yours free →`;
+  const url = 'https://mingkai1207.github.io/scriptflare/';
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank', 'width=560,height=400');
+}
+
+// === SCRIPT TIGHTENER (Pro) ===
+async function tightenScript() {
+  if (!currentScript || isGenerating) return;
+
+  if (!isProUser()) {
+    showToast('🔒 Script Tightener is a Pro feature — upgrade to unlock.', 'warning');
+    setTimeout(() => scrollToPricing(), 600);
+    return;
+  }
+
+  const wordsBefore = currentScript.split(/\s+/).filter(Boolean).length;
+  const btn = document.querySelector('[onclick="tightenScript()"]');
+  if (btn) { btn.textContent = '⏳ Tightening…'; btn.disabled = true; }
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          {
+            role: 'system',
+            content: `You are a YouTube script editor. Tighten the script by:
+1. Removing filler words: basically, very, really, just, literally, actually, essentially, kind of, sort of, you know, I mean, at the end of the day
+2. Cutting any sentence that repeats a point already made
+3. Shortening long rambling sentences — aim for spoken-word clarity
+4. Keeping ALL section headers, [VISUAL: ...] cues, and structure intact
+5. Never remove entire sections or key information
+Return ONLY the tightened script with no commentary.`
+          },
+          { role: 'user', content: `Tighten this script:\n\n${currentScript}` }
+        ],
+        max_tokens: 2800,
+        temperature: 0.3,
+      }),
+    });
+
+    if (!response.ok) throw new Error('API error');
+    const data = await response.json();
+    const tightened = data.choices?.[0]?.message?.content?.trim();
+    if (!tightened || tightened.length < 100) throw new Error('Bad response');
+
+    const wordsAfter = tightened.split(/\s+/).filter(Boolean).length;
+    const saved = wordsBefore - wordsAfter;
+    const pct = Math.round((saved / wordsBefore) * 100);
+
+    const topic = document.getElementById('topic').value.trim();
+    const niche = document.getElementById('niche').value;
+    currentScript = tightened;
+    autoSaveScript(tightened, topic, niche);
+
+    const scriptDiv = document.getElementById('script-content');
+    if (scriptDiv) scriptDiv.innerHTML = formatScript(tightened);
+    showQualityReport(tightened);
+    updateWordCount(tightened);
+
+    if (saved > 0) {
+      showToast(`✂️ Script tightened — cut ${saved} words (${pct}% shorter). Same info, crisper delivery.`, 'success');
+    } else {
+      showToast('✅ Script already tight — no significant filler found.', 'success');
+    }
+  } catch (e) {
+    showToast('⚠️ Tighten failed — try again.', 'error');
+  } finally {
+    if (btn) { btn.textContent = '✂️ Tighten'; btn.disabled = false; }
+  }
+}
+
 // === COPY & DOWNLOAD ===
 function copyScript() {
   if (!currentScript) return;
