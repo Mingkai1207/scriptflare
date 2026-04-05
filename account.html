@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account — ScriptFlare</title>
+  <link rel="stylesheet" href="account.css">
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav class="account-nav">
+    <div class="logo"><a href="index.html">Script<span>Flare</span> 🔥</a></div>
+    <div class="nav-actions">
+      <span class="tier-badge" id="tierBadge">free</span>
+      <a href="index.html" class="btn-signout">← Generator</a>
+      <button class="btn-signout" onclick="signOut()">Sign out</button>
+    </div>
+  </nav>
+
+  <div class="account-layout">
+
+    <!-- Welcome banner -->
+    <div id="welcomeBanner" style="display:none; background:rgba(255,107,53,0.1); border:1px solid rgba(255,107,53,0.3); border-radius:10px; padding:14px 20px; margin-bottom:24px; color: var(--brand); font-weight:600;">
+      🎉 Welcome to ScriptFlare! Your free account has 3 scripts to get started.
+    </div>
+
+    <!-- Plan & Upgrade -->
+    <div class="account-section" id="planSection">
+      <div class="section-title"><span class="section-icon">💳</span> Your Plan</div>
+
+      <!-- Free tier -->
+      <div id="freePlan">
+        <p style="color:var(--text-muted); margin-bottom:20px; font-size:0.9rem;">You're on the <strong style="color:var(--text)">Free plan</strong>. Upgrade to unlock unlimited scripts, AI improvements, and Autopilot.</p>
+        <div class="upgrade-grid">
+          <div class="upgrade-card pro-card">
+            <div class="plan-name" style="color:var(--pro)">Pro</div>
+            <div class="plan-price" style="color:var(--pro)">$19<span>/mo</span></div>
+            <ul>
+              <li>Unlimited scripts</li>
+              <li>AI Improve button</li>
+              <li>All niches & tones</li>
+              <li>Script history</li>
+              <li>Priority generation</li>
+            </ul>
+            <button class="btn-upgrade pro" onclick="subscribe('pro')">Upgrade to Pro →</button>
+          </div>
+          <div class="upgrade-card autopilot-card">
+            <div class="plan-name" style="color:var(--autopilot)">Autopilot</div>
+            <div class="plan-price" style="color:var(--autopilot)">$49<span>/mo</span></div>
+            <ul>
+              <li>Everything in Pro</li>
+              <li>Daily trending topics</li>
+              <li>Channel analysis</li>
+              <li>Auto-generate scripts</li>
+              <li>Deliver to Notion</li>
+            </ul>
+            <button class="btn-upgrade autopilot" onclick="subscribe('autopilot')">Get Autopilot →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pro tier -->
+      <div id="proPlan" style="display:none;">
+        <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">You're on <strong style="color:var(--pro)">Pro</strong>. Want hands-free script delivery?</p>
+        <button class="btn-upgrade autopilot" style="width:auto; padding:10px 20px;" onclick="subscribe('autopilot')">Upgrade to Autopilot ($49/mo) →</button>
+      </div>
+
+      <!-- Autopilot tier -->
+      <div id="autopilotPlan" style="display:none;">
+        <p style="color:var(--text-muted); font-size:0.9rem;">You're on <strong style="color:var(--autopilot)">Autopilot</strong> — the full ScriptFlare experience. 🚀</p>
+      </div>
+    </div>
+
+    <!-- Autopilot Config (Autopilot only) -->
+    <div class="account-section" id="autopilotSection">
+      <div class="section-title">
+        <span class="section-icon">🤖</span> Autopilot Settings
+        <button class="btn-run" id="runNowBtn" onclick="runAutopilotNow()" style="margin-left:auto; font-size:0.85rem; padding:8px 16px;">▶ Run Now</button>
+      </div>
+
+      <div id="autopilotLocked" class="locked-overlay">
+        <h3>🔒 Autopilot Plan Required</h3>
+        <p>Autopilot automatically discovers trending topics, generates scripts, and delivers them to Notion on your schedule.</p>
+        <button class="btn-locked" onclick="subscribe('autopilot')">Upgrade to Autopilot — $49/mo →</button>
+      </div>
+
+      <div id="autopilotForm" style="display:none;">
+        <div class="config-grid">
+          <div class="config-field">
+            <label>Niche</label>
+            <select id="cfgNiche">
+              <option>personal finance</option>
+              <option>investing</option>
+              <option>health and fitness</option>
+              <option>mindset and motivation</option>
+              <option>technology</option>
+              <option>business and entrepreneurship</option>
+              <option>travel</option>
+              <option>true crime</option>
+              <option>history and education</option>
+              <option>food and cooking</option>
+            </select>
+          </div>
+          <div class="config-field">
+            <label>Script Length (minutes)</label>
+            <select id="cfgLength">
+              <option value="5">5 minutes</option>
+              <option value="8" selected>8 minutes</option>
+              <option value="10">10 minutes</option>
+              <option value="12">12 minutes</option>
+              <option value="15">15 minutes</option>
+            </select>
+          </div>
+          <div class="config-field">
+            <label>Tone</label>
+            <input type="text" id="cfgTone" value="educational and engaging" placeholder="educational and engaging">
+          </div>
+          <div class="config-field">
+            <label>Daily Run Time (UTC)</label>
+            <input type="time" id="cfgTime" value="08:00">
+          </div>
+        </div>
+
+        <div class="config-field" style="margin-top:16px;">
+          <label>Run on Days</label>
+          <div class="day-checkboxes" id="dayCheckboxes">
+            <label class="day-checkbox" data-day="0"><input type="checkbox"> Sun</label>
+            <label class="day-checkbox checked" data-day="1"><input type="checkbox" checked> Mon</label>
+            <label class="day-checkbox" data-day="2"><input type="checkbox"> Tue</label>
+            <label class="day-checkbox checked" data-day="3"><input type="checkbox" checked> Wed</label>
+            <label class="day-checkbox" data-day="4"><input type="checkbox"> Thu</label>
+            <label class="day-checkbox checked" data-day="5"><input type="checkbox" checked> Fri</label>
+            <label class="day-checkbox" data-day="6"><input type="checkbox"> Sat</label>
+          </div>
+        </div>
+
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">Enable Autopilot</div>
+            <div class="toggle-desc">Scripts will be auto-generated on your schedule</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="cfgEnabled">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
+
+        <button class="btn-save" onclick="saveAutopilotConfig()" id="saveConfigBtn">Save Autopilot Settings</button>
+      </div>
+    </div>
+
+    <!-- Channel Analysis -->
+    <div class="account-section" id="channelSection">
+      <div class="section-title"><span class="section-icon">📺</span> Channel Analysis</div>
+
+      <div id="channelLocked" class="locked-overlay">
+        <h3>🔒 Autopilot Plan Required</h3>
+        <p>Connect your YouTube channel so Autopilot can find topics that fit your style.</p>
+        <button class="btn-locked" onclick="subscribe('autopilot')">Get Autopilot →</button>
+      </div>
+
+      <div id="channelForm" style="display:none;">
+        <div class="config-field" style="margin-bottom:16px;">
+          <label>Your YouTube Channel URL</label>
+          <input type="url" id="channelUrl" placeholder="https://youtube.com/@YourChannel" style="max-width:480px;">
+        </div>
+        <div id="channelProfile" style="display:none; background:var(--surface2); border-radius:8px; padding:16px; margin-bottom:16px; font-size:0.88rem; color:var(--text-muted);"></div>
+        <button class="btn-save" onclick="analyzeChannel()" id="analyzeBtn">🔍 Analyze Channel</button>
+      </div>
+    </div>
+
+    <!-- Notion Delivery -->
+    <div class="account-section" id="notionSection">
+      <div class="section-title"><span class="section-icon">📝</span> Notion Delivery</div>
+
+      <div id="notionLocked" class="locked-overlay">
+        <h3>🔒 Autopilot Plan Required</h3>
+        <p>Automatically deliver generated scripts to your Notion workspace.</p>
+        <button class="btn-locked" onclick="subscribe('autopilot')">Get Autopilot →</button>
+      </div>
+
+      <div id="notionForm" class="notion-setup" style="display:none;">
+        <div class="hint">
+          To connect Notion: <a href="https://www.notion.so/my-integrations" target="_blank">Create an integration</a>, copy the Internal Integration Token, then share a page with that integration and paste the page ID below.<br>
+          Page ID = last 32 characters of the page URL (e.g. <code style="color:var(--brand)">notion.so/MyPage-<strong>abc123...</strong></code>)
+        </div>
+        <div class="config-field">
+          <label>Notion Integration Token</label>
+          <input type="password" id="notionToken" placeholder="secret_xxxxxxxxxxxx">
+        </div>
+        <div class="config-field">
+          <label>Notion Page ID</label>
+          <input type="text" id="notionPageId" placeholder="xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx">
+        </div>
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button class="verify-btn" onclick="verifyNotion()">Verify Connection</button>
+          <span class="verify-status" id="notionStatus"></span>
+        </div>
+        <button class="btn-save" onclick="saveNotionConfig()" id="saveNotionBtn">Save Notion Settings</button>
+      </div>
+    </div>
+
+    <!-- Generated Scripts -->
+    <div class="account-section">
+      <div class="section-title"><span class="section-icon">📄</span> Generated Scripts</div>
+      <div id="scriptsContainer">
+        <div class="empty-state">Loading scripts…</div>
+      </div>
+    </div>
+
+  </div><!-- /account-layout -->
+
+  <div class="toast-msg" id="toastMsg"></div>
+
+  <script>
+    const API = 'https://scriptflare-backend-production.up.railway.app';
+    let currentUser = null;
+    let currentTier = 'free';
+
+    function getToken() { return localStorage.getItem('sf_token'); }
+
+    async function apiCall(path, method = 'GET', body = null) {
+      const opts = {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getToken()}`,
+        },
+      };
+      if (body) opts.body = JSON.stringify(body);
+      const res = await fetch(`${API}${path}`, opts);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Request failed');
+      return data;
+    }
+
+    function showToast(msg, type = 'info') {
+      const el = document.getElementById('toastMsg');
+      el.textContent = msg;
+      el.className = `toast-msg show ${type}`;
+      setTimeout(() => el.classList.remove('show'), 3500);
+    }
+
+    function signOut() {
+      localStorage.removeItem('sf_token');
+      localStorage.removeItem('sf_user');
+      localStorage.removeItem('sf_pro');
+      window.location.href = 'login.html';
+    }
+
+    function setTierUI(tier) {
+      currentTier = tier;
+      const badge = document.getElementById('tierBadge');
+      badge.textContent = tier;
+      badge.className = `tier-badge ${tier}`;
+
+      // Plan section
+      document.getElementById('freePlan').style.display = tier === 'free' ? 'block' : 'none';
+      document.getElementById('proPlan').style.display = tier === 'pro' ? 'block' : 'none';
+      document.getElementById('autopilotPlan').style.display = tier === 'autopilot' ? 'block' : 'none';
+
+      const isAutopilot = tier === 'autopilot';
+      // Autopilot section
+      document.getElementById('autopilotLocked').style.display = isAutopilot ? 'none' : 'block';
+      document.getElementById('autopilotForm').style.display = isAutopilot ? 'block' : 'none';
+      document.getElementById('runNowBtn').style.display = isAutopilot ? 'inline-block' : 'none';
+      // Channel section
+      document.getElementById('channelLocked').style.display = isAutopilot ? 'none' : 'block';
+      document.getElementById('channelForm').style.display = isAutopilot ? 'block' : 'none';
+      // Notion section
+      document.getElementById('notionLocked').style.display = isAutopilot ? 'none' : 'block';
+      document.getElementById('notionForm').style.display = isAutopilot ? 'block' : 'none';
+    }
+
+    async function loadUserData() {
+      const token = getToken();
+      if (!token) { window.location.href = 'login.html'; return; }
+
+      try {
+        const { user } = await apiCall('/auth/me');
+        currentUser = user;
+        setTierUI(user.tier);
+        localStorage.setItem('sf_pro', user.tier !== 'free' ? '1' : '');
+      } catch (err) {
+        if (err.message.includes('Invalid') || err.message.includes('expired')) {
+          window.location.href = 'login.html';
+        }
+      }
+    }
+
+    async function loadScripts() {
+      const container = document.getElementById('scriptsContainer');
+      try {
+        const { scripts } = await apiCall('/api/autopilot/scripts?limit=20');
+        if (!scripts || scripts.length === 0) {
+          container.innerHTML = '<div class="empty-state">No scripts yet. Generate your first script on the <a href="index.html" style="color:var(--brand)">main page</a> or run Autopilot.</div>';
+          return;
+        }
+        container.innerHTML = `
+          <table class="scripts-table">
+            <thead>
+              <tr>
+                <th>Topic</th>
+                <th>Niche</th>
+                <th>Source</th>
+                <th>Delivered</th>
+                <th>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${scripts.map(s => `
+                <tr>
+                  <td class="script-topic">${s.topic}</td>
+                  <td style="color:var(--text-muted);font-size:0.82rem;">${s.niche}</td>
+                  <td><span class="source-badge ${s.source}">${s.source}</span></td>
+                  <td><span class="deliver-badge ${s.delivered_to || 'pending'}">${s.delivered_to || '—'}</span></td>
+                  <td style="color:var(--text-muted);font-size:0.82rem;">${new Date(s.created_at).toLocaleDateString()}</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>`;
+      } catch (err) {
+        container.innerHTML = '<div class="empty-state">Could not load scripts.</div>';
+      }
+    }
+
+    async function loadAutopilotConfig() {
+      if (currentTier !== 'autopilot') return;
+      try {
+        const { config } = await apiCall('/api/autopilot/config');
+        if (!config) return;
+
+        document.getElementById('cfgNiche').value = config.niche || 'personal finance';
+        document.getElementById('cfgLength').value = config.script_length || 8;
+        document.getElementById('cfgTone').value = config.tone || '';
+        document.getElementById('cfgTime').value = config.schedule_time || '08:00';
+        document.getElementById('cfgEnabled').checked = config.enabled;
+
+        const days = config.schedule_days || [1, 3, 5];
+        document.querySelectorAll('#dayCheckboxes .day-checkbox').forEach(el => {
+          const day = parseInt(el.dataset.day);
+          const checked = days.includes(day);
+          el.querySelector('input').checked = checked;
+          el.classList.toggle('checked', checked);
+        });
+
+        if (config.notion_token) {
+          document.getElementById('notionToken').value = config.notion_token;
+          document.getElementById('notionPageId').value = config.notion_page_id || '';
+        }
+      } catch (err) {
+        // No config yet, use defaults
+      }
+    }
+
+    async function loadChannelProfile() {
+      if (currentTier !== 'autopilot') return;
+      try {
+        const { channel_profile } = await apiCall('/api/channel/profile');
+        if (channel_profile) {
+          document.getElementById('channelUrl').value = channel_profile.youtube_channel_url;
+          showChannelProfile(channel_profile);
+        }
+      } catch {}
+    }
+
+    function showChannelProfile(profile) {
+      const el = document.getElementById('channelProfile');
+      el.style.display = 'block';
+      el.innerHTML = `
+        <strong>Niche:</strong> ${profile.channel_niche || '—'}<br>
+        <strong>Keywords:</strong> ${(profile.top_keywords || []).join(', ') || '—'}<br>
+        <strong>Style:</strong> ${profile.style_notes || '—'}<br>
+        <em style="color:var(--text-muted);font-size:0.8rem;">Last analyzed: ${profile.last_analyzed_at ? new Date(profile.last_analyzed_at).toLocaleDateString() : 'never'}</em>
+      `;
+    }
+
+    // Day checkbox toggles
+    document.querySelectorAll('#dayCheckboxes .day-checkbox').forEach(el => {
+      el.addEventListener('click', () => {
+        const input = el.querySelector('input');
+        input.checked = !input.checked;
+        el.classList.toggle('checked', input.checked);
+      });
+    });
+
+    async function saveAutopilotConfig() {
+      const btn = document.getElementById('saveConfigBtn');
+      btn.disabled = true;
+      btn.textContent = 'Saving…';
+
+      const days = [];
+      document.querySelectorAll('#dayCheckboxes .day-checkbox').forEach(el => {
+        if (el.querySelector('input').checked) days.push(parseInt(el.dataset.day));
+      });
+
+      try {
+        await apiCall('/api/autopilot/config', 'PUT', {
+          niche: document.getElementById('cfgNiche').value,
+          script_length: parseInt(document.getElementById('cfgLength').value),
+          tone: document.getElementById('cfgTone').value,
+          schedule_time: document.getElementById('cfgTime').value,
+          schedule_days: days,
+          enabled: document.getElementById('cfgEnabled').checked,
+          notion_token: document.getElementById('notionToken').value || null,
+          notion_page_id: document.getElementById('notionPageId').value || null,
+        });
+        showToast('✅ Settings saved!', 'success');
+      } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = 'Save Autopilot Settings';
+    }
+
+    async function saveNotionConfig() {
+      // Merged into saveAutopilotConfig
+      await saveAutopilotConfig();
+    }
+
+    async function verifyNotion() {
+      const token = document.getElementById('notionToken').value;
+      const pageId = document.getElementById('notionPageId').value;
+      const statusEl = document.getElementById('notionStatus');
+
+      if (!token || !pageId) {
+        statusEl.textContent = 'Fill in both fields first';
+        statusEl.className = 'verify-status err';
+        return;
+      }
+
+      statusEl.textContent = 'Verifying…';
+      statusEl.className = 'verify-status';
+
+      try {
+        const { valid, message } = await apiCall('/api/deliver/verify-notion', 'POST', {
+          notion_token: token,
+          notion_page_id: pageId,
+        });
+        statusEl.textContent = valid ? '✓ Connected!' : '✗ ' + message;
+        statusEl.className = `verify-status ${valid ? 'ok' : 'err'}`;
+      } catch (err) {
+        statusEl.textContent = '✗ ' + err.message;
+        statusEl.className = 'verify-status err';
+      }
+    }
+
+    async function analyzeChannel() {
+      const url = document.getElementById('channelUrl').value.trim();
+      if (!url) { showToast('Enter your YouTube channel URL', 'error'); return; }
+
+      const btn = document.getElementById('analyzeBtn');
+      btn.disabled = true;
+      btn.textContent = '🔍 Analyzing… (30-60s)';
+
+      try {
+        const { channel_profile } = await apiCall('/api/channel/analyze', 'POST', {
+          youtube_channel_url: url,
+        });
+        showChannelProfile(channel_profile);
+        showToast('✅ Channel analyzed!', 'success');
+      } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = '🔍 Analyze Channel';
+    }
+
+    async function subscribe(tier) {
+      try {
+        const { approval_url } = await apiCall('/billing/create-subscription', 'POST', { tier });
+        window.open(approval_url, '_blank');
+        showToast('💳 PayPal opened in new tab. Complete payment to activate.', 'info');
+      } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+      }
+    }
+
+    async function runAutopilotNow() {
+      const btn = document.getElementById('runNowBtn');
+      btn.disabled = true;
+      btn.textContent = '⏳ Running…';
+      showToast('🤖 Autopilot started — this may take 1-2 minutes…', 'info');
+
+      try {
+        const result = await apiCall('/api/autopilot/run', 'POST');
+        if (result.success) {
+          showToast(`✅ Done! ${result.scriptsCreated} script${result.scriptsCreated !== 1 ? 's' : ''} generated`, 'success');
+          await loadScripts();
+        } else {
+          showToast('❌ ' + (result.error || 'Autopilot run failed'), 'error');
+        }
+      } catch (err) {
+        showToast('❌ ' + err.message, 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = '▶ Run Now';
+    }
+
+    // Check for payment callback
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('payment') === 'success') {
+      showToast('🎉 Payment successful! Your tier will update shortly.', 'success');
+    }
+    if (params.get('welcome') === '1') {
+      document.getElementById('welcomeBanner').style.display = 'block';
+    }
+
+    // Init
+    (async () => {
+      await loadUserData();
+      await Promise.all([loadScripts(), loadAutopilotConfig(), loadChannelProfile()]);
+    })();
+  </script>
+</body>
+</html>

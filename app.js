@@ -173,6 +173,14 @@ function restoreLastScript() {
 document.addEventListener('DOMContentLoaded', () => {
   updateUsageBar();
   checkProStatus();
+  syncUserTierFromServer(); // non-blocking server tier sync
+  // Show Account button in nav if logged in
+  if (localStorage.getItem('sf_token')) {
+    const accBtn = document.getElementById('nav-account-btn');
+    const ctaBtn = document.getElementById('nav-cta-main');
+    if (accBtn) accBtn.style.display = 'inline-flex';
+    if (ctaBtn) ctaBtn.style.display = 'none';
+  }
   restoreLastScript();
   initNavbarScroll();
   updateGenerateBtnState();
@@ -586,7 +594,31 @@ function updateGenerateBtnState() {
 
 // === PRO STATUS ===
 function isProUser() {
-  return localStorage.getItem(CONFIG.proKey) === 'true';
+  // Accept 'true', '1', or any truthy non-empty string
+  const val = localStorage.getItem(CONFIG.proKey);
+  return val === 'true' || val === '1';
+}
+
+// Sync user tier from backend (called on page load if token present)
+async function syncUserTierFromServer() {
+  const token = localStorage.getItem('sf_token');
+  if (!token) return;
+  try {
+    const res = await fetch('https://scriptflare-backend-production.up.railway.app/auth/me', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const { user } = await res.json();
+    if (user && user.tier) {
+      const isPro = user.tier !== 'free';
+      localStorage.setItem(CONFIG.proKey, isPro ? 'true' : '');
+      localStorage.setItem('sf_user', JSON.stringify(user));
+      // Re-run pro UI check after server sync
+      if (isPro) checkProStatus();
+    }
+  } catch {
+    // Network issue — fall back to localStorage value silently
+  }
 }
 
 function checkProStatus() {

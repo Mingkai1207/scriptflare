@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up — ScriptFlare</title>
+  <link rel="stylesheet" href="account.css">
+</head>
+<body class="auth-page">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <a href="index.html">Script<span>Flare</span> 🔥</a>
+    </div>
+    <h1 class="auth-title">Start creating</h1>
+    <p class="auth-subtitle">Get 3 free scripts — no credit card required</p>
+
+    <div class="auth-error" id="authError"></div>
+
+    <form id="signupForm">
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input type="text" id="name" placeholder="Your name" autocomplete="name">
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="you@example.com" required autocomplete="email">
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="Min. 8 characters" required autocomplete="new-password" minlength="8">
+      </div>
+      <button type="submit" class="btn-auth" id="signupBtn">Create Free Account</button>
+    </form>
+
+    <p class="auth-switch">
+      Already have an account? <a href="login.html">Sign in →</a>
+    </p>
+  </div>
+
+  <script>
+    const API = 'https://scriptflare-backend-production.up.railway.app';
+
+    // Redirect if already logged in
+    if (localStorage.getItem('sf_token')) {
+      window.location.href = 'account.html';
+    }
+
+    document.getElementById('signupForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('signupBtn');
+      const errEl = document.getElementById('authError');
+      errEl.classList.remove('visible');
+      btn.disabled = true;
+      btn.textContent = 'Creating account…';
+
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      if (password.length < 8) {
+        errEl.textContent = 'Password must be at least 8 characters';
+        errEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Create Free Account';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API}/auth/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Signup failed');
+
+        localStorage.setItem('sf_token', data.token);
+        localStorage.setItem('sf_user', JSON.stringify(data.user));
+        localStorage.setItem('sf_pro', '');
+
+        window.location.href = 'account.html?welcome=1';
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.classList.add('visible');
+        btn.disabled = false;
+        btn.textContent = 'Create Free Account';
+      }
+    });
+  </script>
+</body>
+</html>
