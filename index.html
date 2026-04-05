@@ -1292,6 +1292,21 @@
     <a href="#generator" class="btn btn-primary btn-sm sticky-cta-btn">Generate Free →</a>
   </div>
 
+  <!-- EMAIL CAPTURE MODAL -->
+  <div class="ec-modal hidden" id="ec-modal" onclick="closeEmailModal(event)">
+    <div class="ec-box">
+      <button class="ec-close" onclick="closeEmailCapture()" aria-label="Close">✕</button>
+      <div class="ec-icon">🎁</div>
+      <h3 class="ec-title">Get 3 More Free Scripts</h3>
+      <p class="ec-sub">Enter your email and we'll unlock 3 bonus scripts + send you our <strong>Faceless YouTube Starter Kit</strong> (free).</p>
+      <form class="ec-form" id="ec-form" onsubmit="submitEmailCapture(event)">
+        <input type="email" id="ec-email" class="ec-input" placeholder="your@email.com" required autocomplete="email" />
+        <button type="submit" class="btn btn-primary ec-submit" id="ec-submit-btn">Unlock 3 Bonus Scripts →</button>
+      </form>
+      <p class="ec-fine">No spam. Unsubscribe anytime.</p>
+    </div>
+  </div>
+
   <script src="app.js"></script>
 </body>
 </html>

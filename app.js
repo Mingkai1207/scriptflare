@@ -427,7 +427,8 @@ function getStreak() {
 
 function getRemainingScripts() {
   if (isProUser()) return Infinity;
-  return Math.max(0, CONFIG.freeLimit - getUsage());
+  const bonus = parseInt(localStorage.getItem('sf_bonus_scripts') || '0', 10);
+  return Math.max(0, CONFIG.freeLimit + bonus - getUsage());
 }
 
 function updateUsageBar() {
@@ -1111,6 +1112,10 @@ function displayScript(script, topic, length) {
     } else if (nowRemaining === 1) {
       setTimeout(() => showToast('⚡ 1 free script remaining — make it count!', 'warning'), 800);
       if (nudge) nudge.classList.remove('hidden');
+      // Show email capture offer (once per browser)
+      if (!localStorage.getItem('sf_email_seen')) {
+        setTimeout(() => showEmailCaptureModal(), 2500);
+      }
     } else {
       setTimeout(() => showToast(`✅ Script ready! ${nowRemaining} free scripts remaining.`, 'success'), 800);
       if (nudge) nudge.classList.add('hidden');
@@ -1190,6 +1195,60 @@ function escapeHtml(text) {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+// === EMAIL CAPTURE MODAL ===
+// Replace FORMSPREE_ID with your Formspree form ID at https://formspree.io
+const FORMSPREE_URL = 'https://formspree.io/f/FORMSPREE_ID';
+const EMAIL_BONUS_SCRIPTS = 3;
+
+function showEmailCaptureModal() {
+  if (localStorage.getItem('sf_email_seen')) return;
+  const modal = document.getElementById('ec-modal');
+  if (modal) modal.classList.remove('hidden');
+}
+
+function closeEmailCapture() {
+  localStorage.setItem('sf_email_seen', '1');
+  const modal = document.getElementById('ec-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function closeEmailModal(e) {
+  if (e.target.id === 'ec-modal') closeEmailCapture();
+}
+
+async function submitEmailCapture(e) {
+  e.preventDefault();
+  const email = document.getElementById('ec-email')?.value.trim();
+  if (!email) return;
+  const btn = document.getElementById('ec-submit-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Sending…'; }
+  try {
+    // POST to Formspree (replace FORMSPREE_ID in FORMSPREE_URL above)
+    if (!FORMSPREE_URL.includes('FORMSPREE_ID')) {
+      await fetch(FORMSPREE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ email, source: 'scriptflare-bonus' }),
+      });
+    }
+  } catch (_) { /* silent — still grant bonus */ }
+  // Grant bonus scripts in localStorage
+  const bonus = parseInt(localStorage.getItem('sf_bonus_scripts') || '0', 10);
+  localStorage.setItem('sf_bonus_scripts', String(bonus + EMAIL_BONUS_SCRIPTS));
+  localStorage.setItem('sf_email_seen', '1');
+  const modal = document.getElementById('ec-modal');
+  if (modal) {
+    modal.querySelector('.ec-box').innerHTML = `
+      <div class="ec-icon">🎉</div>
+      <h3 class="ec-title">You're in! 3 scripts unlocked.</h3>
+      <p class="ec-sub">Check your inbox for the Faceless YouTube Starter Kit. Happy creating!</p>
+      <button class="btn btn-primary" onclick="closeEmailCapture()">Start Generating →</button>
+    `;
+  }
+  updateUsageBar();
+  updateGenerateBtnState();
 }
 
 function showPaywall() {
