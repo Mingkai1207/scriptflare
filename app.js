@@ -1820,7 +1820,11 @@ function displayScript(script, topic, length, genSecs) {
         setTimeout(() => showEmailCaptureModal(), 2500);
       }
     } else {
-      setTimeout(() => showToast(`✅ Script ready! ${nowRemaining} free scripts remaining.`, 'success'), 800);
+      const isFirstEver = parseInt(localStorage.getItem('sf_total') || '0', 10) === 1;
+      const msg = isFirstEver
+        ? '🎉 First script done — now go create that video!'
+        : `✅ Script ready! ${nowRemaining} free script${nowRemaining !== 1 ? 's' : ''} remaining.`;
+      setTimeout(() => showToast(msg, 'success'), 800);
       if (nudge) nudge.classList.add('hidden');
     }
   } else {
@@ -1836,6 +1840,11 @@ function displayScript(script, topic, length, genSecs) {
       savingsEl.classList.remove('hidden');
       setTimeout(() => savingsEl.classList.add('hidden'), 9000);
     }
+  }
+
+  // First script celebration
+  if (totalUsed === 1) {
+    setTimeout(() => launchConfetti(), 600);
   }
 
   // Pro preview drawer — show once after first generation for free users
@@ -5220,7 +5229,27 @@ function rateScript(stars) {
   advanceChallengeIfReady();
 }
 
-// === CSS ANIMATION (inject shake) ===
+// === FIRST SCRIPT CONFETTI ===
+function launchConfetti() {
+  const colors = ['#7c5cfc','#06b6d4','#f59e0b','#ec4899','#10b981','#8b5cf6','#f97316','#c4b5fd'];
+  const container = document.createElement('div');
+  container.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999;overflow:hidden';
+  document.body.appendChild(container);
+  for (let i = 0; i < 90; i++) {
+    const p = document.createElement('div');
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const x = Math.random() * 100;
+    const delay = Math.random() * 1.0;
+    const size = 5 + Math.random() * 9;
+    const dur = 1.6 + Math.random() * 1.6;
+    const rot = Math.random() * 360;
+    p.style.cssText = `position:absolute;left:${x}%;top:-12px;width:${size}px;height:${size * 0.55}px;background:${color};border-radius:2px;opacity:0;transform:rotate(${rot}deg);animation:sf-confetti-fall ${dur}s ${delay}s ease-in forwards`;
+    container.appendChild(p);
+  }
+  setTimeout(() => container.remove(), 4500);
+}
+
+// === CSS ANIMATION (inject shake + confetti) ===
 const style = document.createElement('style');
 style.textContent = `
   @keyframes shake {
@@ -5229,6 +5258,11 @@ style.textContent = `
     40%      { transform: translateX(6px); }
     60%      { transform: translateX(-4px); }
     80%      { transform: translateX(4px); }
+  }
+  @keyframes sf-confetti-fall {
+    0%   { opacity:1; transform:translateY(0) rotate(var(--r,0deg)) scaleX(1); }
+    50%  { opacity:1; scaleX:0.8; }
+    100% { opacity:0; transform:translateY(110vh) rotate(calc(var(--r,0deg) + 720deg)) scaleX(0.6); }
   }
 `;
 document.head.appendChild(style);
