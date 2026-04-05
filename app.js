@@ -997,7 +997,9 @@ Script requirements:
 - Hook must grip attention in the first 3 seconds — curiosity, bold claim, or a stat that stops scrolling
 - Include 6–10 [VISUAL: ...] cues spread throughout for B-roll pacing
 - Plant an open loop early ("By the end of this video, you'll know exactly why...") and resolve it
-- Language must sound natural when read aloud — avoid passive voice and complex sentence structure
+- Use mid-video retention phrases at least 3 times to prevent click-off: e.g. "But here's where it gets interesting...", "Now here's the thing most people miss...", "Stay with me because this is where it changes..."
+- Use specific numbers and concrete details — never vague terms like "many", "some", or "a lot"
+- Language must sound natural when read aloud — short sentences, active voice, no corporate jargon
 - Every section must earn its place — cut anything the viewer could skip without losing the story
 - End with a CTA that asks for a specific action (subscribe, comment with their answer, watch next)
 
