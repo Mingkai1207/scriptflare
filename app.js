@@ -660,6 +660,77 @@ const TOPIC_SUGGESTIONS = {
   ],
 };
 
+// === BULK IDEA GENERATOR (Pro) ===
+async function showBulkIdeas() {
+  const panel = document.getElementById('bulk-ideas-panel');
+  const btn = document.getElementById('bulk-ideas-btn');
+  if (!panel) return;
+
+  // Toggle off if already showing ideas
+  if (!panel.classList.contains('hidden') && panel.querySelector('.bi-chip')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  if (!isProUser()) {
+    panel.innerHTML = `<div class="bi-gate"><span class="bi-gate-icon">💡</span><strong>Bulk Idea Generator — Pro Feature</strong><p>Generate 20 AI-powered topic ideas for your niche in one click — never run out of content.</p><button class="btn btn-primary btn-sm" onclick="scrollToPricing()">Unlock with Pro →</button></div>`;
+    panel.classList.remove('hidden');
+    return;
+  }
+
+  const niche = document.getElementById('niche')?.value;
+  if (!niche) { showToast('⚠️ Pick a niche first', 'warning'); return; }
+
+  panel.innerHTML = `<div class="bi-loading"><div class="spinner"></div><span>Generating 20 topic ideas for "${niche}"…</span></div>`;
+  panel.classList.remove('hidden');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Generating…'; }
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          { role: 'system', content: 'You are a YouTube content strategist specializing in faceless channels.' },
+          { role: 'user', content: `Generate exactly 20 compelling YouTube video topic ideas for the "${niche}" niche. These should be titles optimized for YouTube — curiosity-driven, specific, and click-worthy. Return ONLY a numbered list (1-20), one idea per line, no explanations.` },
+        ],
+        max_tokens: 800,
+        temperature: 0.9,
+      }),
+    });
+    const data = await response.json();
+    const content = data.choices?.[0]?.message?.content || '';
+    const ideas = content.split('\n')
+      .map(l => l.replace(/^\d+\.\s*/, '').trim())
+      .filter(l => l.length > 10 && l.length < 120)
+      .slice(0, 20);
+
+    if (ideas.length < 3) throw new Error('No ideas returned');
+
+    panel.innerHTML = `
+      <div class="bi-header">
+        <span class="bi-title">💡 20 Topic Ideas — ${niche}</span>
+        <span class="bi-sub">Click any idea to use it as your next topic</span>
+      </div>
+      <div class="bi-grid">
+        ${ideas.map(idea => `<button class="bi-chip" onclick="useBulkIdea('${idea.replace(/'/g, "&#39;").replace(/"/g, '&quot;')}')">${escapeHtml(idea)}</button>`).join('')}
+      </div>
+    `;
+  } catch (err) {
+    panel.innerHTML = `<div class="bi-error">⚠️ Could not generate ideas — try again.</div>`;
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '💡 Generate 20 Topic Ideas'; }
+  }
+}
+
+function useBulkIdea(topic) {
+  const input = document.getElementById('topic');
+  if (input) { input.value = topic; updateTopicCounter(); detectNicheFromTopic(); input.focus(); }
+  showToast('✅ Topic set! Hit Generate when ready.', 'success');
+  document.getElementById('generate-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
 function showTopicSuggestions(niche) {
   const container = document.getElementById('topic-suggestions');
   const chips = document.getElementById('topic-sug-chips');
