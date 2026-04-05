@@ -686,6 +686,8 @@
             <div class="quality-item" id="q-retention">🧲 Retention</div>
             <div class="quality-item" id="q-cta">📣 CTA</div>
           </div>
+          <!-- Script rating -->
+          <div class="script-rating hidden" id="script-rating"></div>
         </div>
 
         <!-- TITLE OPTIONS (shown after generating) -->
@@ -950,6 +952,63 @@
           <p class="plan-note">🔒 Secure payment via PayPal</p>
           <div class="pricing-countdown" id="pricing-countdown"></div>
           <p class="plan-note" style="margin-top: 6px; color: var(--text-faint);">Not happy? Email us — we'll make it right.</p>
+        </div>
+      </div>
+
+      <!-- ROI CALCULATOR -->
+      <div class="roi-calc reveal" id="roi-calc">
+        <div class="roi-inner">
+          <div class="roi-head">
+            <div class="roi-title">📈 Calculate your YouTube income potential</div>
+            <div class="roi-subtitle">See what consistent posting with Pro could earn you in 6 months</div>
+          </div>
+          <div class="roi-controls">
+            <div class="roi-control">
+              <label for="roi-videos">Videos per month:</label>
+              <div class="roi-slider-row">
+                <input type="range" id="roi-videos" min="1" max="20" value="4" oninput="updateROI()">
+                <span class="roi-slider-val" id="roi-videos-val">4</span>
+              </div>
+            </div>
+            <div class="roi-control">
+              <label for="roi-niche-select">Your niche:</label>
+              <select id="roi-niche-select" onchange="updateROI()">
+                <option value="personal finance">💰 Personal Finance</option>
+                <option value="technology and AI">🤖 Technology & AI</option>
+                <option value="business and entrepreneurship">🏆 Business</option>
+                <option value="health and wellness">💪 Health & Wellness</option>
+                <option value="self-improvement">📈 Self-Improvement</option>
+                <option value="true crime and mysteries">🔍 True Crime</option>
+                <option value="history and facts">📚 History</option>
+                <option value="motivation and mindset">🔥 Motivation</option>
+                <option value="relationships and psychology">🧠 Psychology</option>
+                <option value="travel and geography">🌍 Travel</option>
+              </select>
+            </div>
+          </div>
+          <div class="roi-results" id="roi-results">
+            <div class="roi-stat">
+              <div class="roi-num" id="roi-scripts-num">24</div>
+              <div class="roi-lbl">Scripts in 6 months</div>
+            </div>
+            <div class="roi-stat">
+              <div class="roi-num" id="roi-views-num">72K+</div>
+              <div class="roi-lbl">Est. channel views</div>
+            </div>
+            <div class="roi-stat roi-stat-highlight">
+              <div class="roi-num" id="roi-revenue-num">$864/mo</div>
+              <div class="roi-lbl">Est. AdSense at month 6</div>
+            </div>
+            <div class="roi-stat roi-stat-cost">
+              <div class="roi-num" id="roi-cost-num">$4.75</div>
+              <div class="roi-lbl">Your cost per script (Pro)</div>
+            </div>
+          </div>
+          <div class="roi-verdict" id="roi-verdict">
+            At <strong id="roi-v-videos">4</strong> videos/month, Pro costs only <strong id="roi-v-cost">$4.75</strong>/script — vs $150–300 for a freelancer.
+          </div>
+          <a href="#pricing" class="btn btn-primary roi-cta-btn" onclick="showPayPal()">Get Pro for $19/mo — Start earning →</a>
+          <div class="roi-disclaimer">Estimates use avg CPM for your niche × conservative 1,200 views/video at month 6. Actual results vary. CPM data: Social Blade / Influencer Marketing Hub 2024.</div>
         </div>
       </div>
 

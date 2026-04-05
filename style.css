@@ -4922,3 +4922,192 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   .daily-topic-banner { gap: 6px 8px; padding: 8px 12px; }
   .dt-text { font-size: 12px; min-width: 140px; }
 }
+
+/* ===================================
+   ROI CALCULATOR
+   =================================== */
+.roi-calc {
+  margin: 32px auto 0;
+  max-width: 740px;
+}
+.roi-inner {
+  background: linear-gradient(135deg, rgba(124,92,252,0.08), rgba(6,182,212,0.06));
+  border: 1px solid rgba(124,92,252,0.2);
+  border-radius: 16px;
+  padding: 28px 28px 22px;
+}
+.roi-head { text-align: center; margin-bottom: 22px; }
+.roi-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #e2e0ff;
+  margin-bottom: 4px;
+}
+.roi-subtitle {
+  font-size: 0.82rem;
+  color: #888;
+}
+.roi-controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.roi-control label {
+  display: block;
+  font-size: 0.78rem;
+  color: #999;
+  margin-bottom: 6px;
+}
+.roi-slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#roi-videos {
+  flex: 1;
+  accent-color: #7c5cfc;
+  height: 4px;
+  cursor: pointer;
+}
+.roi-slider-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #c4b5fd;
+  min-width: 24px;
+  text-align: right;
+}
+#roi-niche-select {
+  width: 100%;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #e2e2e2;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 0.83rem;
+  font-family: inherit;
+}
+.roi-results {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.roi-stat {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 12px 8px;
+  text-align: center;
+}
+.roi-stat-highlight {
+  border-color: rgba(124,92,252,0.35);
+  background: rgba(124,92,252,0.08);
+}
+.roi-stat-cost {
+  border-color: rgba(16,185,129,0.25);
+  background: rgba(16,185,129,0.05);
+}
+.roi-num {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: #e2e0ff;
+  margin-bottom: 3px;
+}
+.roi-stat-highlight .roi-num { color: #c4b5fd; }
+.roi-stat-cost .roi-num { color: #6ee7b7; }
+.roi-lbl {
+  font-size: 0.68rem;
+  color: #777;
+  line-height: 1.3;
+}
+.roi-verdict {
+  text-align: center;
+  font-size: 0.82rem;
+  color: #aaa;
+  margin-bottom: 14px;
+  line-height: 1.5;
+}
+.roi-verdict strong { color: #c4b5fd; }
+.roi-cta-btn {
+  display: block;
+  text-align: center;
+  width: 100%;
+  max-width: 320px;
+  margin: 0 auto 12px;
+  font-size: 0.9rem;
+}
+.roi-disclaimer {
+  text-align: center;
+  font-size: 0.68rem;
+  color: #555;
+  line-height: 1.4;
+}
+@media (max-width: 600px) {
+  .roi-controls { grid-template-columns: 1fr; }
+  .roi-results { grid-template-columns: repeat(2, 1fr); }
+  .roi-inner { padding: 20px 16px 16px; }
+}
+
+/* ===================================
+   SCRIPT RATING WIDGET
+   =================================== */
+.script-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: rgba(124, 92, 252, 0.04);
+  border-top: 1px solid rgba(124, 92, 252, 0.1);
+  flex-wrap: wrap;
+  border-radius: 0 0 10px 10px;
+}
+.sr-label {
+  font-size: 0.8rem;
+  color: #888;
+  white-space: nowrap;
+}
+.sr-stars {
+  display: flex;
+  gap: 1px;
+}
+.sr-star {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.35rem;
+  color: #444;
+  padding: 1px 3px;
+  transition: color 0.1s, transform 0.1s;
+  line-height: 1;
+}
+.sr-star:hover,
+.sr-star-lit {
+  color: #f59e0b;
+  transform: scale(1.2);
+}
+.sr-response {
+  font-size: 0.8rem;
+  color: #999;
+  width: 100%;
+  padding: 4px 0 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sr-response .btn {
+  padding: 3px 9px;
+  font-size: 0.77rem;
+}
+.sr-great { color: #10b981; }
+.sr-good  { color: #6ee7b7; }
+.sr-ok    { color: #f59e0b; }
+.sr-low   { color: #f87171; }
+.sr-cta {
+  color: #9d82fd;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+.sr-cta:hover { text-decoration: underline; }

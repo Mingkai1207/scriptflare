@@ -174,6 +174,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initReturningUserNudge();
   initPricingCountdown();
   initExitIntent();
+  updateROI();
   initTheme();
   // Auto-open first FAQ item
   const firstFaq = document.querySelector('.faq-q');
@@ -1771,6 +1772,7 @@ function displayScript(script, topic, length, genSecs) {
   showContentCalendar(niche, topic);
   showChannelNames(niche);
   showTopicSuggestions(niche);
+  showScriptRating();
 
   // Success toast + upgrade nudge
   const nowRemaining = getRemainingScripts();
@@ -1968,10 +1970,38 @@ async function submitEmailCapture(e) {
 }
 
 function showPaywall() {
+  // Personalize paywall copy based on niche
+  const niche = document.getElementById('niche')?.value || '';
+  const usage = getUsage();
+  const NICHE_LABELS = {
+    'personal finance': '💰 Finance', 'motivation and mindset': '🔥 Motivation',
+    'true crime and mysteries': '🔍 True Crime', 'history and facts': '📚 History',
+    'technology and AI': '🤖 Tech & AI', 'business and entrepreneurship': '🏆 Business',
+    'self-improvement': '📈 Self-Improvement', 'health and wellness': '💪 Health',
+    'relationships and psychology': '🧠 Psychology', 'travel and geography': '🌍 Travel',
+    'spirituality and philosophy': '✨ Spirituality', 'news and current events': '📰 News',
+  };
+  const nicheLabel = NICHE_LABELS[niche] || '';
+  const pw = document.getElementById('paywall');
+  if (pw) {
+    const h3 = pw.querySelector('h3');
+    const sub = pw.querySelector('p');
+    if (h3) {
+      h3.textContent = nicheLabel
+        ? `You've used your ${usage} free scripts`
+        : "You've used your 3 free scripts";
+    }
+    if (sub) {
+      sub.textContent = nicheLabel
+        ? `Pro unlocks unlimited ${nicheLabel} scripts — plus AI tools, translate, bulk ideas, and more.`
+        : "You're one script away from becoming a consistent creator. Pro unlocks everything:";
+    }
+  }
+
   document.getElementById('gen-form').classList.add('hidden');
   document.getElementById('gen-output').classList.add('hidden');
-  document.getElementById('paywall').classList.remove('hidden');
-  document.getElementById('paywall').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  pw.classList.remove('hidden');
+  pw.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function showError(message) {
@@ -5066,6 +5096,97 @@ function copyThumbnailText(btn, text) {
     setTimeout(() => { btn.textContent = old; }, 1500);
     showToast('📋 Thumbnail text copied!', 'success');
   });
+}
+
+// === ROI CALCULATOR ===
+function updateROI() {
+  const videos = parseInt(document.getElementById('roi-videos')?.value || '4', 10);
+  const niche = document.getElementById('roi-niche-select')?.value || 'personal finance';
+
+  const videosValEl = document.getElementById('roi-videos-val');
+  if (videosValEl) videosValEl.textContent = videos;
+
+  const data = NICHE_REVENUE[niche] || { min: 5, max: 15 };
+  const avgCPM = (data.min + data.max) / 2;
+
+  // Conservative growth model: avg 1,200 views/video by month 6, growing from 300
+  const scripts6mo = videos * 6;
+  const totalViews6mo = Math.round(videos * 6 * 1200 * 0.5); // avg across ramp-up period
+  const monthlyViewsAtMonth6 = videos * 1200;
+  const monthlyRevenue = Math.round((monthlyViewsAtMonth6 / 1000) * avgCPM * 0.55); // 55% monetized
+  const costPerScript = (19 / videos).toFixed(2);
+
+  const fmt = n => n >= 1000 ? (n / 1000).toFixed(0) + 'K' : n;
+
+  const setEl = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+  setEl('roi-scripts-num', scripts6mo);
+  setEl('roi-views-num', fmt(totalViews6mo) + '+');
+  setEl('roi-revenue-num', '$' + monthlyRevenue.toLocaleString() + '/mo');
+  setEl('roi-cost-num', '$' + costPerScript);
+  setEl('roi-v-videos', videos);
+  setEl('roi-v-cost', '$' + costPerScript);
+}
+
+// === SCRIPT RATING WIDGET ===
+function showScriptRating() {
+  const el = document.getElementById('script-rating');
+  if (!el) return;
+  delete el.dataset.rated;
+  el.innerHTML = `
+    <span class="sr-label">How's this script?</span>
+    <div class="sr-stars" id="sr-stars">
+      ${[1,2,3,4,5].map(n =>
+        `<button class="sr-star" data-n="${n}"
+          onmouseover="hoverStars(${n})"
+          onmouseout="resetStars()"
+          onclick="rateScript(${n})"
+          aria-label="${n} star${n > 1 ? 's' : ''}">☆</button>`
+      ).join('')}
+    </div>
+  `;
+  el.classList.remove('hidden');
+}
+
+function hoverStars(n) {
+  document.querySelectorAll('.sr-star').forEach((s, i) => {
+    s.textContent = i < n ? '★' : '☆';
+    s.classList.toggle('sr-star-lit', i < n);
+  });
+}
+
+function resetStars() {
+  const rated = parseInt(document.getElementById('script-rating')?.dataset.rated || '0', 10);
+  document.querySelectorAll('.sr-star').forEach((s, i) => {
+    s.textContent = i < rated ? '★' : '☆';
+    s.classList.toggle('sr-star-lit', i < rated);
+  });
+}
+
+function rateScript(stars) {
+  const el = document.getElementById('script-rating');
+  if (!el) return;
+  el.dataset.rated = stars;
+  resetStars();
+
+  const starsEl = document.getElementById('sr-stars');
+  if (!starsEl) return;
+  starsEl.style.pointerEvents = 'none';
+
+  // Remove existing response if any
+  el.querySelector('.sr-response')?.remove();
+
+  let html = '';
+  if (stars >= 5) {
+    html = `<div class="sr-response sr-great">🎉 Awesome! <button class="btn btn-ghost btn-sm" onclick="shareOnX()">𝕏 Share your script</button> <a href="#pricing" onclick="scrollToPricing()" class="sr-cta">Or go unlimited with Pro →</a></div>`;
+  } else if (stars >= 4) {
+    html = `<div class="sr-response sr-good">👍 Great script! <button class="btn btn-ghost btn-sm" onclick="improveScript()">✨ Polish it further</button> or <a href="#pricing" onclick="scrollToPricing()" class="sr-cta">unlock unlimited →</a></div>`;
+  } else if (stars >= 3) {
+    html = `<div class="sr-response sr-ok">💡 Good base — try <button class="btn btn-ghost btn-sm" onclick="tightenScript()">✂️ Tighten</button> or <button class="btn btn-ghost btn-sm" onclick="improveScript()">✨ AI Improve</button></div>`;
+  } else {
+    html = `<div class="sr-response sr-low">🔄 Let's fix it — <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">Regenerate</button> <button class="btn btn-ghost btn-sm" onclick="document.getElementById('gen-output').classList.add('hidden');document.getElementById('gen-form').classList.remove('hidden');document.getElementById('gen-form').scrollIntoView({behavior:'smooth'})">Change settings</button></div>`;
+  }
+  starsEl.insertAdjacentHTML('afterend', html);
+  advanceChallengeIfReady();
 }
 
 // === CSS ANIMATION (inject shake) ===
