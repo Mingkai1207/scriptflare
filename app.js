@@ -796,6 +796,62 @@ function autoFillAudience(niche) {
   if (suggestion) audienceEl.placeholder = suggestion;
 }
 
+// === QUICK-START PRESETS ===
+const QUICK_PRESETS = {
+  'finance-viral': {
+    niche: 'personal finance',
+    length: '10',
+    tone: 'dramatic and intense',
+    topic: '5 money mistakes that keep most people broke (and how to fix them)',
+  },
+  'crime-story': {
+    niche: 'true crime and mysteries',
+    length: '12',
+    tone: 'storytelling and narrative',
+    topic: 'The disappearance that investigators still can\'t explain',
+  },
+  'tech-explained': {
+    niche: 'technology and AI',
+    length: '8',
+    tone: 'engaging and educational',
+    topic: 'How AI is quietly changing every job you know',
+  },
+  'motivation-list': {
+    niche: 'motivation and mindset',
+    length: '8',
+    tone: 'listicle and punchy',
+    topic: '7 habits that separate the top 1% from everyone else',
+  },
+  'history-fact': {
+    niche: 'history and facts',
+    length: '10',
+    tone: 'documentary-style',
+    topic: 'The forgotten empire that was more powerful than Rome',
+  },
+};
+
+function applyPreset(key) {
+  const preset = QUICK_PRESETS[key];
+  if (!preset) return;
+  const topicEl = document.getElementById('topic');
+  const nicheEl = document.getElementById('niche');
+  const lengthEl = document.getElementById('length');
+  const toneEl = document.getElementById('tone');
+  if (topicEl) { topicEl.value = preset.topic; updateTopicCounter(); }
+  if (nicheEl) nicheEl.value = preset.niche;
+  if (lengthEl) lengthEl.value = preset.length;
+  if (toneEl) toneEl.value = preset.tone;
+  syncNichePill(preset.niche);
+  showLengthHint(preset.niche);
+  showNicheRevenue(preset.niche);
+  autoFillAudience(preset.niche);
+  // Visual feedback
+  document.querySelectorAll('.qs-chip').forEach(c => c.classList.remove('qs-active'));
+  document.querySelector(`[onclick="applyPreset('${key}')"]`)?.classList.add('qs-active');
+  showToast(`✅ "${preset.niche}" preset loaded — edit the topic or hit Generate!`, 'success');
+  topicEl?.focus();
+}
+
 function pickNiche(value) {
   const select = document.getElementById('niche');
   if (select) select.value = value;

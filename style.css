@@ -3589,6 +3589,49 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   color: var(--text-muted);
 }
 
+/* Quick-Start Presets Row */
+.qs-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: rgba(124,92,252,0.04);
+  border: 1px solid rgba(124,92,252,0.12);
+  border-radius: 10px;
+}
+.qs-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  flex-shrink: 0;
+  margin-right: 2px;
+}
+.qs-chip {
+  background: var(--bg3, var(--bg));
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text-muted);
+  font-size: 0.76rem;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.qs-chip:hover {
+  border-color: rgba(124,92,252,0.4);
+  color: var(--text);
+  background: rgba(124,92,252,0.07);
+}
+.qs-chip.qs-active {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: rgba(124,92,252,0.1);
+}
+
 /* === SCRIPT FORMAT TEMPLATES === */
 .format-templates {
   display: flex;
