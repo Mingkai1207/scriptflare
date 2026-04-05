@@ -1599,6 +1599,26 @@ footer {
   background: rgba(4, 20, 14, 0.95);
   color: #6ee7b7;
 }
+.sf-toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  white-space: normal;
+}
+.sf-toast-action {
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: inherit;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.sf-toast-action:hover { background: rgba(255,255,255,0.2); }
 
 /* === SCROLL REVEAL === */
 .reveal {

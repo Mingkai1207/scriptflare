@@ -2467,21 +2467,31 @@ function updateTopicCounter() {
 }
 
 // === TOAST ===
-function showToast(message, type = 'info') {
+function showToast(message, type = 'info', actionFn = null, actionLabel = null) {
   const existing = document.querySelector('.sf-toast');
   if (existing) existing.remove();
 
   const toast = document.createElement('div');
   toast.className = 'sf-toast sf-toast-' + type;
-  toast.textContent = message;
+  const msgSpan = document.createElement('span');
+  msgSpan.textContent = message;
+  toast.appendChild(msgSpan);
+  if (actionFn && actionLabel) {
+    const actionBtn = document.createElement('button');
+    actionBtn.className = 'sf-toast-action';
+    actionBtn.textContent = actionLabel;
+    actionBtn.onclick = () => { actionFn(); toast.remove(); };
+    toast.appendChild(actionBtn);
+  }
   document.body.appendChild(toast);
 
+  const duration = actionFn ? 6000 : 4000;
   requestAnimationFrame(() => {
     toast.classList.add('sf-toast-visible');
     setTimeout(() => {
       toast.classList.remove('sf-toast-visible');
       setTimeout(() => toast.remove(), 400);
-    }, 4000);
+    }, duration);
   });
 }
 
@@ -3228,12 +3238,21 @@ Return ONLY the tightened script with no commentary.`
 // === COPY & DOWNLOAD ===
 function copyScript() {
   if (!currentScript) return;
-  navigator.clipboard.writeText(currentScript).then(() => {
+  const onCopied = () => {
     const copyBtn = document.getElementById('copy-text');
-    copyBtn.textContent = '✅ Copied!';
-    setTimeout(() => { copyBtn.textContent = '📋 Copy Script'; }, 2000);
-  }).catch(() => {
-    // Fallback for older browsers
+    if (copyBtn) {
+      copyBtn.textContent = '✅ Copied!';
+      setTimeout(() => { copyBtn.textContent = '📋 Copy Script'; }, 2000);
+    }
+    // First-copy share nudge (once per session, only for free users)
+    if (!isProUser() && !sessionStorage.getItem('sf_copy_nudged')) {
+      sessionStorage.setItem('sf_copy_nudged', '1');
+      setTimeout(() => {
+        showToast('Script copied! Know a creator friend?', 'info', copyGiftLink, '🎁 Send gift link');
+      }, 1300);
+    }
+  };
+  navigator.clipboard.writeText(currentScript).then(onCopied).catch(() => {
     const ta = document.createElement('textarea');
     ta.value = currentScript;
     ta.style.position = 'fixed';
@@ -3242,9 +3261,7 @@ function copyScript() {
     ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
-    const copyBtn = document.getElementById('copy-text');
-    copyBtn.textContent = '✅ Copied!';
-    setTimeout(() => { copyBtn.textContent = '📋 Copy Script'; }, 2000);
+    onCopied();
   });
 }
 
@@ -5549,13 +5566,18 @@ function rateScript(stars) {
 
   let html = '';
   if (stars >= 5) {
-    html = `<div class="sr-response sr-great">🎉 Awesome! <button class="btn btn-ghost btn-sm" onclick="shareOnX()">𝕏 Share your script</button> <a href="#pricing" onclick="scrollToPricing()" class="sr-cta">Or go unlimited with Pro →</a></div>`;
+    const proNudge = !isProUser() ? ` · <a href="#pricing" onclick="scrollToPricing()" class="sr-cta">Unlimited with Pro →</a>` : '';
+    html = `<div class="sr-response sr-great">🎉 Glad you loved it! <button class="btn btn-ghost btn-sm" onclick="shareOnX()">𝕏 Tweet it</button> <button class="btn btn-ghost btn-sm" onclick="copyGiftLink()">🎁 Gift a friend 3 scripts</button>${proNudge}</div>`;
   } else if (stars >= 4) {
-    html = `<div class="sr-response sr-good">👍 Great script! <button class="btn btn-ghost btn-sm" onclick="improveScript()">✨ Polish it further</button> or <a href="#pricing" onclick="scrollToPricing()" class="sr-cta">unlock unlimited →</a></div>`;
+    html = `<div class="sr-response sr-good">👍 Good script! <button class="btn btn-ghost btn-sm" onclick="improveScript()">✨ Polish it</button> or <a href="#pricing" onclick="scrollToPricing()" class="sr-cta">go unlimited →</a></div>`;
   } else if (stars >= 3) {
-    html = `<div class="sr-response sr-ok">💡 Good base — try <button class="btn btn-ghost btn-sm" onclick="tightenScript()">✂️ Tighten</button> or <button class="btn btn-ghost btn-sm" onclick="improveScript()">✨ AI Improve</button></div>`;
+    html = `<div class="sr-response sr-ok">💡 Decent base — <button class="btn btn-ghost btn-sm" onclick="tightenScript()">✂️ Tighten</button> or <button class="btn btn-ghost btn-sm" onclick="improveScript()">✨ AI Improve</button></div>`;
   } else {
-    html = `<div class="sr-response sr-low">🔄 Let's fix it — <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">Regenerate</button> <button class="btn btn-ghost btn-sm" onclick="document.getElementById('gen-output').classList.add('hidden');document.getElementById('gen-form').classList.remove('hidden');document.getElementById('gen-form').scrollIntoView({behavior:'smooth'})">Change settings</button></div>`;
+    // Low rating: funnel frustration into upgrade
+    const fixCTA = !isProUser()
+      ? `<button class="btn btn-primary btn-sm" onclick="improveScript()">✨ Auto-Fix with Pro →</button>`
+      : `<button class="btn btn-ghost btn-sm" onclick="improveScript()">✨ AI Fix</button>`;
+    html = `<div class="sr-response sr-low">😬 Let's improve it — ${fixCTA} or <button class="btn btn-ghost btn-sm" onclick="regenerateScript()">Regenerate</button></div>`;
   }
   starsEl.insertAdjacentHTML('afterend', html);
   advanceChallengeIfReady();
