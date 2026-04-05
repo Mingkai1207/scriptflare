@@ -2082,6 +2082,59 @@ footer {
   background: rgba(255,255,255,0.03);
 }
 
+/* === INLINE TOPIC STARTERS === */
+.topic-starters {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  animation: fadeSlideIn 0.22s ease;
+}
+.ts-label {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+  padding-top: 5px;
+  flex-shrink: 0;
+  letter-spacing: 0.03em;
+}
+.ts-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.ts-chip {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: all 0.18s;
+  text-align: left;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ts-chip:hover {
+  border-color: var(--primary);
+  color: var(--text);
+  background: rgba(124,92,252,0.07);
+  transform: translateY(-1px);
+}
+/* Generate button pulse when topic starter is clicked */
+@keyframes sf-btn-pulse {
+  0%   { box-shadow: 0 0 0 0 rgba(124,92,252,0.5); }
+  50%  { box-shadow: 0 0 0 8px rgba(124,92,252,0); }
+  100% { box-shadow: 0 0 0 0 rgba(124,92,252,0); }
+}
+.btn-pulse {
+  animation: sf-btn-pulse 0.6s ease 0s, sf-btn-pulse 0.6s ease 0.8s;
+}
+
 /* === TOPIC SUGGESTIONS === */
 .topic-suggestions {
   padding: 16px 24px;

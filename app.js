@@ -1462,6 +1462,7 @@ function pickNiche(value) {
   showNicheRevenue(value);
   autoFillAudience(value);
   showNicheSocialProof(value);
+  showTopicStarters(value);
   // Sync ROI calculator niche
   const roiNiche = document.getElementById('roi-niche-select');
   if (roiNiche && value) { roiNiche.value = value; updateROI(); }
@@ -1473,8 +1474,51 @@ function onNicheSelectChange(value) {
   showNicheRevenue(value);
   autoFillAudience(value);
   showNicheSocialProof(value);
+  showTopicStarters(value);
   const roiNiche = document.getElementById('roi-niche-select');
   if (roiNiche && value) { roiNiche.value = value; updateROI(); }
+}
+
+// === INLINE TOPIC STARTERS ===
+function showTopicStarters(niche) {
+  const container = document.getElementById('topic-starters');
+  const chips = document.getElementById('ts-chips');
+  if (!container || !chips) return;
+
+  // Only show when the topic field is empty
+  const topicVal = (document.getElementById('topic')?.value || '').trim();
+  if (topicVal) return;
+
+  const pool = TOPIC_SUGGESTIONS[niche];
+  if (!pool || !pool.length) { container.classList.add('hidden'); return; }
+
+  // Pick 3 varied starters
+  const shuffled = pool.slice().sort(() => Math.random() - 0.5).slice(0, 3);
+  chips.innerHTML = shuffled.map(t =>
+    `<button class="ts-chip" onclick="useTopicStarter('${t.replace(/'/g, "&#39;").replace(/"/g, '&quot;')}')">${escapeHtml(t)}</button>`
+  ).join('');
+  container.classList.remove('hidden');
+}
+
+function useTopicStarter(topic) {
+  const input = document.getElementById('topic');
+  if (!input) return;
+  input.value = topic;
+  updateTopicCounter();
+  updateViralScore();
+  hideTopicStarters();
+  input.focus();
+  // Pulse the generate button to guide the user
+  const btn = document.getElementById('generate-btn');
+  if (btn) {
+    btn.classList.add('btn-pulse');
+    setTimeout(() => btn.classList.remove('btn-pulse'), 1800);
+  }
+}
+
+function hideTopicStarters() {
+  const topicVal = (document.getElementById('topic')?.value || '').trim();
+  if (topicVal) document.getElementById('topic-starters')?.classList.add('hidden');
 }
 
 function jumpToGenerator(niche) {
@@ -1643,10 +1687,13 @@ Write ONLY the spoken script text with 2–3 [VISUAL: ...] cues. No section head
 
 Your scripts always:
 - Open with a psychologically powerful hook in the FIRST 15-30 seconds (curiosity gap, bold claim, or surprising statistic)
+- Follow a proven emotional arc: open with a relatable pain or curiosity → build tension through revelation → resolve with empowerment or insight
 - Follow proven retention structure: Hook → Intro → Main Content (with open loops) → Resolution → CTA
 - Include [VISUAL: description] cues throughout for B-roll footage guidance
 - Use natural, spoken language — conversational, not formal or essay-style
 - Plant and resolve at least one "open loop" (hint at a revelation, deliver it in the final third)
+- End each section with a forward-pull transition that makes the viewer lean into the next — never end cold
+- Echo a specific phrase or image from the HOOK in the final section to create satisfying, memorable closure
 - End with a specific CTA that feels earned, not tacked on
 
 Format EVERY script with these exact headers (plain text — no markdown bold, no asterisks):
@@ -1676,12 +1723,14 @@ Target word count: approximately ${wordCount} words${nicheNote}${langNote}${cust
 Script requirements:
 - Hook must grip attention in the first 3 seconds — curiosity, bold claim, or a stat that stops scrolling
 - Include 6–10 [VISUAL: ...] cues spread throughout for B-roll pacing
-- Plant an open loop early ("By the end of this video, you'll know exactly why...") and resolve it
+- Plant an open loop early ("By the end of this video, you'll know exactly why...") and resolve it in the second half
+- Close each section with a one-sentence forward-pull that gives the viewer a reason to keep watching (not "so let's dive in" — something specific to the next section's revelation)
 - Use mid-video retention phrases at least 3 times to prevent click-off: e.g. "But here's where it gets interesting...", "Now here's the thing most people miss...", "Stay with me because this is where it changes..."
-- Use specific numbers and concrete details — never vague terms like "many", "some", or "a lot"
+- Use specific numbers, names, dates, and concrete details — never vague terms like "many", "some", or "a lot"
 - Language must sound natural when read aloud — short sentences, active voice, no corporate jargon
 - Every section must earn its place — cut anything the viewer could skip without losing the story
-- End with a CTA that asks for a specific action (subscribe, comment with their answer, watch next)
+- In the final section, call back to a specific phrase or image from the HOOK to create satisfying narrative closure
+- End with a CTA that asks for a specific action (subscribe, comment with their answer, watch next video)
 
 Write the complete, production-ready script now:`;
 
@@ -2030,19 +2079,35 @@ function showPaywall() {
     'spirituality and philosophy': '✨ Spirituality', 'news and current events': '📰 News',
   };
   const nicheLabel = NICHE_LABELS[niche] || '';
+
+  // Pull last generated topic for personalized headline
+  let lastTopic = '';
+  try {
+    const saved = JSON.parse(localStorage.getItem('sf_autosave') || '{}');
+    if (saved.topic) lastTopic = saved.topic;
+  } catch (_) {}
+
+  // Pick a "suggested next" topic from the niche pool (different from lastTopic)
+  let suggestedNext = '';
+  const pool = TOPIC_SUGGESTIONS[niche] || [];
+  const altTopics = pool.filter(t => t !== lastTopic);
+  if (altTopics.length > 0) suggestedNext = altTopics[Math.floor(Math.random() * altTopics.length)];
+
   const pw = document.getElementById('paywall');
   if (pw) {
     const h3 = pw.querySelector('h3');
     const sub = pw.querySelector('p');
     if (h3) {
-      h3.textContent = nicheLabel
-        ? `You've used your ${usage} free scripts`
-        : "You've used your 3 free scripts";
+      h3.textContent = lastTopic
+        ? `"${lastTopic.length > 48 ? lastTopic.slice(0, 48) + '…' : lastTopic}" was your last free script`
+        : (nicheLabel ? `You've used your ${usage} free scripts` : "You've used your 3 free scripts");
     }
     if (sub) {
-      sub.textContent = nicheLabel
-        ? `Pro unlocks unlimited ${nicheLabel} scripts — plus AI tools, translate, bulk ideas, and more.`
-        : "You're one script away from becoming a consistent creator. Pro unlocks everything:";
+      sub.textContent = suggestedNext
+        ? `Your next script could be: "${suggestedNext.length > 60 ? suggestedNext.slice(0, 60) + '…' : suggestedNext}" — unlock Pro to write it.`
+        : (nicheLabel
+          ? `Pro unlocks unlimited ${nicheLabel} scripts — plus AI tools, translate, bulk ideas, and more.`
+          : "You're one script away from becoming a consistent creator. Pro unlocks everything:");
     }
   }
 
