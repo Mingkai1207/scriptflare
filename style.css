@@ -3934,6 +3934,50 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   color: var(--primary-light);
 }
 
+/* Viral Potential Score */
+.viral-score-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+}
+.vs-label {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  white-space: nowrap;
+}
+.vs-bars {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.vs-bar {
+  width: 10px;
+  height: 12px;
+  border-radius: 2px;
+  transition: background 0.2s;
+}
+.vs-empty { background: rgba(255,255,255,0.06); }
+.vs-filled.vs-high  { background: #f59e0b; }
+.vs-filled.vs-good  { background: #10b981; }
+.vs-filled.vs-ok    { background: #6366f1; }
+.vs-filled.vs-low   { background: #6b7280; }
+.vs-grade {
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.vs-grade.vs-high { color: #f59e0b; }
+.vs-grade.vs-good { color: #10b981; }
+.vs-grade.vs-ok   { color: #818cf8; }
+.vs-grade.vs-low  { color: #9ca3af; }
+.vs-tip {
+  font-size: 0.72rem;
+  color: #777;
+  font-style: italic;
+}
+
 /* Hook Type Selector */
 .hook-type-row {
   display: flex;

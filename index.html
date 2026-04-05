@@ -480,13 +480,19 @@
             <div class="form-group full">
               <label for="topic">Video Topic / Idea <span class="required">*</span></label>
               <div class="topic-input-row">
-                <input type="text" id="topic" placeholder="e.g. 5 habits that made me a millionaire before 30" maxlength="200" oninput="updateTopicCounter(); detectNicheFromTopic()" />
+                <input type="text" id="topic" placeholder="e.g. 5 habits that made me a millionaire before 30" maxlength="200" oninput="updateTopicCounter(); detectNicheFromTopic(); updateViralScore()" />
                 <button type="button" class="btn-surprise" onclick="surpriseTopic()" title="Pick a random trending topic">🎲</button>
                 <button type="button" class="btn-mic" id="btn-mic" onclick="startVoiceInput()" title="Speak your topic idea">🎙️</button>
               </div>
               <div class="form-hint-row">
                 <span class="form-hint">Be specific — better input = better script</span>
                 <span class="topic-counter" id="topic-counter">0 / 200</span>
+              </div>
+              <div class="viral-score-row hidden" id="viral-score-row">
+                <span class="vs-label">Viral potential:</span>
+                <div class="vs-bars" id="vs-bars"></div>
+                <span class="vs-grade" id="vs-grade"></span>
+                <span class="vs-tip" id="vs-tip"></span>
               </div>
               <div class="topic-history hidden" id="topic-history">
                 <span class="topic-history-label">Recent:</span>

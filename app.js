@@ -5138,6 +5138,61 @@ function copyThumbnailText(btn, text) {
   });
 }
 
+// === VIRAL SCORE (client-side topic analyzer) ===
+let _vsTimer = null;
+function updateViralScore() {
+  clearTimeout(_vsTimer);
+  _vsTimer = setTimeout(_computeViralScore, 400);
+}
+
+function _computeViralScore() {
+  const topic = (document.getElementById('topic')?.value || '').trim().toLowerCase();
+  const row = document.getElementById('viral-score-row');
+  if (!row) return;
+  if (topic.length < 8) { row.classList.add('hidden'); return; }
+
+  let score = 0;
+  const tips = [];
+
+  // Specificity signals (numbers + dollar amounts)
+  if (/\d/.test(topic)) { score += 2; } else { tips.push('Add a number (e.g. "5 habits")'); }
+  // Power words
+  const power = ['secret','nobody','truth','hidden','real reason','mistake','stop','never','worst','best','shocking','revealed','untold','wrong','lie','lied','banned','viral','illegal','warning'];
+  if (power.some(w => topic.includes(w))) score += 2;
+  // Question hook potential
+  if (/^(why|how|what|when|is|are|can|does|will|should|which)/.test(topic) || topic.includes('?')) score += 1;
+  // Specificity (longer topics have more detail)
+  if (topic.length >= 40) score += 1; else if (topic.length >= 20) score += 0.5;
+  // Emotional words
+  const emo = ['change','transform','destroy','ruin','save','grow','fail','win','lose','fear','love','hate','build','break','escape'];
+  if (emo.some(w => topic.includes(w))) score += 1;
+  // Mention of self / relatable subject
+  if (/\b(i|my|me|you|your|we|our)\b/.test(topic)) score += 0.5;
+  // Well-structured (short enough to be punchy)
+  if (topic.split(' ').length <= 12) score += 0.5;
+
+  const capped = Math.min(8, Math.round(score));
+  const pct = Math.round((capped / 8) * 100);
+  const grade = capped >= 7 ? '🔥 High' : capped >= 5 ? '⚡ Good' : capped >= 3 ? '👍 OK' : '💡 Low';
+  const gradeClass = capped >= 7 ? 'vs-high' : capped >= 5 ? 'vs-good' : capped >= 3 ? 'vs-ok' : 'vs-low';
+
+  const bars = document.getElementById('vs-bars');
+  const gradeEl = document.getElementById('vs-grade');
+  const tipEl = document.getElementById('vs-tip');
+
+  if (bars) {
+    bars.innerHTML = Array.from({ length: 8 }, (_, i) =>
+      `<span class="vs-bar ${i < capped ? gradeClass + ' vs-filled' : 'vs-empty'}"></span>`
+    ).join('');
+  }
+  if (gradeEl) { gradeEl.textContent = grade; gradeEl.className = `vs-grade ${gradeClass}`; }
+  if (tipEl) {
+    const tip = tips.length ? `💡 ${tips[0]}` : capped >= 7 ? 'Strong topic — great hook potential' : '';
+    tipEl.textContent = tip;
+  }
+  row.classList.remove('hidden');
+}
+
 // === ROI CALCULATOR ===
 function updateROI() {
   const videos = parseInt(document.getElementById('roi-videos')?.value || '4', 10);
