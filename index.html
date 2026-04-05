@@ -496,7 +496,7 @@
           </div>
           <div class="form-row two-col">
             <div class="form-group">
-              <label for="niche">Channel Niche <span class="required">*</span></label>
+              <label for="niche">Channel Niche <span class="required">*</span> <button type="button" class="niche-quiz-trigger" onclick="openNicheQuiz()" title="Not sure? Take the 30-second quiz">❓ Help me choose</button></label>
               <div class="niche-pills">
                 <button type="button" class="niche-pill" onclick="pickNiche('personal finance')">💰 Finance</button>
                 <button type="button" class="niche-pill" onclick="pickNiche('motivation and mindset')">🔥 Motivation</button>
@@ -1403,6 +1403,14 @@
         <button type="submit" class="btn btn-primary ec-submit" id="ec-submit-btn">Unlock 3 Bonus Scripts →</button>
       </form>
       <p class="ec-fine">No spam. Unsubscribe anytime.</p>
+    </div>
+  </div>
+
+  <!-- NICHE PICKER QUIZ MODAL -->
+  <div class="nq-modal hidden" id="nq-modal" onclick="closeNicheQuizModal(event)">
+    <div class="nq-box" id="nq-box">
+      <button class="nq-close" onclick="closeNicheQuiz()">✕</button>
+      <div id="nq-content"></div>
     </div>
   </div>
 

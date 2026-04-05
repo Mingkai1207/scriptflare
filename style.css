@@ -4436,6 +4436,180 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   margin-left: 4px;
 }
 
+/* === NICHE QUIZ TRIGGER === */
+.niche-quiz-trigger {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  margin-left: 8px;
+  transition: color 0.15s;
+}
+.niche-quiz-trigger:hover { color: var(--primary); }
+
+/* === NICHE PICKER QUIZ MODAL === */
+.nq-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.75);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.nq-box {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 28px 24px;
+  width: min(100%, 480px);
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.nq-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 16px;
+  cursor: pointer;
+}
+.nq-close:hover { color: var(--text); }
+.nq-step {
+  font-size: 11px;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+.nq-progress {
+  background: rgba(255,255,255,0.08);
+  border-radius: 4px;
+  height: 4px;
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+.nq-prog-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+.nq-question {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 18px;
+  line-height: 1.35;
+}
+.nq-opts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.nq-opt {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+.nq-opt:hover {
+  background: rgba(124,92,252,0.1);
+  border-color: rgba(124,92,252,0.4);
+  color: var(--text);
+  transform: translateX(3px);
+}
+.nq-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.nq-result-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  position: relative;
+}
+.nq-top-badge {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+.nq-alt-badge {
+  position: absolute;
+  top: -8px;
+  left: 12px;
+  background: rgba(255,255,255,0.12);
+  color: var(--text-muted);
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+.nq-rc-icon { font-size: 22px; margin-top: 6px; }
+.nq-rc-name { font-size: 13px; font-weight: 700; color: var(--text); }
+.nq-rc-cpm { font-size: 11px; color: var(--text-muted); }
+.nq-rc-btn {
+  margin-top: 8px;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: inherit;
+}
+.nq-rc-btn:hover { background: var(--primary-dark, #6340e8); }
+.nq-retake {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 8px;
+  padding: 7px 16px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  width: 100%;
+}
+.nq-retake:hover { border-color: var(--primary); color: var(--primary); }
+@media (max-width: 480px) {
+  .nq-results { grid-template-columns: 1fr; }
+  .nq-question { font-size: 15px; }
+  .nq-opt { font-size: 13px; padding: 10px 12px; }
+}
+
 /* === 7-DAY CREATOR CHALLENGE WIDGET === */
 .creator-challenge {
   position: fixed;

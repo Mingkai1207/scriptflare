@@ -1004,6 +1004,131 @@ function autoFillAudience(niche) {
   if (suggestion) audienceEl.placeholder = suggestion;
 }
 
+// === NICHE PICKER QUIZ ===
+const NQ_QUESTIONS = [
+  {
+    q: 'What kind of content gets you most excited to make?',
+    opts: [
+      { label: '📖 True stories and real events', niches: ['true crime and mysteries', 'history and facts', 'news and current events'] },
+      { label: '💡 Teaching people something valuable', niches: ['personal finance', 'technology and AI', 'health and wellness', 'business and entrepreneurship'] },
+      { label: '🔥 Inspiring people to change their lives', niches: ['motivation and mindset', 'self-improvement', 'spirituality and philosophy'] },
+      { label: '🌍 Exploring the world and people', niches: ['travel and geography', 'relationships and psychology', 'history and facts'] },
+    ],
+  },
+  {
+    q: 'How important is high ad revenue to you?',
+    opts: [
+      { label: '💰 Very important — I want the highest CPM possible', niches: ['personal finance', 'business and entrepreneurship', 'technology and AI'] },
+      { label: '📊 Important but not the only factor', niches: ['health and wellness', 'self-improvement', 'relationships and psychology'] },
+      { label: '🎯 I care more about audience size and viral potential', niches: ['motivation and mindset', 'true crime and mysteries', 'history and facts'] },
+      { label: '🌱 I want a niche I\'m genuinely passionate about', niches: ['travel and geography', 'spirituality and philosophy', 'news and current events'] },
+    ],
+  },
+  {
+    q: 'How much research are you willing to do per video?',
+    opts: [
+      { label: '📚 I love deep research and accuracy', niches: ['history and facts', 'true crime and mysteries', 'news and current events', 'technology and AI'] },
+      { label: '📝 Some research — I mix data with my own views', niches: ['personal finance', 'business and entrepreneurship', 'health and wellness'] },
+      { label: '🧠 Mostly from my own experience and knowledge', niches: ['motivation and mindset', 'self-improvement', 'relationships and psychology'] },
+      { label: '✈️ Research is part of the adventure for me', niches: ['travel and geography', 'spirituality and philosophy'] },
+    ],
+  },
+];
+
+const _nqAnswers = [];
+
+function openNicheQuiz() {
+  _nqAnswers.length = 0;
+  const modal = document.getElementById('nq-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  renderNicheQuestion(0);
+}
+
+function closeNicheQuiz() {
+  const modal = document.getElementById('nq-modal');
+  if (modal) modal.classList.add('hidden');
+  document.body.style.overflow = '';
+}
+
+function closeNicheQuizModal(e) {
+  if (e.target.id === 'nq-modal') closeNicheQuiz();
+}
+
+function renderNicheQuestion(idx) {
+  const q = NQ_QUESTIONS[idx];
+  if (!q) { showNicheQuizResult(); return; }
+  const content = document.getElementById('nq-content');
+  if (!content) return;
+
+  const opts = q.opts.map((opt, i) =>
+    `<button class="nq-opt" onclick="nqAnswer(${idx}, ${i})">${opt.label}</button>`
+  ).join('');
+
+  content.innerHTML = `
+    <div class="nq-step">Question ${idx + 1} of ${NQ_QUESTIONS.length}</div>
+    <div class="nq-progress"><div class="nq-prog-fill" style="width:${((idx)/NQ_QUESTIONS.length)*100}%"></div></div>
+    <h3 class="nq-question">${q.q}</h3>
+    <div class="nq-opts">${opts}</div>
+  `;
+}
+
+function nqAnswer(qIdx, optIdx) {
+  _nqAnswers.push(NQ_QUESTIONS[qIdx].opts[optIdx].niches);
+  renderNicheQuestion(qIdx + 1);
+}
+
+function showNicheQuizResult() {
+  // Count niche frequency across all answers
+  const freq = {};
+  _nqAnswers.flat().forEach(n => { freq[n] = (freq[n] || 0) + 1; });
+  const sorted = Object.entries(freq).sort((a, b) => b[1] - a[1]);
+  const top2 = sorted.slice(0, 2).map(([n]) => n);
+
+  const NICHE_ICONS = {
+    'personal finance': '💰', 'motivation and mindset': '🔥', 'true crime and mysteries': '🔍',
+    'history and facts': '📚', 'technology and AI': '🤖', 'business and entrepreneurship': '🏆',
+    'self-improvement': '📈', 'health and wellness': '💪', 'relationships and psychology': '🧠',
+    'travel and geography': '🌍', 'spirituality and philosophy': '✨', 'news and current events': '📰',
+  };
+
+  const nicheCards = top2.map((n, i) => {
+    const rev = NICHE_REVENUE[n];
+    const icon = NICHE_ICONS[n] || '⚡';
+    const label = n.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    const badge = i === 0 ? '<span class="nq-top-badge">Best match</span>' : '<span class="nq-alt-badge">Also great</span>';
+    return `<div class="nq-result-card">
+      ${badge}
+      <div class="nq-rc-icon">${icon}</div>
+      <strong class="nq-rc-name">${label}</strong>
+      ${rev ? `<span class="nq-rc-cpm">${rev.cpm} CPM · ${rev.tier}</span>` : ''}
+      <button class="nq-rc-btn" onclick="applyNicheFromQuiz('${n}')">Use this niche →</button>
+    </div>`;
+  }).join('');
+
+  const content = document.getElementById('nq-content');
+  if (!content) return;
+  content.innerHTML = `
+    <div class="nq-prog-fill" style="width:100%"></div>
+    <h3 class="nq-question">Your best niches are:</h3>
+    <div class="nq-results">${nicheCards}</div>
+    <button class="nq-retake" onclick="openNicheQuiz()">↩ Retake quiz</button>
+  `;
+}
+
+function applyNicheFromQuiz(niche) {
+  pickNiche(niche);
+  closeNicheQuiz();
+  const nicheSelect = document.getElementById('niche');
+  if (nicheSelect) {
+    const label = nicheSelect.querySelector(`option[value="${niche}"]`)?.textContent || niche;
+    showToast(`✅ Niche set to ${label} — now enter your topic and generate!`, 'success');
+  }
+  document.getElementById('topic')?.focus();
+}
+
 // === TOPIC OF THE DAY ===
 const DAILY_TOPICS = [
   { topic: 'The 4 investing mistakes killing your portfolio returns', niche: 'personal finance', tone: 'dramatic and intense' },
