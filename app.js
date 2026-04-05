@@ -1426,6 +1426,17 @@ function showQualityReport(script) {
   const hasCTA = /\[call to action\]/i.test(script) || /\[cta\]/i.test(script);
   const hasOpenLoop = ['stay tuned','coming up','find out','later in','keep watching','stick around','by the end'].some(p => lower.includes(p));
 
+  // Retention hooks: mid-video engagement phrases
+  const retentionPhrases = [
+    "but here's where","here's where it gets","but wait","now here's the thing",
+    "stay with me","and that's not all","here's what most people","what nobody tells",
+    "the surprising part","but it gets better","but it gets worse","here's the kicker",
+    "but before that","and this is important","pay attention to this","you won't believe",
+    "the real reason","and this is where","but here's the twist","here's the thing",
+    "what's interesting is","and this is key","but here's the catch","spoiler alert"
+  ];
+  const retentionCount = retentionPhrases.filter(p => lower.includes(p)).length;
+
   // Hook strength: extract hook section and analyze for power patterns
   const hookMatch = script.match(/\[HOOK\]([\s\S]*?)(?=\[(?!VISUAL:))/i);
   const hookText = hookMatch ? hookMatch[1].toLowerCase() : lower.slice(0, 400);
@@ -1447,6 +1458,7 @@ function showQualityReport(script) {
   set('q-hook', hasHook, `Hook  ${hookBars}`);
   set('q-broll', brollCount >= 4, `${brollCount} B-Roll Cues`);
   set('q-openloop', hasOpenLoop, 'Open Loop');
+  set('q-retention', retentionCount >= 2, `${retentionCount} Retention Hook${retentionCount !== 1 ? 's' : ''}`);
   set('q-cta', hasCTA, 'CTA');
 
   // Compute score
@@ -1459,23 +1471,22 @@ function showQualityReport(script) {
   else if (brollCount >= 2) score += 10;
   if (hasOpenLoop) score += 22;
   if (hasCTA) score += 22;
-  const sectionCount = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length;
-  if (sectionCount >= 4) score = Math.min(100, score + 4);
+  const retentionPts = retentionCount >= 2 ? 4 : retentionCount === 1 ? 2 : 0;
+  score = Math.min(100, score + retentionPts);
 
   const hookPts = hasHook ? 22 : 0;
   const hookStrPts = hookStrength >= 4 ? 8 : hookStrength >= 2 ? 4 : 0;
   const brollPts = brollCount >= 6 ? 22 : brollCount >= 4 ? 18 : brollCount >= 2 ? 10 : 0;
   const loopPts = hasOpenLoop ? 22 : 0;
   const ctaPts = hasCTA ? 22 : 0;
-  const secPts = (script.match(/^\[(?!VISUAL)[^\]]{2,60}\]$/gm) || []).length >= 4 ? 4 : 0;
 
   const scoreBreakdown = [
     { label: 'Hook section', pts: hookPts, max: 22 },
     { label: 'Hook strength', pts: hookStrPts, max: 8 },
     { label: 'B-roll cues', pts: brollPts, max: 22 },
     { label: 'Open loop', pts: loopPts, max: 22 },
+    { label: 'Retention hooks', pts: retentionPts, max: 4 },
     { label: 'CTA', pts: ctaPts, max: 22 },
-    { label: 'Structure', pts: secPts, max: 4 },
   ];
 
   const scoreEl = document.getElementById('quality-score');
@@ -1553,6 +1564,7 @@ function showQualityReport(script) {
   if (!hasHook) tips.push('Add a <strong>[HOOK]</strong> section header — it tells the AI to write a dedicated retention-optimized opening.');
   if (brollCount < 4) tips.push(`Only ${brollCount} B-roll cue${brollCount !== 1 ? 's' : ''} found — try adding <em>[VISUAL: description]</em> lines every 3–4 paragraphs.`);
   if (!hasOpenLoop) tips.push('No open loop detected — add "Stay with me because by the end of this video..." to boost watch time.');
+  if (retentionCount < 2) tips.push(`Only ${retentionCount} retention hook${retentionCount !== 1 ? 's' : ''} found — add phrases like "But here's where it gets interesting…" mid-video to reduce drop-off.`);
   if (!hasCTA) tips.push('Missing <strong>[CALL TO ACTION]</strong> — always end with a specific CTA (like/subscribe/comment) for better algorithm signals.');
 
   let tipsEl = document.getElementById('quality-tips');
