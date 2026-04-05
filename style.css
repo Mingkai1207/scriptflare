@@ -3934,6 +3934,50 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   color: var(--primary-light);
 }
 
+/* Hook Type Selector */
+.hook-type-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.ht-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-right: 2px;
+  flex-shrink: 0;
+}
+.ht-chip {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 11px;
+  cursor: pointer;
+  transition: all 0.18s;
+  font-family: inherit;
+}
+.ht-chip:hover {
+  background: rgba(124,92,252,0.1);
+  border-color: rgba(124,92,252,0.35);
+  color: var(--primary-light);
+}
+.ht-chip.ht-active {
+  background: rgba(124,92,252,0.15);
+  border-color: var(--primary);
+  color: var(--primary-light);
+}
+@media (max-width: 480px) {
+  .hook-type-row { gap: 5px; }
+  .ht-chip { font-size: 0.72rem; padding: 3px 9px; }
+}
+
 /* === MOBILE RESPONSIVE: NEW COMPONENTS === */
 @media (max-width: 640px) {
   /* Niche revenue card stacks */

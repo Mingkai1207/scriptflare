@@ -591,6 +591,14 @@
             <button type="button" class="ft-chip" onclick="applyTemplate('quicktips')">⚡ Quick Tips</button>
             <button type="button" class="ft-chip" onclick="applyTemplate('transformation')">🎭 Before &amp; After</button>
           </div>
+          <div class="hook-type-row">
+            <span class="ht-label">🎣 Hook style:</span>
+            <button type="button" class="ht-chip ht-active" data-ht="auto" onclick="setHookType('auto')" title="AI picks the best hook for your topic">🎯 Auto</button>
+            <button type="button" class="ht-chip" data-ht="curiosity" onclick="setHookType('curiosity')" title="Create a curiosity gap that demands to be filled">🤔 Curiosity</button>
+            <button type="button" class="ht-chip" data-ht="stat" onclick="setHookType('stat')" title="Open with a shocking, specific statistic">🔢 Stat</button>
+            <button type="button" class="ht-chip" data-ht="question" onclick="setHookType('question')" title="Start with a bold rhetorical question">❓ Question</button>
+            <button type="button" class="ht-chip" data-ht="story" onclick="setHookType('story')" title="Open mid-scene in a gripping story moment">📖 Story</button>
+          </div>
 
           <p class="generate-tip">Press <kbd>⌘ / Ctrl + Enter</kbd> to generate · <kbd>⌘ / Ctrl + S</kbd> to download · <button type="button" class="btn-voice-profile" onclick="openVoiceProfile()">⚙️ Voice Profile</button></p>
           <button class="btn btn-primary btn-xl" id="generate-btn" onclick="generateScript()">

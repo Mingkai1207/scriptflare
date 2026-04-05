@@ -33,6 +33,22 @@ let currentScript = '';
 let isGenerating = false;
 let _progressTimer = null;
 let _progressBarTimer = null;
+let _hookType = 'auto';
+
+// === HOOK TYPE ===
+const HOOK_TYPE_INSTRUCTIONS = {
+  curiosity: 'Use a curiosity gap hook — start with an intriguing partial reveal that creates an urgent question in the viewer\'s mind. Example structure: "There\'s a detail about [topic] that almost nobody knows — and once you see it, you\'ll never look at this the same way." Do NOT give the answer in the hook — make them stay to find out.',
+  stat:      'Open with a shocking, specific, verifiable statistic that immediately establishes stakes. Lead with the number first, then frame it. Example: "94% of people who try [topic] fail within the first 6 months — but not for the reason you think." The stat must feel surprising even to someone who knows the topic.',
+  question:  'Start with a bold rhetorical question that speaks directly to the viewer\'s desires, fears, or beliefs. Make it a question they\'ve asked themselves. Example: "What if everything you\'ve been told about [topic] is completely wrong?" Then immediately hint at why the answer is surprising.',
+  story:     'Open mid-scene in a gripping story moment — vivid sensory detail, present tense, one clear protagonist in crisis or discovery. Example: "It was 11 PM on a Tuesday when [person] discovered something that would change [history/their life]. They had no idea what was about to happen." Cut straight into the scene, no preamble.',
+};
+
+function setHookType(type) {
+  _hookType = type;
+  document.querySelectorAll('.ht-chip').forEach(c => {
+    c.classList.toggle('ht-active', c.dataset.ht === type);
+  });
+}
 
 // === SCRIPT AUTO-SAVE + HISTORY ===
 const SF_HISTORY_KEY = 'sf_history';
@@ -1637,6 +1653,9 @@ CRITICAL FORMATTING RULES:
   const langNote = scriptLang !== 'English' ? `\nLanguage: Write the ENTIRE script in ${scriptLang}. All section headers must also be in ${scriptLang}, but keep the bracket format: [HOOK], [INTRO], [SECTION 1: Title], [CALL TO ACTION].` : '';
   const customNote = customNotes ? `\nAdditional creator instructions: ${customNotes}` : '';
   const voiceNote = getVoiceProfileNote();
+  const hookNote = (_hookType !== 'auto' && HOOK_TYPE_INSTRUCTIONS[_hookType])
+    ? `\nHook style required for [HOOK] section: ${HOOK_TYPE_INSTRUCTIONS[_hookType]}`
+    : '';
 
   const userPrompt = `Create a complete ${length}-minute faceless YouTube script.
 
@@ -1644,7 +1663,7 @@ Topic: "${topic}"
 Niche: ${niche}
 Target audience: ${audience}
 Tone/Style: ${tone}
-Target word count: approximately ${wordCount} words${nicheNote}${langNote}${customNote}${voiceNote}
+Target word count: approximately ${wordCount} words${nicheNote}${langNote}${customNote}${voiceNote}${hookNote}
 
 Script requirements:
 - Hook must grip attention in the first 3 seconds — curiosity, bold claim, or a stat that stops scrolling
