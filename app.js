@@ -884,7 +884,7 @@ function useBulkIdea(topic) {
   document.getElementById('generate-btn')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-function showTopicSuggestions(niche) {
+function showTopicSuggestions(niche, topic) {
   const container = document.getElementById('topic-suggestions');
   const chips = document.getElementById('topic-sug-chips');
   if (!container || !chips) return;
@@ -893,6 +893,37 @@ function showTopicSuggestions(niche) {
   chips.innerHTML = suggestions.map(t =>
     `<button class="topic-sug-chip" onclick="useSuggestion(this, '${t.replace(/'/g, "&#39;")}')">${t}</button>`
   ).join('');
+
+  // Series sequel row — derived from the current topic
+  const existingSeries = container.querySelector('.topic-series-row');
+  if (existingSeries) existingSeries.remove();
+
+  if (topic && topic.trim()) {
+    const t = topic.trim();
+    const year = new Date().getFullYear();
+    const templates = [
+      `Why ${t} fails for most people`,
+      `The beginner's guide to ${t}`,
+      `${t}: 5 mistakes to avoid`,
+      `What nobody tells you about ${t}`,
+      `How I used ${t} to change everything`,
+      `The truth about ${t} in ${year}`,
+      `${t} — is it actually worth it?`,
+      `${t} myths everyone believes`,
+      `I tried ${t} for 30 days — here's what happened`,
+      `The ${t} strategy that actually works`,
+    ];
+    const picks = templates.sort(() => Math.random() - 0.5).slice(0, 3);
+    const seriesDiv = document.createElement('div');
+    seriesDiv.className = 'topic-series-row';
+    seriesDiv.innerHTML =
+      `<p class="topic-sug-label">🎬 Build a series →</p>` +
+      `<div class="topic-sug-chips">` +
+      picks.map(s => `<button class="topic-sug-chip tsc-series" onclick="useSuggestion(this, '${s.replace(/'/g, "&#39;")}')">${s}</button>`).join('') +
+      `</div>`;
+    container.appendChild(seriesDiv);
+  }
+
   container.classList.remove('hidden');
 }
 
@@ -1721,7 +1752,7 @@ Write ONLY the spoken script text with 2–3 [VISUAL: ...] cues on their own lin
       displayScript(script, topic, length);
       showQualityReport(script);
       showNichePerfTip(niche);
-      showTopicSuggestions(niche);
+      showTopicSuggestions(niche, topic);
       showTitleOptions(topic, niche);
       showContentCalendar(niche);
       showChannelNames(niche);
@@ -1930,7 +1961,7 @@ function displayScript(script, topic, length, genSecs) {
   showTitleOptions(topic, niche);
   showContentCalendar(niche, topic);
   showChannelNames(niche);
-  showTopicSuggestions(niche);
+  showTopicSuggestions(niche, topic);
   showScriptRating();
 
   // Success toast + upgrade nudge

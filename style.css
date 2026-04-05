@@ -2176,6 +2176,24 @@ footer {
   color: var(--text);
   background: rgba(124,92,252,0.06);
 }
+.topic-series-row {
+  flex-basis: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+  margin-top: 6px;
+}
+.tsc-series {
+  border-color: rgba(124,92,252,0.3);
+}
+.tsc-series:hover {
+  border-color: var(--primary);
+  background: rgba(124,92,252,0.1);
+  color: var(--text);
+}
 
 /* === HERO NICHE QUICK-START === */
 .hero-niches {
