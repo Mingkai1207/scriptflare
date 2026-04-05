@@ -3934,6 +3934,40 @@ details[open] .nr-calc-toggle::before { content: '▼ '; }
   color: var(--primary-light);
 }
 
+/* Niche Social Proof */
+.niche-social-proof {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.15);
+  border-radius: 8px;
+  margin-top: 8px;
+  animation: nsp-in 0.3s ease;
+}
+@keyframes nsp-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.nsp-result {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #10b981;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.nsp-quote {
+  font-size: 0.79rem;
+  color: #ccc;
+  font-style: italic;
+  line-height: 1.4;
+}
+.nsp-who {
+  font-size: 0.7rem;
+  color: #888;
+}
+
 /* Viral Potential Score */
 .viral-score-row {
   display: flex;
