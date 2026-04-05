@@ -624,8 +624,11 @@
           <div class="niche-perf-tip hidden" id="niche-perf-tip"></div>
           <!-- Script quality indicators -->
           <div class="script-quality hidden" id="script-quality">
-            <div class="quality-score-wrap">
-              <span class="quality-score-label">Score</span>
+            <div class="quality-score-wrap" title="Click to see score breakdown" onclick="document.getElementById('quality-score')?.click()">
+              <svg class="quality-gauge" viewBox="0 0 44 44" id="quality-gauge-svg">
+                <circle class="gauge-track" cx="22" cy="22" r="18" />
+                <circle class="gauge-fill" id="gauge-fill-circle" cx="22" cy="22" r="18" stroke-dasharray="0 113" />
+              </svg>
               <span class="quality-score score-high" id="quality-score">—</span>
             </div>
             <div class="quality-item" id="q-hook">🎣 Hook</div>

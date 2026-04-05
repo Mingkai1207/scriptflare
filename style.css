@@ -1693,6 +1693,26 @@ footer {
   border-right: 1px solid var(--border);
   margin-right: 4px;
   gap: 1px;
+  position: relative;
+  cursor: pointer;
+}
+.quality-gauge {
+  width: 48px;
+  height: 48px;
+  transform: rotate(-90deg);
+}
+.gauge-track {
+  fill: none;
+  stroke: rgba(255,255,255,0.07);
+  stroke-width: 4;
+}
+.gauge-fill {
+  fill: none;
+  stroke: #6ee7b7;
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-dasharray: 0 113;
+  transition: stroke-dasharray 0.8s ease;
 }
 .quality-score-label {
   font-size: 9px;
@@ -1702,10 +1722,16 @@ footer {
   font-weight: 600;
 }
 .quality-score {
-  font-size: 20px;
+  position: absolute;
+  font-size: 14px;
   font-weight: 800;
-  line-height: 1.1;
+  line-height: 1;
   letter-spacing: -0.03em;
+  top: 50%;
+  left: 8px;
+  width: 48px;
+  text-align: center;
+  transform: translateY(-50%);
 }
 .score-high { color: #34d399; }
 .score-mid  { color: #fbbf24; }

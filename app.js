@@ -1555,6 +1555,20 @@ function showQualityReport(script) {
     scoreEl.title = `Click to see score breakdown`;
     scoreEl.className = 'quality-score clickable ' + (score >= 80 ? 'score-high' : score >= 60 ? 'score-mid' : 'score-low');
     scoreEl.onclick = () => toggleScoreBreakdown(score, scoreBreakdown);
+
+    // Animate gauge circle
+    const gaugeFill = document.getElementById('gauge-fill-circle');
+    if (gaugeFill) {
+      const circumference = 2 * Math.PI * 18; // r=18
+      const filled = (score / 100) * circumference;
+      const color = score >= 80 ? '#6ee7b7' : score >= 60 ? '#fcd34d' : '#f87171';
+      gaugeFill.style.strokeDasharray = `0 ${circumference}`;
+      gaugeFill.style.stroke = color;
+      requestAnimationFrame(() => {
+        gaugeFill.style.transition = 'stroke-dasharray 0.8s ease';
+        gaugeFill.style.strokeDasharray = `${filled} ${circumference - filled}`;
+      });
+    }
   }
 
   // Per-section word count breakdown
