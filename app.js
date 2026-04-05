@@ -1628,6 +1628,8 @@ function regenerateScript() {
   document.getElementById('blog-post-panel')?.classList.add('hidden');
   document.getElementById('chapter-ts')?.classList.add('hidden');
   document.getElementById('studio-pack')?.classList.add('hidden');
+  document.getElementById('thumbnail-panel')?.classList.add('hidden');
+  document.getElementById('readability-score')?.classList.add('hidden');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
   currentScript = '';
@@ -1656,6 +1658,8 @@ function clearOutput() {
   document.getElementById('chapter-ts')?.classList.add('hidden');
   document.getElementById('studio-pack')?.classList.add('hidden');
   document.getElementById('translate-panel')?.classList.add('hidden');
+  document.getElementById('thumbnail-panel')?.classList.add('hidden');
+  document.getElementById('readability-score')?.classList.add('hidden');
   document.getElementById('niche-hint')?.classList.remove('visible');
   document.getElementById('script-content')?.classList.remove('hide-broll');
   document.getElementById('broll-toggle')?.classList.remove('broll-off');
@@ -1944,7 +1948,57 @@ function showQualityReport(script) {
   wtEl.innerHTML = `<span class="wtp-label">Predicted Retention</span><span class="wtp-bar-wrap"><span class="wtp-bar ${wtClass}" style="width:${wt}%"></span></span><span class="wtp-pct ${wtClass}">${wt}% <span class="wtp-grade">${wtLabel}</span></span>`;
   wtEl.classList.remove('hidden');
 
+  // Readability Score (Flesch-Kincaid)
+  const readScore = calcReadability(script);
+  let readEl = document.getElementById('readability-score');
+  if (!readEl) {
+    readEl = document.createElement('div');
+    readEl.id = 'readability-score';
+    readEl.className = 'readability-score';
+    wtEl.insertAdjacentElement('afterend', readEl);
+  }
+  const readCls = readScore.score >= 70 ? 'read-easy' : readScore.score >= 50 ? 'read-mid' : 'read-hard';
+  readEl.innerHTML = `<span class="read-label">Readability</span><span class="read-bar-wrap"><span class="read-bar ${readCls}" style="width:${readScore.score}%"></span></span><span class="read-pct ${readCls}">${readScore.label} <span class="read-grade">${readScore.grade}</span></span>`;
+  readEl.classList.remove('hidden');
+
   qDiv.classList.remove('hidden');
+}
+
+// === READABILITY SCORE (Flesch Reading Ease) ===
+function calcReadability(script) {
+  const clean = script
+    .replace(/\[VISUAL:[^\]]*\]/gi, '')
+    .replace(/\[[^\]]*\]/g, '')
+    .replace(/\*\*[^*]*\*\*/g, '')
+    .trim();
+
+  const sentences = clean.split(/[.!?]+/).filter(s => s.trim().length > 5);
+  const words = clean.split(/\s+/).filter(w => w.length > 0);
+  if (!sentences.length || !words.length) return { grade: '–', label: 'Unknown', score: 50 };
+
+  const avgWPS = words.length / sentences.length;
+
+  function syllables(word) {
+    const w = word.toLowerCase().replace(/[^a-z]/g, '');
+    if (!w) return 0;
+    let n = (w.match(/[aeiou]/g) || []).length;
+    if (w.endsWith('e') && n > 1) n--;
+    return Math.max(1, n);
+  }
+  const totalSyl = words.reduce((s, w) => s + syllables(w), 0);
+  const avgSPW = totalSyl / words.length;
+
+  const flesch = 206.835 - 1.015 * avgWPS - 84.6 * avgSPW;
+  const score = Math.max(0, Math.min(100, Math.round(flesch)));
+
+  let label, grade;
+  if (score >= 80)      { label = 'Very Easy'; grade = 'A'; }
+  else if (score >= 70) { label = 'Easy'; grade = 'B+'; }
+  else if (score >= 60) { label = 'Standard'; grade = 'B'; }
+  else if (score >= 50) { label = 'Moderate'; grade = 'C'; }
+  else                  { label = 'Complex'; grade = 'D'; }
+
+  return { grade, label, score };
 }
 
 function toggleScoreBreakdown(score, breakdown) {
@@ -4251,6 +4305,118 @@ function switchPreview(btn, panelId) {
   btn.classList.add('active');
   const panel = document.getElementById(panelId);
   if (panel) panel.classList.add('active');
+}
+
+// === THUMBNAIL TEXT GENERATOR ===
+async function showThumbnailPanel() {
+  if (!currentScript || isGenerating) return;
+  const panel = document.getElementById('thumbnail-panel');
+  if (!panel) return;
+
+  if (!isProUser()) {
+    showToast('🔒 Thumbnail generator is a Pro feature — upgrade to unlock.', 'warning');
+    setTimeout(() => scrollToPricing(), 600);
+    return;
+  }
+
+  // Toggle off
+  if (!panel.classList.contains('hidden')) {
+    panel.classList.add('hidden');
+    return;
+  }
+
+  const topic = document.getElementById('topic').value.trim();
+  const niche = document.getElementById('niche').value;
+
+  panel.classList.remove('hidden');
+  panel.innerHTML = `<div class="thumb-loading"><span class="spinner"></span> Generating thumbnail ideas…</div>`;
+
+  try {
+    const response = await fetch(CONFIG.apiUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${CONFIG.apiKey}` },
+      body: JSON.stringify({
+        model: CONFIG.model,
+        messages: [
+          {
+            role: 'system',
+            content: `You are a viral YouTube thumbnail copywriter. Generate 5 short thumbnail text options for a YouTube video. Each must be 1-5 words max — punchy, emotional, readable at a glance. Vary the styles. Return ONLY a valid JSON array:
+[
+  {"style": "Curiosity Gap", "text": "YOU WON'T BELIEVE THIS"},
+  {"style": "Number Hook", "text": "5 DARK SECRETS"},
+  {"style": "Question", "text": "IS THIS LEGAL?"},
+  {"style": "Contrast", "text": "RICH vs BROKE"},
+  {"style": "Emotion Trigger", "text": "I WAS WRONG"}
+]
+No extra text, no markdown, just the JSON array.`
+          },
+          { role: 'user', content: `Topic: "${topic || 'this video'}"\nNiche: ${niche}\n\nGenerate 5 thumbnail text options:` }
+        ],
+        max_tokens: 350,
+        temperature: 0.92,
+      }),
+    });
+
+    if (!response.ok) throw new Error('API error');
+    const data = await response.json();
+    const raw = data.choices?.[0]?.message?.content?.trim();
+    renderThumbnailPanel(panel, raw);
+  } catch (e) {
+    panel.innerHTML = `<div class="thumb-error">⚠️ Could not generate thumbnail ideas — <button class="btn btn-ghost btn-sm" onclick="showThumbnailPanel()">Try again</button></div>`;
+  }
+}
+
+function renderThumbnailPanel(panel, raw) {
+  let options = [];
+  try {
+    const jsonStart = raw.indexOf('[');
+    const jsonEnd = raw.lastIndexOf(']') + 1;
+    options = JSON.parse(raw.slice(jsonStart, jsonEnd));
+  } catch (e) {
+    panel.innerHTML = `<div class="thumb-error">⚠️ Could not parse results — <button class="btn btn-ghost btn-sm" onclick="showThumbnailPanel()">Try again</button></div>`;
+    return;
+  }
+  if (!options.length) {
+    panel.innerHTML = `<div class="thumb-error">⚠️ No options returned — <button class="btn btn-ghost btn-sm" onclick="showThumbnailPanel()">Try again</button></div>`;
+    return;
+  }
+
+  const cards = options.map((opt, i) => {
+    const safe = escapeHtml(opt.text || '');
+    const safeTxt = (opt.text || '').replace(/\\/g, '\\\\').replace(/`/g, '\\`');
+    const colors = ['#7c5cfc','#06b6d4','#f59e0b','#ec4899','#10b981'];
+    const color = colors[i % colors.length];
+    return `<div class="thumb-card">
+      <div class="thumb-preview" style="--tc:${color}">
+        <span class="thumb-text">${safe}</span>
+      </div>
+      <div class="thumb-meta">
+        <span class="thumb-style">${escapeHtml(opt.style || '')}</span>
+        <button class="thumb-copy-btn" onclick="copyThumbnailText(this, \`${safeTxt}\`)">📋 Copy</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  panel.innerHTML = `
+    <div class="thumb-header">
+      <div>
+        <strong>🖼️ Thumbnail Text Ideas</strong>
+        <span class="thumb-sub">Click any option to copy for your thumbnail overlay</span>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('thumbnail-panel').classList.add('hidden')">✕</button>
+    </div>
+    <div class="thumb-grid">${cards}</div>
+    <div class="thumb-tip">💡 Use 1–4 words max. High contrast bold font. Pair with a face reaction for 40% higher CTR.</div>
+  `;
+}
+
+function copyThumbnailText(btn, text) {
+  navigator.clipboard.writeText(text).then(() => {
+    const old = btn.textContent;
+    btn.textContent = '✅ Copied!';
+    setTimeout(() => { btn.textContent = old; }, 1500);
+    showToast('📋 Thumbnail text copied!', 'success');
+  });
 }
 
 // === CSS ANIMATION (inject shake) ===
