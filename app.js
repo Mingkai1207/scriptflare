@@ -599,6 +599,19 @@ function isProUser() {
   return val === 'true' || val === '1';
 }
 
+// Save a generated script to the backend DB (fire-and-forget, requires login)
+async function saveScriptToDb(scriptContent, topic, niche) {
+  const token = localStorage.getItem('sf_token');
+  if (!token) return; // Not logged in — skip silently
+  try {
+    await fetch('https://scriptflare-backend-production.up.railway.app/api/autopilot/generate-save', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ topic, niche, script_content: scriptContent, source: 'manual' }),
+    });
+  } catch (_) {} // Network errors are silent — local save is the primary record
+}
+
 // Sync user tier from backend (called on page load if token present)
 async function syncUserTierFromServer() {
   const token = localStorage.getItem('sf_token');
@@ -1781,6 +1794,7 @@ Write ONLY the spoken script text with 2–3 [VISUAL: ...] cues on their own lin
       if (!script) throw new Error('Empty response');
       incrementUsage();
       autoSaveScript(script, topic, niche);
+      saveScriptToDb(script, topic, niche); // fire-and-forget DB sync when logged in
       displayScript(script, topic, length);
       showQualityReport(script);
       showNichePerfTip(niche);
@@ -1900,7 +1914,9 @@ Write the complete, production-ready script now:`;
     currentScript = script;
     incrementUsage();
     saveTopicHistory(topic);
-    autoSaveScript(script, topic, document.getElementById('niche').value);
+    const _niche = document.getElementById('niche').value;
+    autoSaveScript(script, topic, _niche);
+    saveScriptToDb(script, topic, _niche); // fire-and-forget DB sync when logged in
     const _genSecs = Math.round((Date.now() - _genStart) / 1000);
     if (length === 'short') { localStorage.setItem('sf_shorts_done', '1'); }
     advanceChallengeIfReady();
