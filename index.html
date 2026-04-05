@@ -469,7 +469,7 @@
                 <button type="button" class="niche-pill" onclick="pickNiche('technology and AI')">🤖 Tech & AI</button>
                 <button type="button" class="niche-pill" onclick="pickNiche('business and entrepreneurship')">🏆 Business</button>
               </div>
-              <select id="niche" onchange="syncNichePill(this.value); showLengthHint(this.value); showNicheRevenue(this.value)">
+              <select id="niche" onchange="syncNichePill(this.value); showLengthHint(this.value); showNicheRevenue(this.value); autoFillAudience(this.value)">
                 <option value="">Select your niche...</option>
                 <option value="personal finance">💰 Personal Finance</option>
                 <option value="motivation and mindset">🔥 Motivation & Mindset</option>

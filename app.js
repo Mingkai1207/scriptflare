@@ -774,12 +774,35 @@ function updateRevenueCalc(niche) {
 }
 
 // === NICHE QUICK-SELECT ===
+const NICHE_AUDIENCES = {
+  'personal finance': 'millennials and Gen Z aged 20-35 who want to build wealth',
+  'investing': 'beginner to intermediate investors aged 25-45',
+  'business and entrepreneurship': 'aspiring entrepreneurs and side hustlers aged 22-40',
+  'motivation and mindset': 'young adults 18-35 looking to improve their lives',
+  'health and wellness': 'health-conscious people aged 25-45',
+  'technology and AI': 'tech enthusiasts and professionals aged 20-40',
+  'history and facts': 'curious learners who love surprising historical facts',
+  'science and education': 'curious people who enjoy learning how the world works',
+  'true crime and mysteries': 'true crime fans aged 18-45 who love investigative content',
+  'psychology and self-improvement': 'people aged 20-40 interested in personal growth and behavior',
+  'relationships and psychology': 'adults 18-40 navigating modern relationships',
+  'productivity': 'ambitious professionals and students who want to do more',
+};
+
+function autoFillAudience(niche) {
+  const audienceEl = document.getElementById('audience');
+  if (!audienceEl || audienceEl.value.trim()) return; // don't overwrite if user typed something
+  const suggestion = NICHE_AUDIENCES[niche];
+  if (suggestion) audienceEl.placeholder = suggestion;
+}
+
 function pickNiche(value) {
   const select = document.getElementById('niche');
   if (select) select.value = value;
   syncNichePill(value);
   showLengthHint(value);
   showNicheRevenue(value);
+  autoFillAudience(value);
 }
 
 function jumpToGenerator(niche) {
@@ -822,7 +845,8 @@ async function generateScript() {
   const niche = document.getElementById('niche').value;
   const length = document.getElementById('length').value;
   const tone = document.getElementById('tone').value;
-  const audience = document.getElementById('audience').value.trim() || 'general YouTube audience';
+  const audienceEl = document.getElementById('audience');
+  const audience = audienceEl?.value.trim() || audienceEl?.placeholder || 'general YouTube audience';
   const scriptLang = document.getElementById('script-lang')?.value || 'English';
   const customNotes = document.getElementById('custom-notes')?.value.trim() || '';
 
