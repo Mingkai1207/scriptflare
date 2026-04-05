@@ -1086,9 +1086,14 @@ const CHALLENGE_DAYS = [
 ];
 
 function initCreatorChallenge() {
-  // Don't show for Pro users or if challenge was never started and user has < 1 script
+  // Don't show if dismissed
+  if (localStorage.getItem('sf_challenge_dismissed')) return;
+  // Don't show for Pro users
+  if (isProUser()) return;
+  // Don't show on first-ever visit (no scripts yet)
   const started = localStorage.getItem('sf_challenge_started');
   if (!started && getUsage() < 1) return;
+  // Start tracking
   if (!started) {
     localStorage.setItem('sf_challenge_started', String(Date.now()));
   }
@@ -1186,10 +1191,11 @@ function renderChallengeComplete() {
   document.body.appendChild(widget);
 }
 
-// Auto-check challenge progress when scripts are generated
+// Auto-check challenge progress when key actions are completed
 function advanceChallengeIfReady() {
   if (!localStorage.getItem('sf_challenge_started')) return;
   if (localStorage.getItem('sf_challenge_dismissed')) return;
+  if (isProUser()) return;
   setTimeout(() => renderChallengeWidget(), 800);
 }
 
