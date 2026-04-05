@@ -2283,6 +2283,28 @@ kbd {
   margin: 4px 0 12px;
 }
 
+/* === PAYWALL TESTIMONIAL === */
+.paywall-testimonial {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  text-align: left;
+}
+.pwt-stars { color: #fbbf24; font-size: 13px; }
+.paywall-testimonial p {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin: 6px 0;
+  font-style: italic;
+}
+.pwt-author {
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
 /* === PAYWALL BENEFITS === */
 .paywall-benefits {
   list-style: none;
