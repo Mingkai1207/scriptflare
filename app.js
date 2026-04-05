@@ -1530,6 +1530,22 @@ function onNicheSelectChange(value) {
 }
 
 // === INLINE TOPIC STARTERS ===
+// Curated top 3 highest-performing topics per niche (specificity + virality)
+const NICHE_TOP_TOPICS = {
+  'personal finance':            ['Why 80% of people will never be financially free — and how to be different', 'The hidden tax loopholes the wealthy use legally every year', 'How compound interest makes the rich richer and traps everyone else'],
+  'motivation and mindset':      ['The brutal truth about why most people stay average their entire lives', 'The identity shift that makes hard habits automatic', '5 mindset shifts that separate the top 1% from everyone else'],
+  'true crime and mysteries':    ['The cold case that cracked open 30 years later', 'The fraud that collapsed an entire industry overnight', 'The serial killer who fooled everyone for 20 years'],
+  'history and facts':           ['Why the Roman Empire really collapsed — the true story', 'The ancient civilization that was more advanced than we thought', '10 historical "facts" that are completely wrong'],
+  'technology and AI':           ['How AI is quietly replacing 40% of jobs — and nobody is talking about it', 'The tech company that knows more about you than your family', 'Why quantum computing will break the internet — and then fix it'],
+  'business and entrepreneurship': ['The $0 business model making people millionaires right now', 'Why 90% of businesses fail in year one — and how to be in the 10%', 'How to validate a business idea in 48 hours with $0'],
+  'self-improvement':            ['The 1% rule that quietly transforms your life in 6 months', 'Why your environment determines your success more than willpower', 'The journaling method that 10× your self-awareness in 30 days'],
+  'health and wellness':         ['The sleep science that doctors aren\'t telling you', 'What happens to your body when you quit sugar for 30 days', 'Why you\'re exhausted all the time — the real explanation'],
+  'relationships and psychology': ['The attachment theory that explains every relationship problem', '5 psychological tricks narcissists use that most people fall for', 'Why most people choose the wrong partner — and how to break the pattern'],
+  'travel and geography':        ['10 places that will disappear within your lifetime', 'The country nobody visits that everyone should', 'Why Japan is the most unique civilization on earth'],
+  'spirituality and philosophy':  ['The ancient Stoic habit that fixes 90% of modern anxiety', '5 Buddhist principles that actually change how you live', 'Why Marcus Aurelius\'s philosophy is more relevant today than ever'],
+  'news and current events':     ['The geopolitical shift that will define the next decade', 'The quiet economic shift nobody is talking about', 'Why the middle class is quietly disappearing — the real data'],
+};
+
 function showTopicStarters(niche) {
   const container = document.getElementById('topic-starters');
   const chips = document.getElementById('ts-chips');
@@ -1539,12 +1555,13 @@ function showTopicStarters(niche) {
   const topicVal = (document.getElementById('topic')?.value || '').trim();
   if (topicVal) return;
 
+  // Prefer curated top topics; fall back to random pool
+  const topTopics = NICHE_TOP_TOPICS[niche];
   const pool = TOPIC_SUGGESTIONS[niche];
-  if (!pool || !pool.length) { container.classList.add('hidden'); return; }
+  const starters = topTopics || (pool ? pool.slice().sort(() => Math.random() - 0.5).slice(0, 3) : null);
+  if (!starters || !starters.length) { container.classList.add('hidden'); return; }
 
-  // Pick 3 varied starters
-  const shuffled = pool.slice().sort(() => Math.random() - 0.5).slice(0, 3);
-  chips.innerHTML = shuffled.map(t =>
+  chips.innerHTML = starters.map(t =>
     `<button class="ts-chip" onclick="useTopicStarter('${t.replace(/'/g, "&#39;").replace(/"/g, '&quot;')}')">${escapeHtml(t)}</button>`
   ).join('');
   container.classList.remove('hidden');
@@ -1657,13 +1674,17 @@ async function generateScript() {
 
   // YouTube Shorts — completely different prompt and flow
   if (length === 'short') {
-    const shortsSystemPrompt = `You are an expert YouTube Shorts scriptwriter. Shorts are vertical, 60-second videos that must hook viewers in the first 2 words. No sections, no headers — just a single punchy flow of spoken text.
+    const shortsSystemPrompt = `You are an expert YouTube Shorts scriptwriter. Shorts are vertical, 60-second videos consumed in a feed — the viewer's thumb is already swiping. Your ONLY job is to make them stop, stay, and engage.
 
 Rules for Shorts scripts:
-- First 2–3 words are the entire hook — make them a bold claim, shocking question, or surprising stat
-- Zero filler, zero throat-clearing — every sentence must earn its place
-- Speak directly to the viewer: "you", "your", "you've"
-- End with a crisp verbal CTA (subscribe, follow, drop a comment)
+- First 2–3 words ARE the hook — they must create instant pattern interruption (bold claim, stat, or mid-sentence opening that implies something was already happening)
+- Write in PRESENT TENSE and ACTIVE VOICE — creates immediacy
+- Zero filler, zero throat-clearing — every word must earn its place or it gets cut
+- Speak directly to the viewer: "you", "your", "here's what you don't know"
+- Structure: Hook (3 sec) → Build tension or information (45 sec) → Payoff/punchline (8 sec) → CTA (4 sec)
+- The payoff MUST feel worth the 60 seconds — surprising fact, unexpected twist, or concrete actionable tip
+- End with a comment-bait CTA: ask a question that viewers want to answer ("Comment if you've ever done this...")
+- Loop potential: the final sentence should hint back at the opening, encouraging re-watch
 - Include 2–3 [VISUAL: description] cues on their own lines for vertical footage
 - Total spoken text: 130–160 words`;
 
@@ -1673,7 +1694,7 @@ Topic: "${topic}"
 Niche: ${niche}
 Tone: ${tone}${langNote}${customNote}${voiceNote}
 
-Write ONLY the spoken script text with 2–3 [VISUAL: ...] cues. No section headers. No preamble. Start with the hook word:`;
+Write ONLY the spoken script text with 2–3 [VISUAL: ...] cues on their own lines. No section headers. No preamble. Start with the hook word — make it impossible to swipe past:`;
 
     try {
       const response = await fetch(CONFIG.apiUrl, {
