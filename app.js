@@ -2126,6 +2126,24 @@ function downloadScript() {
   URL.revokeObjectURL(url);
 }
 
+// === COPY CLEAN (voiceover only, no B-roll or headers) ===
+function copyCleanScript() {
+  if (!currentScript) return;
+  const cleanLines = currentScript.split('\n').filter(line => {
+    const t = line.trim();
+    if (!t) return false;
+    if (/^\[VISUAL:/i.test(t)) return false; // strip B-roll cues
+    if (/^\[.{2,60}\]$/.test(t)) return false; // strip section headers like [HOOK], [INTRO], etc.
+    if (/^\*\*[A-Z][A-Z\s\/&:]{1,40}\*\*$/.test(t)) return false; // strip bold headers
+    return true;
+  });
+  const clean = cleanLines.join('\n').trim();
+  if (!clean) { showToast('⚠️ No spoken content found.', 'warning'); return; }
+  navigator.clipboard.writeText(clean)
+    .then(() => showToast('✅ Clean voiceover text copied — paste into ElevenLabs or any TTS tool!', 'success'))
+    .catch(() => showToast('⚠️ Copy failed', 'error'));
+}
+
 function copyAsMarkdown() {
   if (!currentScript) return;
   const topic = document.getElementById('topic').value.trim() || 'YouTube Script';
