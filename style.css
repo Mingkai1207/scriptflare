@@ -963,9 +963,9 @@ select {
 #pricing { background: var(--bg); }
 .pricing-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: 20px;
-  max-width: 720px;
+  max-width: 1060px;
   margin: 0 auto 40px;
 }
 .pricing-card {
@@ -1320,7 +1320,7 @@ footer {
     flex-direction: column;
   }
   .step-arrow { transform: rotate(90deg); }
-  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
+  .pricing-grid { grid-template-columns: repeat(2, 1fr); max-width: 720px; }
 }
 @media (max-width: 640px) {
   .nav-hamburger { display: flex; }
@@ -1339,6 +1339,7 @@ footer {
   }
   .nav-links.open { display: flex; }
   .features-grid { grid-template-columns: 1fr; }
+  .pricing-grid { grid-template-columns: 1fr; max-width: 400px; }
   .form-row.two-col { grid-template-columns: 1fr; }
   .hero-stats { gap: 24px; }
   .stat-divider { display: none; }
